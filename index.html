@@ -298,22 +298,10 @@ index.html<!DOCTYPE html>
                 <button onclick="closeLoginModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="flex flex-col gap-2.5">
-                <!-- Google Sign In Button Container -->
+                <!-- Google Sign In Button Container (Dynamic Render) -->
                 <div class="w-full flex flex-col items-center py-1">
-                    <div id="g_id_onload"
-                         data-client_id="702112953676-htntgj2u2uqnci23frjsqvtvsvmsvvtl.apps.googleusercontent.com"
-                         data-callback="handleGoogleSignIn"
-                         data-auto_prompt="false">
-                    </div>
-                    <div class="g_id_signin"
-                         data-type="standard"
-                         data-size="large"
-                         data-theme="outline"
-                         data-text="sign_in_with"
-                         data-shape="rectangular"
-                         data-logo_alignment="left">
-                    </div>
-                    <p class="text-[9px] text-gray-400 mt-1">أو التسجيل اليدوي بالأسفل:</p>
+                    <div id="google-signin-btn-container" class="w-full flex justify-center"></div>
+                    <p class="text-[9px] text-gray-400 mt-2">أو التسجيل اليدوي بالأسفل:</p>
                 </div>
 
                 <div class="flex flex-col gap-1">
@@ -449,8 +437,8 @@ index.html<!DOCTYPE html>
 
     <!-- FIREBASE SDKs & JAVASCRIPT LOGIC -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-        import { getDatabase, ref, set, get, onValue, update, remove, child } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, set, get, onValue, update, remove, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDWSRGPkdvSXK3LKzcgoifOnJgUW9k5SlI",
@@ -764,7 +752,31 @@ index.html<!DOCTYPE html>
             }
         };
 
-        window.openLoginModal = () => document.getElementById('login-modal').classList.remove('hidden');
+        // Dynamic Google Sign-In Initialization (Fixes Hidden Modal Bug)
+        function initGoogleButton() {
+            const container = document.getElementById('google-signin-btn-container');
+            if (container && window.google && window.google.accounts) {
+                container.innerHTML = '';
+                try {
+                    google.accounts.id.initialize({
+                        client_id: "702112953676-htntgj2u2uqnci23frjsqvtvsvmsvvtl.apps.googleusercontent.com",
+                        callback: handleGoogleSignIn
+                    });
+                    google.accounts.id.renderButton(
+                        container,
+                        { type: "standard", size: "large", theme: "outline", text: "sign_in_with", shape: "rectangular", logo_alignment: "left" }
+                    );
+                } catch(err) {
+                    console.log('Google Auth init error:', err);
+                }
+            }
+        }
+
+        window.openLoginModal = function() {
+            document.getElementById('login-modal').classList.remove('hidden');
+            setTimeout(initGoogleButton, 100); // Render button when modal opens
+        }
+
         window.closeLoginModal = () => document.getElementById('login-modal').classList.add('hidden');
         window.openEarnPointsModal = () => document.getElementById('earn-points-modal').classList.remove('hidden');
         window.closeEarnPointsModal = () => document.getElementById('earn-points-modal').classList.add('hidden');
@@ -803,7 +815,7 @@ index.html<!DOCTYPE html>
 
         window.redeemProduct = function(productId) {
             if (!state.currentUser) {
-                showToast('يجيب تسجيل الدخول أولاً.', 'error');
+                showToast('يجب تسجيل الدخول أولاً.', 'error');
                 openLoginModal();
                 return;
             }
@@ -1087,6 +1099,7 @@ index.html<!DOCTYPE html>
         window.openCustomPointsModal = function(tag) {
             const user = state.users.find(u => u.tag === tag);
             if (!user) return;
+            document.getElementById('target-user-tag').value, tag;
             document.getElementById('target-user-tag').value = tag;
             document.getElementById('custom-points-user-label').innerText = `المتابع: ${user.name} (${user.tag}) - الرصيد: ${user.xp || 0}`;
             document.getElementById('custom-points-val').value = '';
