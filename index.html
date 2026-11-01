@@ -301,7 +301,7 @@ index.html<!DOCTYPE html>
                 <!-- Google Sign In Button Container -->
                 <div class="w-full flex flex-col items-center py-1">
                     <div id="g_id_onload"
-                         data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+                         data-client_id="702112953676-htntgj2u2uqnci23frjsqvtvsvmsvvtl.apps.googleusercontent.com"
                          data-callback="handleGoogleSignIn"
                          data-auto_prompt="false">
                     </div>
@@ -366,8 +366,8 @@ index.html<!DOCTYPE html>
                 <button onclick="closeAdminPinModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="flex flex-col gap-3">
-                <p class="text-[10px] text-gray-300 text-center">أدخل رمز المرور السري للوصول إلى لوحة التحكم (الافتراضي: 1234)</p>
-                <input type="password" id="admin-pin-input" placeholder="****" maxlength="6" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-2 text-center text-lg tracking-widest text-white focus:outline-none focus:border-red-500">
+                <p class="text-[10px] text-gray-300 text-center">أدخل كلمة المرور السرية الخاصة بك (بدون قيود على عدد الخانات)</p>
+                <input type="password" id="admin-pin-input" placeholder="أدخل كلمة المرور..." class="bg-black/60 border border-supercellCardBorder rounded px-3 py-2 text-center text-sm text-white focus:outline-none focus:border-red-500">
                 <button onclick="verifyAdminPin()" class="btn-red py-2 rounded text-white font-black text-xs">تحقق ودخول</button>
             </div>
         </div>
@@ -496,7 +496,7 @@ index.html<!DOCTYPE html>
         ];
 
         let state = {
-            currentUser: null, // {name, ytChannel, tag, country, xp, avatar}
+            currentUser: null,
             products: [],
             history: [],
             users: [],
@@ -512,7 +512,7 @@ index.html<!DOCTYPE html>
                     whatsapp: 'https://whatsapp.com'
                 }
             },
-            adminPin: 'mohanad0939957279'
+            adminPin: 'mohanad0939957279' // كلمة السر الخاصة بك الأصلية
         };
 
         // --- LOCAL STORAGE & SYNC ---
@@ -526,6 +526,9 @@ index.html<!DOCTYPE html>
                     state.users = parsed.users || [];
                     state.settings = parsed.settings || state.settings;
                     state.currentUser = parsed.currentUser || null;
+                    if (parsed.adminPin) {
+                        state.adminPin = parsed.adminPin;
+                    }
                 } catch(e) {
                     state.products = DEFAULT_PRODUCTS;
                 }
@@ -753,15 +756,6 @@ index.html<!DOCTYPE html>
         function closeEarnPointsModal() {
             document.getElementById('earn-points-modal').classList.add('hidden');
         }
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script>
-  window.onload = function () {
-    google.accounts.id.initialize({
-      client_id: '702112953676-htntgj2u2uqnci23frjsqvtvsvmsvvtl.apps.googleusercontent.com',
-      callback: handleGoogleSignIn
-    });
-  };
-
 
         // Google Sign-In Handler
         function handleGoogleSignIn(response) {
@@ -770,7 +764,7 @@ index.html<!DOCTYPE html>
                 const name = payload.name;
                 const email = payload.email;
                 const avatar = payload.picture;
-                const tag = '#G_' + payload.sub.slice(-6).toUpperCase(); // Unique tag generated from Google ID
+                const tag = '#G_' + payload.sub.slice(-6).toUpperCase();
 
                 let existingUser = state.users.find(u => u.tag === tag || u.email === email);
                 if (!existingUser) {
@@ -1246,6 +1240,12 @@ index.html<!DOCTYPE html>
 
         // --- INITIALIZATION ---
         window.onload = function() {
+            if (typeof google !== 'undefined' && google.accounts) {
+                google.accounts.id.initialize({
+                    client_id: '702112953676-htntgj2u2uqnci23frjsqvtvsvmsvvtl.apps.googleusercontent.com',
+                    callback: handleGoogleSignIn
+                });
+            }
             loadState();
             syncStateData();
             renderFooterSocials();
