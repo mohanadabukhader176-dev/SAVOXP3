@@ -753,6 +753,15 @@ index.html<!DOCTYPE html>
         function closeEarnPointsModal() {
             document.getElementById('earn-points-modal').classList.add('hidden');
         }
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+  window.onload = function () {
+    google.accounts.id.initialize({
+      client_id: '702112953676-htntgj2u2uqnci23frjsqvtvsvmsvvtl.apps.googleusercontent.com',
+      callback: handleGoogleSignIn
+    });
+  };
+</script>
 
         // Google Sign-In Handler
         function handleGoogleSignIn(response) {
