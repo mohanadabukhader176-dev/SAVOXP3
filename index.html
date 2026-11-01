@@ -199,7 +199,7 @@ index.html<!DOCTYPE html>
                 <div class="bg-supercellCard border-2 border-red-500/50 p-3 rounded-xl flex items-center justify-between">
                     <div>
                         <h3 class="font-black text-sm text-red-400">لوحة تحكم المشرف (Admin)</h3>
-                        <p class="text-[10px] text-gray-300">تحكم كامل بالنقاط، المنتجات، الإعلانات والسجل</p>
+                        <p class="text-[10px] text-gray-300">تحكم كامل بالنقاط، المنتجات، الإعلانات والسجل (سحابي)</p>
                     </div>
                     <button onclick="lockAdminPanel()" class="btn-red px-2.5 py-1 rounded text-white font-bold text-xs">قفل اللوحة</button>
                 </div>
@@ -231,7 +231,7 @@ index.html<!DOCTYPE html>
                             <input type="text" id="social-twi" placeholder="رابط تويتش" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1 text-[11px] text-white">
                             <input type="text" id="social-wa" placeholder="رابط واتساب" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1 text-[11px] text-white col-span-2">
                         </div>
-                        <button onclick="saveAdminSettings()" class="btn-gold py-1.5 rounded text-black font-black text-xs mt-1">حفظ الإعدادات والتحديث</button>
+                        <button onclick="saveAdminSettings()" class="btn-gold py-1.5 rounded text-black font-black text-xs mt-1">حفظ الإعدادات والتحديث السحابي</button>
                     </div>
 
                     <!-- Product Management -->
@@ -245,7 +245,7 @@ index.html<!DOCTYPE html>
                         </div>
                     </div>
 
-                    <!-- Master Audit Log (New Feature) -->
+                    <!-- Master Audit Log -->
                     <div class="panel-card p-3 flex flex-col gap-2.5">
                         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1">
                             <h4 class="font-black text-xs text-supercellGold"><i class="fa-solid fa-clipboard-list ml-1"></i> سجل العمليات الشامل للأدمن</h4>
@@ -259,7 +259,7 @@ index.html<!DOCTYPE html>
 
                     <!-- Users Management -->
                     <div class="panel-card p-3 flex flex-col gap-2.5">
-                        <h4 class="font-black text-xs text-supercellGold border-b border-supercellCardBorder pb-1">إدارة المتابعين وشحن النقاط</h4>
+                        <h4 class="font-black text-xs text-supercellGold border-b border-supercellCardBorder pb-1">إدارة المتابعين وشحن النقاط سحابياً</h4>
                         <div class="flex gap-2">
                             <input type="text" id="admin-search-user" oninput="renderAdminUsers()" placeholder="بحث بالاسم أو الـ Tag..." class="flex-1 bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                         </div>
@@ -288,7 +288,7 @@ index.html<!DOCTYPE html>
 
     <!-- MODALS -->
 
-    <!-- 1. LOGIN MODAL (Manual & Google Sign-In Option) -->
+    <!-- 1. LOGIN MODAL -->
     <div id="login-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3 animate-scaleIn">
             <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
@@ -337,7 +337,7 @@ index.html<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- 2. EARN POINTS MODAL (Info about how to get XP) -->
+    <!-- 2. EARN POINTS MODAL -->
     <div id="earn-points-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3 text-center">
             <div class="w-12 h-12 rounded-full bg-supercellBlue/20 border-2 border-supercellBlue flex items-center justify-center text-supercellBlue text-2xl mx-auto">
@@ -366,7 +366,7 @@ index.html<!DOCTYPE html>
                 <button onclick="closeAdminPinModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="flex flex-col gap-3">
-                <p class="text-[10px] text-gray-300 text-center">أدخل كلمة المرور السرية الخاصة بك (بدون قيود على عدد الخانات)</p>
+                <p class="text-[10px] text-gray-300 text-center">أدخل كلمة المرور السرية الخاصة بك</p>
                 <input type="password" id="admin-pin-input" placeholder="أدخل كلمة المرور..." class="bg-black/60 border border-supercellCardBorder rounded px-3 py-2 text-center text-sm text-white focus:outline-none focus:border-red-500">
                 <button onclick="verifyAdminPin()" class="btn-red py-2 rounded text-white font-black text-xs">تحقق ودخول</button>
             </div>
@@ -403,14 +403,13 @@ index.html<!DOCTYPE html>
                 <div class="flex flex-col gap-1">
                     <label class="text-[10px] text-gray-300">مخزون الأكواد (ضع كل رابط/كود في سطر مستقل):</label>
                     <textarea id="prod-links" rows="4" placeholder="https://link.clashroyale.com/?...&#10;https://link.clashroyale.com/?..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold resize-none"></textarea>
-                    <p class="text-[9px] text-gray-400">سيتم حساب المخزون تلقائياً بعدد الروابط. كل عملية شراء تحذف رابطاً تلقائياً.</p>
                 </div>
-                <button onclick="saveProduct()" class="btn-gold py-2 rounded text-black font-black text-xs mt-2">حفظ المنتج</button>
+                <button onclick="saveProduct()" class="btn-gold py-2 rounded text-black font-black text-xs mt-2">حفظ المنتج سحابياً</button>
             </div>
         </div>
     </div>
 
-    <!-- 5. CUSTOM POINTS MODAL (FOR ADMIN) -->
+    <!-- 5. CUSTOM POINTS MODAL -->
     <div id="custom-points-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
             <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
@@ -448,9 +447,25 @@ index.html<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
-    <script>
-        // --- INITIAL DATA & STATE ---
+    <!-- FIREBASE SDKs & JAVASCRIPT LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+        import { getDatabase, ref, set, get, onValue, update, remove, child } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDWSRGPkdvSXK3LKzcgoifOnJgUW9k5SlI",
+            authDomain: "savo-xp-848d5.firebaseapp.com",
+            databaseURL: "https://savo-xp-848d5-default-rtdb.firebaseio.com",
+            projectId: "savo-xp-848d5",
+            storageBucket: "savo-xp-848d5.firebasestorage.app",
+            messagingSenderId: "278710848709",
+            appId: "1:278710848709:web:9d7b3e8f69f7bfef3734ac",
+            measurementId: "G-XL4ZDMTSVF"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
         const DEFAULT_PRODUCTS = [
             {
                 id: 'prod_1',
@@ -460,8 +475,7 @@ index.html<!DOCTYPE html>
                 image: 'https://placehold.co/150x150/2B1055/FFD700?text=Gems',
                 links: [
                     'https://link.clashroyale.com/?server=1&token=DEMO_CODE_100_GEMS_1',
-                    'https://link.clashroyale.com/?server=1&token=DEMO_CODE_100_GEMS_2',
-                    'https://link.clashroyale.com/?server=1&token=DEMO_CODE_100_GEMS_3'
+                    'https://link.clashroyale.com/?server=1&token=DEMO_CODE_100_GEMS_2'
                 ]
             },
             {
@@ -472,25 +486,6 @@ index.html<!DOCTYPE html>
                 image: 'https://placehold.co/150x150/1b0c30/00E5FF?text=Pass',
                 links: [
                     'https://link.clashroyale.com/?server=1&token=DEMO_PASS_ROYALE_1'
-                ]
-            },
-            {
-                id: 'prod_3',
-                name: 'صندوق عملاق متميز',
-                desc: 'يحتوي بطاقات ذهبية وملحمية مضمونة',
-                price: 150,
-                image: 'https://placehold.co/150x150/3b1a6e/FFD700?text=Chest',
-                links: []
-            },
-            {
-                id: 'prod_4',
-                name: 'عرض الذهب السريع (50 ألف)',
-                desc: 'رابط تعبئة رصيد الذهب داخل اللعبة',
-                price: 300,
-                image: 'https://placehold.co/150x150/150824/FFD700?text=Gold',
-                links: [
-                    'https://link.clashroyale.com/?server=1&token=DEMO_GOLD_1',
-                    'https://link.clashroyale.com/?server=1&token=DEMO_GOLD_2'
                 ]
             }
         ];
@@ -512,88 +507,85 @@ index.html<!DOCTYPE html>
                     whatsapp: 'https://whatsapp.com'
                 }
             },
-            adminPin: 'mohanad0939957279' // كلمة السر الخاصة بك الأصلية
+            adminPin: 'mohanad0939957279'
         };
 
-        // --- LOCAL STORAGE & SYNC ---
-        function loadState() {
-            const savedState = localStorage.getItem('savo_xp_state_v2');
-            if (savedState) {
-                try {
-                    const parsed = JSON.parse(savedState);
-                    state.products = parsed.products || DEFAULT_PRODUCTS;
-                    state.history = parsed.history || [];
-                    state.users = parsed.users || [];
-                    state.settings = parsed.settings || state.settings;
-                    state.currentUser = parsed.currentUser || null;
-                    if (parsed.adminPin) {
-                        state.adminPin = parsed.adminPin;
-                    }
-                } catch(e) {
+        // Initialize Firebase Realtime Listeners for instant sync
+        function initFirebaseSync() {
+            // Settings
+            onValue(ref(db, 'settings'), (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    state.settings = val;
+                } else {
+                    set(ref(db, 'settings'), state.settings);
+                }
+                renderAnnouncement();
+                renderHeaderLogo();
+                renderFooterSocials();
+            });
+
+            // Products
+            onValue(ref(db, 'products'), (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    state.products = Object.values(val);
+                } else {
+                    set(ref(db, 'products'), DEFAULT_PRODUCTS);
                     state.products = DEFAULT_PRODUCTS;
                 }
-            } else {
-                state.products = DEFAULT_PRODUCTS;
-                saveStateToStorage();
-            }
-        }
+                renderStore();
+                if(!document.getElementById('tab-admin').classList.contains('hidden')) {
+                    renderAdminProducts();
+                }
+            });
 
-        function saveStateToStorage() {
-            localStorage.setItem('savo_xp_state_v2', JSON.stringify(state));
-            window.dispatchEvent(new Event('storage_updated'));
-        }
-
-        window.addEventListener('storage_updated', () => {
-            syncStateData();
-        });
-
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'savo_xp_state_v2') {
-                loadState();
-                syncStateData();
-            }
-        });
-
-        function syncStateData() {
-            const savedState = localStorage.getItem('savo_xp_state_v2');
-            if (savedState) {
-                const parsed = JSON.parse(savedState);
-                state.products = parsed.products || state.products;
-                state.settings = parsed.settings || state.settings;
-                state.history = parsed.history || state.history;
-                state.users = parsed.users || state.users;
-                
-                if (state.currentUser) {
-                    const found = state.users.find(u => u.tag === state.currentUser.tag);
-                    if (found) {
-                        const oldXp = state.currentUser.xp;
-                        state.currentUser.xp = found.xp;
-                        if (oldXp !== found.xp) {
-                            const diff = found.xp - oldXp;
-                            showToast(diff > 0 ? `تم إضافة 💎 +${diff} إلى رصيدك!` : `تم خصم 💎 ${diff} من رصيدك!`, diff > 0 ? 'success' : 'error');
+            // Users
+            onValue(ref(db, 'users'), (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    state.users = Object.values(val);
+                    if (state.currentUser) {
+                        const updatedMe = state.users.find(u => u.tag === state.currentUser.tag);
+                        if (updatedMe) {
+                            const oldXp = state.currentUser.xp;
+                            state.currentUser.xp = updatedMe.xp;
+                            if (oldXp !== updatedMe.xp) {
+                                showToast(`تم تحديث رصيدك إلى 💎 ${updatedMe.xp} XP`);
+                            }
                         }
                     }
+                } else {
+                    state.users = [];
                 }
-            }
-            renderAnnouncement();
-            renderHeaderLogo();
-            renderStore();
-            renderHistory();
-            renderUserProfile();
-            if(!document.getElementById('tab-admin').classList.contains('hidden')) {
-                renderAdminProducts();
-                renderAdminUsers();
-                renderAdminAuditLog();
-            }
+                renderUserProfile();
+                if(!document.getElementById('tab-admin').classList.contains('hidden')) {
+                    renderAdminUsers();
+                }
+            });
+
+            // History
+            onValue(ref(db, 'history'), (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    state.history = Object.values(val);
+                } else {
+                    state.history = [];
+                }
+                renderHistory();
+                if(!document.getElementById('tab-admin').classList.contains('hidden')) {
+                    renderAdminAuditLog();
+                }
+            });
         }
 
-        // --- TOAST NOTIFICATIONS ---
-        function showToast(message, type = 'success') {
+        // Expose functions globally
+        window.showToast = function(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-emerald-600 border-emerald-400' : type === 'error' ? 'bg-red-600 border-red-400' : 'bg-supercellPurple border-supercellBlue';
+            const bgColor = type === 'success' ? 'bg-emerald-600 border-emerald-400' : 'bg-red-600 border-red-400';
             
-            toast.className = `pointer-events-auto ${bgColor} text-white px-4 py-2.5 rounded-xl border-2 shadow-xl flex items-center justify-between gap-3 text-xs font-bold animate-bounceIn`;
+            toast.className = `pointer-events-auto ${bgColor} text-white px-4 py-2.5 rounded-xl border-2 shadow-xl flex items-center justify-between gap-3 text-xs font-bold`;
             toast.innerHTML = `
                 <div class="flex items-center gap-2">
                     <i class="fa-solid ${type === 'success' ? 'fa-circle-check text-supercellGold' : 'fa-triangle-exclamation'} text-sm"></i>
@@ -606,14 +598,12 @@ index.html<!DOCTYPE html>
                 toast.style.transition = 'opacity 0.3s ease';
                 setTimeout(() => toast.remove(), 300);
             }, 3500);
-        }
+        };
 
-        // --- UI RENDERING ---
-        function renderAnnouncement() {
+        window.renderAnnouncement = function() {
             const badgeEl = document.getElementById('announcement-badge');
             const badgeContainer = document.getElementById('announcement-badge-container');
             const badgeText = state.settings.badge ? state.settings.badge.trim() : '';
-            
             if (badgeText !== '') {
                 badgeContainer.style.display = 'inline-block';
                 badgeEl.innerText = badgeText;
@@ -621,27 +611,27 @@ index.html<!DOCTYPE html>
                 badgeContainer.style.display = 'none';
             }
             document.getElementById('announcement-text').innerText = state.settings.announcement;
-        }
+        };
 
-        function renderHeaderLogo() {
+        window.renderHeaderLogo = function() {
             const container = document.getElementById('logo-display');
             if (state.settings.logoUrl && state.settings.logoUrl.trim() !== '') {
                 container.innerHTML = `<img src="${state.settings.logoUrl}" alt="Logo" class="h-7 w-auto object-contain" onerror="this.onerror=null; this.parentNode.innerHTML='SAVO XP';">`;
             } else {
                 container.innerHTML = `SAVO XP`;
             }
-        }
+        };
 
-        function renderFooterSocials() {
+        window.renderFooterSocials = function() {
             const socials = state.settings.socials || {};
             document.getElementById('social-link-yt').href = socials.youtube || '#';
             document.getElementById('social-link-tik').href = socials.tiktok || '#';
             document.getElementById('social-link-ig').href = socials.instagram || '#';
             document.getElementById('social-link-twi').href = socials.twitch || '#';
             document.getElementById('social-link-wa').href = socials.whatsapp || '#';
-        }
+        };
 
-        function renderUserProfile() {
+        window.renderUserProfile = function() {
             const btn = document.getElementById('header-user-btn');
             const card = document.getElementById('user-profile-card');
             const xpDisplay = document.getElementById('header-xp-balance');
@@ -650,9 +640,9 @@ index.html<!DOCTYPE html>
             if (state.currentUser) {
                 btn.classList.add('hidden');
                 card.classList.remove('hidden');
-                document.getElementById('profile-name').innerText = `${state.currentUser.name} (${state.currentUser.ytChannel || 'قناة يوتيوب'})`;
+                document.getElementById('profile-name').innerText = `${state.currentUser.name}`;
                 document.getElementById('profile-tag').innerText = state.currentUser.tag;
-                xpDisplay.innerText = state.currentUser.xp;
+                xpDisplay.innerText = state.currentUser.xp || 0;
 
                 if (state.currentUser.avatar) {
                     avatarContainer.innerHTML = `<img src="${state.currentUser.avatar}" alt="Avatar" class="w-full h-full object-cover">`;
@@ -664,16 +654,16 @@ index.html<!DOCTYPE html>
                 card.classList.add('hidden');
                 xpDisplay.innerText = '0';
             }
-        }
+        };
 
-        function renderStore() {
+        window.renderStore = function() {
             const grid = document.getElementById('products-grid');
             const countEl = document.getElementById('store-count');
             grid.innerHTML = '';
             countEl.innerText = `${state.products.length} منتج`;
 
             if (state.products.length === 0) {
-                grid.innerHTML = `<div class="col-span-2 text-center py-8 text-gray-400 text-xs">لا توجد منتجات متاحة حالياً في المتجر.</div>`;
+                grid.innerHTML = `<div class="col-span-2 text-center py-8 text-gray-400 text-xs">لا توجد منتجات متاحة حالياً.</div>`;
                 return;
             }
 
@@ -704,31 +694,30 @@ index.html<!DOCTYPE html>
                 `;
                 grid.appendChild(card);
             });
-        }
+        };
 
-        function renderHistory() {
+        window.renderHistory = function() {
             const list = document.getElementById('history-list');
             list.innerHTML = '';
 
             if (!state.currentUser) {
-                list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">يرجى تسجيل الدخول لعرض سجل المشتريات الخاصة بك.</div>`;
+                list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">يرجى تسجيل الدخول لعرض سجل المشتريات.</div>`;
                 return;
             }
 
             const userHistory = state.history.filter(h => h.userTag === state.currentUser.tag);
-
             if (userHistory.length === 0) {
-                list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لم تقم بشراء أي منتج بعد. استبدل نقاطك الآن!</div>`;
+                list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لم تقم بشراء أي منتج بعد.</div>`;
                 return;
             }
 
-            userHistory.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(item => {
+            userHistory.reverse().forEach(item => {
                 const el = document.createElement('div');
                 el.className = 'panel-card p-3 flex items-center justify-between gap-2';
                 el.innerHTML = `
                     <div class="flex flex-col gap-0.5">
                         <h4 class="font-black text-xs text-white">${item.productName}</h4>
-                        <span class="text-[9px] text-gray-400"><i class="fa-regular fa-clock ml-1"></i>${item.timestamp}</span>
+                        <span class="text-[9px] text-gray-400">${item.timestamp}</span>
                         <span class="text-[9px] text-supercellBlue truncate max-w-[200px]">الرابط: ${item.assignedLink}</span>
                     </div>
                     <div class="flex items-center gap-1 bg-red-950/40 border border-red-500/30 px-2 py-1 rounded shrink-0">
@@ -738,29 +727,18 @@ index.html<!DOCTYPE html>
                 `;
                 list.appendChild(el);
             });
-        }
+        };
 
-        // --- USER ACTIONS ---
-        function openLoginModal() {
-            document.getElementById('login-modal').classList.remove('hidden');
-        }
-
-        function closeLoginModal() {
-            document.getElementById('login-modal').classList.add('hidden');
-        }
-
-        function openEarnPointsModal() {
-            document.getElementById('earn-points-modal').classList.remove('hidden');
-        }
-
-        function closeEarnPointsModal() {
-            document.getElementById('earn-points-modal').classList.add('hidden');
-        }
-
-        // Google Sign-In Handler
-        function handleGoogleSignIn(response) {
+        // Google Sign-In Callback
+        window.handleGoogleSignIn = function(response) {
             try {
-                const payload = parseJwt(response.credential);
+                const base64Url = response.credential.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                const payload = JSON.parse(jsonPayload);
+
                 const name = payload.name;
                 const email = payload.email;
                 const avatar = payload.picture;
@@ -768,110 +746,86 @@ index.html<!DOCTYPE html>
 
                 let existingUser = state.users.find(u => u.tag === tag || u.email === email);
                 if (!existingUser) {
-                    existingUser = { 
-                        name, 
-                        ytChannel: email, 
-                        tag, 
-                        country: 'جوجل', 
-                        xp: 0, 
-                        avatar,
-                        email 
-                    };
-                    state.users.push(existingUser);
+                    existingUser = { name, ytChannel: email, tag, country: 'جوجل', xp: 0, avatar, email };
+                    set(ref(db, 'users/' + tag.replace('#','')), existingUser);
                 } else {
                     existingUser.name = name;
                     existingUser.avatar = avatar;
+                    update(ref(db, 'users/' + tag.replace('#','')), { name, avatar });
                 }
 
                 state.currentUser = existingUser;
-                saveStateToStorage();
                 closeLoginModal();
                 renderUserProfile();
                 renderHistory();
-                showToast(`مرحباً بك ${name}! تم تسجيل الدخول بحساب جوجل بنجاح.`);
+                showToast(`مرحباً بك ${name}! تم تسجيل الدخول بجوجل بنجاح.`);
             } catch(e) {
                 showToast('حدث خطأ أثناء تسجيل الدخول عبر جوجل.', 'error');
             }
-        }
+        };
 
-        function parseJwt(token) {
-            var base64Url = token.split('.')[1];
-            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            return JSON.parse(jsonPayload);
-        }
+        window.openLoginModal = () => document.getElementById('login-modal').classList.remove('hidden');
+        window.closeLoginModal = () => document.getElementById('login-modal').classList.add('hidden');
+        window.openEarnPointsModal = () => document.getElementById('earn-points-modal').classList.remove('hidden');
+        window.closeEarnPointsModal = () => document.getElementById('earn-points-modal').classList.add('hidden');
 
-        function submitLogin() {
+        window.submitLogin = function() {
             const name = document.getElementById('login-name').value.trim();
             const ytChannel = document.getElementById('login-yt-name').value.trim();
             let tag = document.getElementById('login-tag').value.trim();
             const country = document.getElementById('login-country').value.trim();
 
             if (!name || !tag) {
-                showToast('يرجى إدخال اسم المتابع وتاغ كلاش رويال على الأقل.', 'error');
+                showToast('يرجى إدخال الاسم والتاغ.', 'error');
                 return;
             }
-
-            if (!tag.startsWith('#')) {
-                tag = '#' + tag;
-            }
+            if (!tag.startsWith('#')) tag = '#' + tag;
 
             let existingUser = state.users.find(u => u.tag === tag);
             if (!existingUser) {
-                existingUser = { name, ytChannel: ytChannel || 'قناة غير مسجلة', tag, country: country || 'غير محدد', xp: 0, avatar: '' };
-                state.users.push(existingUser);
-            } else {
-                existingUser.name = name;
-                existingUser.ytChannel = ytChannel || existingUser.ytChannel;
-                existingUser.country = country || existingUser.country;
+                existingUser = { name, ytChannel: ytChannel || 'قناة', tag, country: country || 'غير محدد', xp: 0, avatar: '' };
+                set(ref(db, 'users/' + tag.replace('#','')), existingUser);
             }
 
             state.currentUser = existingUser;
-            saveStateToStorage();
             closeLoginModal();
             renderUserProfile();
             renderHistory();
-            showToast(`أهلاً بك يا ${name}! تم تسجيل الدخول بنجاح.`);
-        }
+            showToast(`أهلاً بك يا ${name}!`);
+        };
 
-        function logoutUser() {
+        window.logoutUser = function() {
             state.currentUser = null;
-            saveStateToStorage();
             renderUserProfile();
             renderHistory();
-            showToast('تم تسجيل الخروج بنجاح.');
-        }
+            showToast('تم تسجيل الخروج.');
+        };
 
-        // --- STORE REDEMPTION ---
-        let lastRedeemedLink = '';
-        function redeemProduct(productId) {
+        window.redeemProduct = function(productId) {
             if (!state.currentUser) {
-                showToast('يجب تسجيل الدخول أولاً لاستبدال المكافآت.', 'error');
+                showToast('يجيب تسجيل الدخول أولاً.', 'error');
                 openLoginModal();
                 return;
             }
 
             const product = state.products.find(p => p.id === productId);
-            if (!product) return;
-
-            if (!product.links || product.links.length === 0) {
-                showToast('عذراً، نفدت كمية هذا المنتج حالياً.', 'error');
+            if (!product || !product.links || product.links.length === 0) {
+                showToast('عذراً، المنتج نفذ من المخزون.', 'error');
                 return;
             }
 
             const userRef = state.users.find(u => u.tag === state.currentUser.tag);
             if (!userRef || userRef.xp < product.price) {
-                showToast('رصيدك من النقاط (XP) لا يكفي لشراء هذا المنتج!', 'error');
+                showToast('رصيدك من النقاط لا يكفي!', 'error');
                 return;
             }
 
-            userRef.xp -= product.price;
-            state.currentUser.xp = userRef.xp;
-
+            const newXp = userRef.xp - product.price;
             const assignedLink = product.links.shift();
-            lastRedeemedLink = assignedLink;
+
+            // Update DB
+            update(ref(db, 'users/' + userRef.tag.replace('#','')), { xp: newXp });
+            update(ref(db, 'products/' + product.id), { links: product.links });
 
             const now = new Date();
             const timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
@@ -886,41 +840,29 @@ index.html<!DOCTYPE html>
                 timestamp: timeStr
             };
 
-            state.history.push(historyItem);
+            set(ref(db, 'history/' + historyItem.id), historyItem);
 
-            saveStateToStorage();
-            renderStore();
-            renderHistory();
-            renderUserProfile();
-            if(!document.getElementById('tab-admin').classList.contains('hidden')) {
-                renderAdminAuditLog();
-            }
-
-            document.getElementById('redeem-success-desc').innerText = `لقد قمت بشراء "${product.name}" بنجاح مقابل ${product.price} XP.`;
+            document.getElementById('redeem-success-desc').innerText = `تم شراء "${product.name}" بنجاح مقابل ${product.price} XP.`;
             document.getElementById('redeem-link-output').value = assignedLink;
             document.getElementById('redeem-success-modal').classList.remove('hidden');
-        }
+        };
 
-        function closeRedeemModal() {
-            document.getElementById('redeem-success-modal').classList.add('hidden');
-        }
-
-        function copyRedeemLink() {
+        window.closeRedeemModal = () => document.getElementById('redeem-success-modal').classList.add('hidden');
+        window.copyRedeemLink = function() {
             const input = document.getElementById('redeem-link-output');
             input.select();
             document.execCommand('copy');
-            showToast('تم نسخ رابط المكافأة إلى الحافظة بنجاح!');
-        }
+            showToast('تم نسخ الرابط بنجاح!');
+        };
 
-        // --- TABS SWITCHING ---
-        function switchTab(tabName) {
+        window.switchTab = function(tabName) {
             document.getElementById('tab-store').classList.add('hidden');
             document.getElementById('tab-history').classList.add('hidden');
             document.getElementById('tab-admin').classList.add('hidden');
 
-            document.getElementById('tab-btn-store').className = 'py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300 hover:text-white';
-            document.getElementById('tab-btn-history').className = 'py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300 hover:text-white';
-            document.getElementById('tab-btn-admin').className = 'py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300 hover:text-white';
+            document.getElementById('tab-btn-store').className = 'py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300';
+            document.getElementById('tab-btn-history').className = 'py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300';
+            document.getElementById('tab-btn-admin').className = 'py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300';
 
             if (tabName === 'store') {
                 document.getElementById('tab-store').classList.remove('hidden');
@@ -931,35 +873,25 @@ index.html<!DOCTYPE html>
                 document.getElementById('tab-btn-history').className = 'py-2 rounded-lg font-black text-xs text-center transition-all bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow';
                 renderHistory();
             }
-        }
+        };
 
-        // --- ADMIN AUTH & DASHBOARD ---
-        function openAdminPinModal() {
-            document.getElementById('admin-pin-input').value = '';
-            document.getElementById('admin-pin-modal').classList.remove('hidden');
-        }
-
-        function closeAdminPinModal() {
-            document.getElementById('admin-pin-modal').classList.add('hidden');
-        }
-
-        function verifyAdminPin() {
+        // Admin Dashboard
+        window.openAdminPinModal = () => document.getElementById('admin-pin-modal').classList.remove('hidden');
+        window.closeAdminPinModal = () => document.getElementById('admin-pin-modal').classList.add('hidden');
+        window.verifyAdminPin = function() {
             const pin = document.getElementById('admin-pin-input').value.trim();
             if (pin === state.adminPin) {
                 closeAdminPinModal();
                 openAdminDashboard();
             } else {
-                showToast('رمز المرور غير صحيح!', 'error');
+                showToast('كلمة المرور غير صحيحة!', 'error');
             }
-        }
+        };
 
-        function openAdminDashboard() {
+        window.openAdminDashboard = function() {
             document.getElementById('tab-store').classList.add('hidden');
             document.getElementById('tab-history').classList.add('hidden');
             document.getElementById('tab-admin').classList.remove('hidden');
-
-            document.getElementById('tab-btn-store').className = 'py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300';
-            document.getElementById('tab-btn-history').className = 'py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300';
             document.getElementById('tab-btn-admin').className = 'py-2 rounded-lg font-black text-xs text-center transition-all bg-red-950 text-red-400 border border-red-500 shadow';
 
             document.getElementById('admin-announcement-badge').value = state.settings.badge || '';
@@ -976,42 +908,30 @@ index.html<!DOCTYPE html>
             renderAdminProducts();
             renderAdminUsers();
             renderAdminAuditLog();
-        }
+        };
 
-        function lockAdminPanel() {
-            switchTab('store');
-            showToast('تم إقفال لوحة تحكم المشرف بنجاح.');
-        }
+        window.lockAdminPanel = () => { switchTab('store'); showToast('تم إقفال اللوحة.'); };
 
-        function saveAdminSettings() {
-            state.settings.badge = document.getElementById('admin-announcement-badge').value.trim();
-            state.settings.announcement = document.getElementById('admin-announcement-input').value.trim() || state.settings.announcement;
-            state.settings.logoUrl = document.getElementById('admin-logo-input').value.trim();
-            
-            state.settings.socials = {
-                youtube: document.getElementById('social-yt').value.trim(),
-                tiktok: document.getElementById('social-tik').value.trim(),
-                instagram: document.getElementById('social-ig').value.trim(),
-                twitch: document.getElementById('social-twi').value.trim(),
-                whatsapp: document.getElementById('social-wa').value.trim()
+        window.saveAdminSettings = function() {
+            const newSettings = {
+                badge: document.getElementById('admin-announcement-badge').value.trim(),
+                announcement: document.getElementById('admin-announcement-input').value.trim(),
+                logoUrl: document.getElementById('admin-logo-input').value.trim(),
+                socials: {
+                    youtube: document.getElementById('social-yt').value.trim(),
+                    tiktok: document.getElementById('social-tik').value.trim(),
+                    instagram: document.getElementById('social-ig').value.trim(),
+                    twitch: document.getElementById('social-twi').value.trim(),
+                    whatsapp: document.getElementById('social-wa').value.trim()
+                }
             };
+            set(ref(db, 'settings'), newSettings);
+            showToast('تم حفظ الإعدادات وتحديثها سحابياً لجميع الزوار!');
+        };
 
-            saveStateToStorage();
-            renderAnnouncement();
-            renderFooterSocials();
-            showToast('تم حفظ وتحديث الإعدادات العامة بنجاح!');
-        }
-
-        // --- ADMIN PRODUCTS MANAGEMENT ---
-        function renderAdminProducts() {
+        window.renderAdminProducts = function() {
             const list = document.getElementById('admin-products-list');
             list.innerHTML = '';
-
-            if (state.products.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا توجد منتجات مسجلة.</p>`;
-                return;
-            }
-
             state.products.forEach(prod => {
                 const stockCount = prod.links ? prod.links.length : 0;
                 const el = document.createElement('div');
@@ -1031,9 +951,9 @@ index.html<!DOCTYPE html>
                 `;
                 list.appendChild(el);
             });
-        }
+        };
 
-        function openProductModal(prodId = null) {
+        window.openProductModal = function(prodId = null) {
             document.getElementById('edit-product-id').value = '';
             document.getElementById('prod-name').value = '';
             document.getElementById('prod-desc').value = '';
@@ -1056,14 +976,12 @@ index.html<!DOCTYPE html>
                 document.getElementById('product-modal-title').innerText = 'إضافة منتج جديد';
             }
             document.getElementById('product-modal').classList.remove('hidden');
-        }
+        };
 
-        function closeProductModal() {
-            document.getElementById('product-modal').classList.add('hidden');
-        }
+        window.closeProductModal = () => document.getElementById('product-modal').classList.add('hidden');
 
-        function saveProduct() {
-            const id = document.getElementById('edit-product-id').value;
+        window.saveProduct = function() {
+            const id = document.getElementById('edit-product-id').value || ('prod_' + Date.now());
             const name = document.getElementById('prod-name').value.trim();
             const desc = document.getElementById('prod-desc').value.trim();
             const price = parseInt(document.getElementById('prod-price').value) || 0;
@@ -1076,58 +994,27 @@ index.html<!DOCTYPE html>
                 return;
             }
 
-            if (id) {
-                const p = state.products.find(x => x.id === id);
-                if (p) {
-                    p.name = name;
-                    p.desc = desc;
-                    p.price = price;
-                    p.image = image;
-                    p.links = links;
-                }
-            } else {
-                const newProd = {
-                    id: 'prod_' + Date.now(),
-                    name,
-                    desc,
-                    price,
-                    image,
-                    links
-                };
-                state.products.push(newProd);
-            }
-
-            saveStateToStorage();
+            const prodObj = { id, name, desc, price, image, links };
+            set(ref(db, 'products/' + id), prodObj);
             closeProductModal();
-            renderAdminProducts();
-            renderStore();
-            showToast('تم حفظ المنتج بنجاح!');
-        }
+            showToast('تم حفظ المنتج سحابياً بنجاح!');
+        };
 
-        function editProduct(id) {
-            openProductModal(id);
-        }
-
-        function deleteProduct(id) {
-            if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
-                state.products = state.products.filter(p => p.id !== id);
-                saveStateToStorage();
-                renderAdminProducts();
-                renderStore();
-                showToast('تم حذف المنتج بنجاح.');
+        window.editProduct = (id) => openProductModal(id);
+        window.deleteProduct = (id) => {
+            if (confirm('هل أنت متأكد من الحذف؟')) {
+                remove(ref(db, 'products/' + id));
+                showToast('تم الحذف.');
             }
-        }
+        };
 
-        // --- ADMIN AUDIT LOG (MASTER HISTORY) ---
-        function renderAdminAuditLog() {
+        window.renderAdminAuditLog = function() {
             const list = document.getElementById('admin-audit-log-list');
             list.innerHTML = '';
-
             if (!state.history || state.history.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا توجد عمليات شراء مسجلة حتى الآن.</p>`;
+                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا توجد عمليات شراء.</p>`;
                 return;
             }
-
             state.history.slice().reverse().forEach(item => {
                 const el = document.createElement('div');
                 el.className = 'bg-black/50 border border-supercellCardBorder p-2 rounded flex flex-col gap-1';
@@ -1137,36 +1024,30 @@ index.html<!DOCTYPE html>
                         <span class="text-[9px] text-red-400 font-bold">-${item.xpSpent} XP</span>
                     </div>
                     <div class="flex items-center justify-between text-[10px] text-gray-300">
-                        <span>المشتريات: <b>${item.productName}</b></span>
+                        <span>المنتج: <b>${item.productName}</b></span>
                         <span class="text-[9px] text-gray-400">${item.timestamp}</span>
                     </div>
-                    <div class="text-[9px] text-supercellBlue bg-black/60 p-1 rounded border border-gray-800 truncate select-all">
-                        الرابط: ${item.assignedLink}
-                    </div>
+                    <div class="text-[9px] text-supercellBlue bg-black/60 p-1 rounded truncate select-all">رابط: ${item.assignedLink}</div>
                 `;
                 list.appendChild(el);
             });
-        }
+        };
 
-        function clearAdminHistory() {
-            if (confirm('هل أنت متأكد من مسح سجل العمليات بالكامل؟')) {
-                state.history = [];
-                saveStateToStorage();
-                renderAdminAuditLog();
-                showToast('تم مسح السجل بنجاح.');
+        window.clearAdminHistory = () => {
+            if (confirm('مسح السجل بالكامل؟')) {
+                set(ref(db, 'history'), null);
+                showToast('تم مسح السجل.');
             }
-        }
+        };
 
-        // --- ADMIN USERS MANAGEMENT ---
-        function renderAdminUsers() {
+        window.renderAdminUsers = function() {
             const list = document.getElementById('admin-users-list');
             const searchVal = document.getElementById('admin-search-user').value.toLowerCase().trim();
             list.innerHTML = '';
 
             const filtered = state.users.filter(u => u.name.toLowerCase().includes(searchVal) || u.tag.toLowerCase().includes(searchVal));
-
             if (filtered.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا يوجد متابعين مطابقين للبحث.</p>`;
+                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا يوجد متابعين مطابقين.</p>`;
                 return;
             }
 
@@ -1177,10 +1058,10 @@ index.html<!DOCTYPE html>
                     <div class="flex items-center justify-between">
                         <div>
                             <h5 class="font-black text-xs text-white">${u.name}</h5>
-                            <p class="text-[10px] text-supercellBlue">${u.tag} | الدولة: ${u.country}</p>
+                            <p class="text-[10px] text-supercellBlue">${u.tag} | ${u.country}</p>
                         </div>
                         <div class="bg-black/70 px-2.5 py-1 rounded border border-supercellBlue/40 text-center">
-                            <span class="text-[10px] text-supercellBlue block font-bold">💎 ${u.xp} XP</span>
+                            <span class="text-[10px] text-supercellBlue block font-bold">💎 ${u.xp || 0} XP</span>
                         </div>
                     </div>
                     <div class="flex items-center gap-1.5 pt-1 border-t border-supercellCardBorder/50">
@@ -1192,63 +1073,46 @@ index.html<!DOCTYPE html>
                 `;
                 list.appendChild(el);
             });
-        }
+        };
 
-        function quickAddXp(tag, amount) {
+        window.quickAddXp = function(tag, amount) {
             const user = state.users.find(u => u.tag === tag);
             if (user) {
-                user.xp += amount;
-                saveStateToStorage();
-                renderAdminUsers();
-                renderUserProfile();
-                showToast(`تم إضافة ${amount} XP للمتابع ${user.name} بنجاح!`);
+                const newXp = (user.xp || 0) + amount;
+                update(ref(db, 'users/' + tag.replace('#','')), { xp: newXp });
+                showToast(`تم إضافة ${amount} XP للمتابع ${user.name}`);
             }
-        }
+        };
 
-        function openCustomPointsModal(tag) {
+        window.openCustomPointsModal = function(tag) {
             const user = state.users.find(u => u.tag === tag);
             if (!user) return;
             document.getElementById('target-user-tag').value = tag;
-            document.getElementById('custom-points-user-label').innerText = `المتابع: ${user.name} (${user.tag}) - الرصيد الحالي: ${user.xp}`;
+            document.getElementById('custom-points-user-label').innerText = `المتابع: ${user.name} (${user.tag}) - الرصيد: ${user.xp || 0}`;
             document.getElementById('custom-points-val').value = '';
             document.getElementById('custom-points-modal').classList.remove('hidden');
-        }
+        };
 
-        function closeCustomPointsModal() {
-            document.getElementById('custom-points-modal').classList.add('hidden');
-        }
+        window.closeCustomPointsModal = () => document.getElementById('custom-points-modal').classList.add('hidden');
 
-        function applyCustomPoints() {
+        window.applyCustomPoints = function() {
             const tag = document.getElementById('target-user-tag').value;
             const val = parseInt(document.getElementById('custom-points-val').value);
-            if (isNaN(val)) {
-                showToast('يرجى إدخال قيمة صحيحة.', 'error');
-                return;
-            }
+            if (isNaN(val)) return;
 
             const user = state.users.find(u => u.tag === tag);
             if (user) {
-                user.xp += val;
-                if (user.xp < 0) user.xp = 0;
-                saveStateToStorage();
+                let newXp = (user.xp || 0) + val;
+                if (newXp < 0) newXp = 0;
+                update(ref(db, 'users/' + tag.replace('#','')), { xp: newXp });
                 closeCustomPointsModal();
-                renderAdminUsers();
-                renderUserProfile();
-                showToast(`تم تعديل رصيد ${user.name} بمقدار ${val >= 0 ? '+' + val : val} 💎`);
+                showToast('تم تعديل النقاط بنجاح!');
             }
-        }
+        };
 
-        // --- INITIALIZATION ---
+        // Start App
         window.onload = function() {
-            if (typeof google !== 'undefined' && google.accounts) {
-                google.accounts.id.initialize({
-                    client_id: '702112953676-htntgj2u2uqnci23frjsqvtvsvmsvvtl.apps.googleusercontent.com',
-                    callback: handleGoogleSignIn
-                });
-            }
-            loadState();
-            syncStateData();
-            renderFooterSocials();
+            initFirebaseSync();
         };
     </script>
 </body>
