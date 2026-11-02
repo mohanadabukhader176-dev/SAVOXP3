@@ -2,1006 +2,1213 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAVO XP - منصة مكافآت صانع المحتوى</title>
-    <!-- FontAwesome & Google Fonts -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SAVO XP - Clash Royale Creator Rewards</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
+    <!-- Google Identity Services SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        supercellDark: '#1b0c30',
+                        supercellPurple: '#2B1055',
+                        supercellGold: '#FFD700',
+                        supercellGoldDark: '#CCA100',
+                        supercellBlue: '#00E5FF',
+                        supercellCard: '#2d1552',
+                        supercellCardBorder: '#53239e'
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --bg-dark: #0f0c1b;
-            --card-bg: #1a162b;
-            --accent-gold: #ffb703;
-            --accent-purple: #7209b7;
-            --accent-blue: #4cc9f0;
-            --accent-red: #e63946;
-            --text-light: #f8f9fa;
-            --text-muted: #a0a0b8;
-            --border-glow: rgba(114, 9, 183, 0.4);
-        }
-
         * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
             font-family: 'Cairo', sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-touch-callout: none;
         }
-
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            background-color: #150824;
+            color: #ffffff;
+            touch-action: pan-x pan-y;
             overflow-x: hidden;
         }
-
-        /* Header & Navigation */
-        header {
-            background: rgba(26, 22, 43, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 2px solid var(--border-glow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding: 12px 20px;
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
         }
-
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        ::-webkit-scrollbar-track {
+            background: #1b0c30;
         }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: var(--accent-gold);
-            text-shadow: 0 0 10px rgba(255, 183, 3, 0.3);
+        ::-webkit-scrollbar-thumb {
+            background: #53239e;
+            border-radius: 4px;
         }
-
-        .user-widget {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .btn-gold {
+            background: linear-gradient(to bottom, #FFE853, #CCA100);
+            border: 2px solid #FFF59D;
+            box-shadow: 0 4px 0 #8B6508, 0 6px 10px rgba(0,0,0,0.4);
+            transition: all 0.1s ease;
         }
-
-        .points-badge {
-            background: linear-gradient(135deg, #2a1b4e, #1a162b);
-            border: 1px solid var(--accent-gold);
-            border-radius: 20px;
-            padding: 6px 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-            color: var(--accent-gold);
-            cursor: pointer;
-            transition: 0.3s;
+        .btn-gold:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #8B6508, 0 2px 5px rgba(0,0,0,0.4);
         }
-
-        .points-badge:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255, 183, 3, 0.4);
+        .btn-blue {
+            background: linear-gradient(to bottom, #00FFFF, #0088CC);
+            border: 2px solid #B3FFFF;
+            box-shadow: 0 4px 0 #004466, 0 6px 10px rgba(0,0,0,0.4);
+            transition: all 0.1s ease;
         }
-
-        .btn-add-points {
-            background: var(--accent-gold);
-            color: #000;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            font-weight: 900;
+        .btn-blue:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #004466, 0 2px 5px rgba(0,0,0,0.4);
         }
-
-        /* Nav Tabs */
-        .nav-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            background: #141122;
-            padding: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        .btn-red {
+            background: linear-gradient(to bottom, #FF5252, #C62828);
+            border: 2px solid #FF8A80;
+            box-shadow: 0 4px 0 #7F0000, 0 6px 10px rgba(0,0,0,0.4);
         }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 8px 18px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .panel-card {
+            background: linear-gradient(135deg, #2b1055 0%, #1f0b3d 100%);
+            border: 2px solid #53239e;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.3);
+            border-radius: 1rem;
         }
-
-        .tab-btn.active, .tab-btn:hover {
-            background: var(--accent-purple);
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(114, 9, 183, 0.4);
+        .game-badge {
+            text-shadow: 2px 2px 0px #000, -2px -2px 0px #000, 2px -2px 0px #000, -2px 2px 0px #000;
         }
-
-        /* User Profile Summary Card */
-        .user-card {
-            max-width: 1200px;
-            margin: 15px auto;
-            padding: 0 20px;
-            width: 100%;
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
         }
-
-        .profile-box {
-            background: linear-gradient(135deg, #241c3a, #1a162b);
-            border-radius: 16px;
-            padding: 15px 20px;
-            border: 1px solid var(--border-glow);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
+        .animate-marquee {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 18s linear infinite;
         }
-
-        .profile-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .avatar-circle {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--accent-purple);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: #fff;
-            border: 2px solid var(--accent-gold);
-        }
-
-        .user-details h4 {
-            font-size: 1.1rem;
-            color: #fff;
-        }
-
-        .user-details p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .btn-action {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-action:hover {
-            background: var(--accent-purple);
-            border-color: var(--accent-purple);
-        }
-
-        .btn-danger {
-            background: rgba(230, 57, 70, 0.2);
-            border-color: var(--accent-red);
-            color: #ff8fa3;
-        }
-
-        .btn-danger:hover {
-            background: var(--accent-red);
-            color: #fff;
-        }
-
-        /* Ticker Announcement */
-        .ticker-wrap {
-            max-width: 1200px;
-            margin: 0 auto 20px auto;
-            padding: 0 20px;
-            width: 100%;
-        }
-
-        .ticker {
-            background: rgba(255, 183, 3, 0.1);
-            border: 1px solid var(--accent-gold);
-            border-radius: 12px;
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--accent-gold);
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        /* Main Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px 40px 20px;
-            flex: 1;
-            width: 100%;
-        }
-
-        .section-title {
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-right: 4px solid var(--accent-gold);
-            padding-right: 10px;
-        }
-
-        /* Store Grid */
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 20px;
-        }
-
-        .product-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            overflow: hidden;
-            transition: 0.3s;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-purple);
-            box-shadow: 0 8px 25px rgba(114, 9, 183, 0.3);
-        }
-
-        .product-tag {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: rgba(76, 201, 240, 0.2);
-            color: var(--accent-blue);
-            padding: 3px 10px;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
-        .product-icon {
-            font-size: 2.5rem;
-            color: var(--accent-gold);
-            margin: 15px 0 10px 0;
-            text-align: center;
-        }
-
-        .product-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-            text-align: center;
-        }
-
-        .product-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-align: center;
-            margin-bottom: 15px;
-            min-height: 40px;
-        }
-
-        .product-price {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 6px;
-            font-weight: 800;
-            font-size: 1.1rem;
-            color: var(--accent-gold);
-            margin-bottom: 15px;
-        }
-
-        .btn-buy {
-            background: linear-gradient(135deg, var(--accent-purple), #560bad);
-            color: #fff;
-            border: none;
-            padding: 10px;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.3s;
-        }
-
-        .btn-buy:hover {
-            box-shadow: 0 4px 15px rgba(114, 9, 183, 0.5);
-            opacity: 0.9;
-        }
-
-        /* Admin Controls Inside Cards */
-        .admin-card-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding-top: 10px;
-        }
-
-        .btn-sm {
-            flex: 1;
-            padding: 6px;
-            font-size: 0.8rem;
-            border-radius: 6px;
-        }
-
-        /* Admin Dashboard Section */
-        .admin-panel {
-            background: var(--card-bg);
-            border-radius: 16px;
-            border: 1px solid var(--accent-purple);
-            padding: 25px;
-            margin-bottom: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px 14px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 0.95rem;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 10px var(--border-glow);
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        /* Modals */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: 0.3s;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .modal-box {
-            background: var(--card-bg);
-            border: 1px solid var(--accent-purple);
-            border-radius: 20px;
-            width: 90%;
-            max-width: 450px;
-            padding: 25px;
-            position: relative;
-            transform: translateY(20px);
-            transition: 0.3s;
-        }
-
-        .modal-overlay.active .modal-box {
-            transform: translateY(0);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
-        /* Footer */
-        footer {
-            background: #090710;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 25px 20px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-top: auto;
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 12px;
-        }
-
-        .social-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-light);
-            text-decoration: none;
-            transition: 0.3s;
-        }
-
-        .social-icon:hover {
-            background: var(--accent-purple);
-            color: #fff;
-        }
-
-        @media (max-width: 600px) {
-            .grid-2 { grid-template-columns: 1fr; }
-            .profile-box { flex-direction: column; align-items: flex-start; }
+        .animate-marquee:hover {
+            animation-play-state: paused;
         }
     </style>
 </head>
-<body>
+<body class="w-full min-h-screen flex flex-col justify-between m-0 p-0">
 
-    <!-- Header -->
-    <header>
-        <div class="header-container">
-            <div class="logo">
-                <i class="fa-solid fa-gem"></i>
-                <span>SAVO XP</span>
-            </div>
-            <div class="user-widget" id="userWidget">
-                <button class="btn-action" onclick="loginWithGoogle()">
-                    <i class="fa-brands fa-google"></i> تسجيل الدخول
-                </button>
-            </div>
-        </div>
-    </header>
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed top-4 left-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- Nav Tabs -->
-    <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('store')"><i class="fa-solid fa-store"></i> المتجر</button>
-        <button class="tab-btn" onclick="switchTab('purchases')"><i class="fa-solid fa-bag-shopping"></i> المشتريات</button>
-        <button class="tab-btn" id="adminTabBtn" style="display: none;" onclick="switchTab('admin')"><i class="fa-solid fa-sliders"></i> الأدمن</button>
-    </div>
+    <!-- Main Wrapper -->
+    <div class="w-full max-w-md mx-auto flex flex-col min-h-screen bg-supercellDark relative shadow-2xl pb-16">
 
-    <!-- User Profile Summary (Visible when logged in) -->
-    <div class="user-card" id="userCardSection" style="display: none;">
-        <div class="profile-box">
-            <div class="profile-info">
-                <div class="avatar-circle" id="userAvatar"><i class="fa-solid fa-user"></i></div>
-                <div class="user-details">
-                    <h4 id="userNameDisplay">اسم المستخدم</h4>
-                    <p id="userTagDisplay">التايج: #------ | قناة اليوتيوب: غير محددة</p>
+        <!-- HEADER -->
+        <header class="w-full bg-supercellPurple border-b-4 border-supercellCardBorder px-3 py-3 flex items-center justify-between sticky top-0 z-40 shadow-md">
+            <div class="flex items-center gap-2">
+                <div id="header-logo-container" class="flex items-center">
+                    <span id="logo-display" class="font-black text-xl italic tracking-tighter text-supercellGold game-badge">SAVO XP</span>
                 </div>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-action" onclick="openProfileModal()"><i class="fa-solid fa-pen-to-square"></i> تعديل حسابي</button>
-                <button class="btn-action btn-danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
+            
+            <div class="flex items-center gap-2">
+                <!-- XP Balance Pill with Info (+) Button -->
+                <div class="bg-black/50 border-2 border-supercellBlue px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-inner">
+                    <span class="text-supercellBlue text-base">💎</span>
+                    <span id="header-xp-balance" class="font-black text-supercellBlue text-sm">0</span>
+                    <button onclick="openEarnPointsModal()" class="w-4 h-4 bg-supercellBlue text-black font-black rounded-full flex items-center justify-center text-[10px] hover:scale-110 transition-transform" title="كيف تحصل على نقاط؟">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+
+                <!-- Login / Profile Button -->
+                <button onclick="openLoginModal()" id="header-user-btn" class="btn-gold px-3 py-1.5 rounded-lg text-black font-black text-xs whitespace-nowrap">
+                    تسجيل الدخول
+                </button>
+            </div>
+        </header>
+
+        <!-- ANNOUNCEMENT TICKER BANNER -->
+        <div id="announcement-banner" class="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-black py-1.5 px-3 flex items-center gap-2 border-b-2 border-amber-400 overflow-hidden shadow-sm">
+            <span id="announcement-badge-container" class="shrink-0">
+                <span id="announcement-badge" class="bg-black text-amber-400 text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">إعلان</span>
+            </span>
+            <div class="overflow-hidden whitespace-nowrap w-full">
+                <p id="announcement-text" class="text-xs font-bold animate-marquee inline-block text-black">أهلاً بك في منصة مكافآت صانع المحتوى SAVO XP - تابع البث المباشر واجمع النقاط!</p>
             </div>
         </div>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 p-3 flex flex-col gap-4">
+
+            <!-- Welcome / Profile Quick Card -->
+            <div id="user-profile-card" class="panel-card p-3 flex items-center justify-between hidden">
+                <div class="flex items-center gap-3">
+                    <div id="profile-avatar-container" class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center border-2 border-supercellGold text-supercellGold font-black text-lg shadow overflow-hidden">
+                        <i class="fa-solid fa-crown" id="profile-fallback-icon"></i>
+                    </div>
+                    <div>
+                        <h4 id="profile-name" class="font-black text-sm text-white truncate max-w-[140px]">اسم المتابع</h4>
+                        <p id="profile-tag" class="text-[10px] text-supercellBlue font-bold">#TAG000</p>
+                    </div>
+                </div>
+                <button onclick="logoutUser()" class="btn-red px-2 py-1 rounded text-white font-bold text-[10px] whitespace-nowrap">
+                    خروج
+                </button>
+            </div>
+
+            <!-- TABS NAVIGATION -->
+            <div class="grid grid-cols-3 gap-1.5 bg-black/40 p-1 rounded-xl border border-supercellCardBorder">
+                <button onclick="switchTab('store')" id="tab-btn-store" class="py-2 rounded-lg font-black text-xs text-center transition-all bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow">
+                    <i class="fa-solid fa-store ml-1"></i> المتجر
+                </button>
+                <button onclick="switchTab('history')" id="tab-btn-history" class="py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300 hover:text-white">
+                    <i class="fa-solid fa-clock-rotate-left ml-1"></i> المشتريات
+                </button>
+                <button onclick="openAdminPinModal()" id="tab-btn-admin" class="py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300 hover:text-white">
+                    <i class="fa-solid fa-gear ml-1"></i> الأدمن
+                </button>
+            </div>
+
+            <!-- TAB 1: REWARD STORE (2x2 GRID) -->
+            <section id="tab-store" class="flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5">
+                        <i class="fa-solid fa-gift"></i> متجر المكافآت والأكواد
+                    </h3>
+                    <span id="store-count" class="text-[10px] bg-supercellCard border border-supercellCardBorder px-2 py-0.5 rounded text-gray-300">0 منتج</span>
+                </div>
+
+                <!-- Products Grid 2x2 -->
+                <div id="products-grid" class="grid grid-cols-2 gap-2.5">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- TAB 2: PURCHASE HISTORY -->
+            <section id="tab-history" class="flex flex-col gap-3 hidden">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5">
+                        <i class="fa-solid fa-receipt"></i> سجل المشتريات الخاصة بك
+                    </h3>
+                </div>
+                <div id="history-list" class="flex flex-col gap-2">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- TAB 3: ADMIN DASHBOARD (Hidden by default until PIN) -->
+            <section id="tab-admin" class="flex flex-col gap-4 hidden">
+                <div class="bg-supercellCard border-2 border-red-500/50 p-3 rounded-xl flex items-center justify-between">
+                    <div>
+                        <h3 class="font-black text-sm text-red-400">لوحة تحكم المشرف (Admin)</h3>
+                        <p class="text-[10px] text-gray-300">تحكم كامل بالنقاط، المنتجات، الإعلانات والسجل (سحابي)</p>
+                    </div>
+                    <button onclick="lockAdminPanel()" class="btn-red px-2.5 py-1 rounded text-white font-bold text-xs">قفل اللوحة</button>
+                </div>
+
+                <!-- Admin Sub-sections -->
+                <div class="flex flex-col gap-3">
+                    <!-- General Settings -->
+                    <div class="panel-card p-3 flex flex-col gap-2.5">
+                        <h4 class="font-black text-xs text-supercellGold border-b border-supercellCardBorder pb-1">الإعدادات العامة والإعلانات</h4>
+                        <div class="flex gap-2">
+                            <div class="flex flex-col gap-1 w-1/3">
+                                <label class="text-[10px] text-gray-300">عنوان التنبيه:</label>
+                                <input type="text" id="admin-announcement-badge" placeholder="مثال: تنويه / أخبار" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                            </div>
+                            <div class="flex flex-col gap-1 flex-1">
+                                <label class="text-[10px] text-gray-300">نص شريط الإعلان:</label>
+                                <input type="text" id="admin-announcement-input" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] text-gray-300">رابط الشعار المخصص (Logo URL):</label>
+                            <input type="text" id="admin-logo-input" placeholder="ترك فارغاً لاستخدام اللوجو الافتراضي" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                        </div>
+                        <h5 class="font-black text-[11px] text-supercellGold mt-1 pt-1 border-t border-supercellCardBorder">روابط وسائل التواصل الاجتماعي (Footer)</h5>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="social-yt" placeholder="رابط اليوتيوب" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1 text-[11px] text-white">
+                            <input type="text" id="social-tik" placeholder="رابط تيك توك" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1 text-[11px] text-white">
+                            <input type="text" id="social-ig" placeholder="رابط انستغرام" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1 text-[11px] text-white">
+                            <input type="text" id="social-twi" placeholder="رابط تويتش" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1 text-[11px] text-white">
+                            <input type="text" id="social-wa" placeholder="رابط واتساب" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1 text-[11px] text-white col-span-2">
+                        </div>
+                        <button onclick="saveAdminSettings()" class="btn-gold py-1.5 rounded text-black font-black text-xs mt-1">حفظ الإعدادات والتحديث السحابي</button>
+                    </div>
+
+                    <!-- Product Management -->
+                    <div class="panel-card p-3 flex flex-col gap-2.5">
+                        <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1">
+                            <h4 class="font-black text-xs text-supercellGold">إدارة المنتجات والأكواد</h4>
+                            <button onclick="openProductModal()" class="btn-blue px-2 py-0.5 rounded text-black font-black text-[10px]"><i class="fa-solid fa-plus"></i> إضافة منتج</button>
+                        </div>
+                        <div id="admin-products-list" class="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Master Audit Log -->
+                    <div class="panel-card p-3 flex flex-col gap-2.5">
+                        <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1">
+                            <h4 class="font-black text-xs text-supercellGold"><i class="fa-solid fa-clipboard-list ml-1"></i> سجل العمليات الشامل للأدمن</h4>
+                            <button onclick="clearAdminHistory()" class="text-[9px] text-red-400 hover:text-red-300 underline">مسح السجل</button>
+                        </div>
+                        <p class="text-[9px] text-gray-300">متابعة دقيقة لكل مشتريات المتابعين والروابط التي تم تسليمها:</p>
+                        <div id="admin-audit-log-list" class="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Users Management -->
+                    <div class="panel-card p-3 flex flex-col gap-2.5">
+                        <h4 class="font-black text-xs text-supercellGold border-b border-supercellCardBorder pb-1">إدارة المتابعين وشحن النقاط سحابياً</h4>
+                        <div class="flex gap-2">
+                            <input type="text" id="admin-search-user" oninput="renderAdminUsers()" placeholder="بحث بالاسم أو الـ Tag..." class="flex-1 bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                        </div>
+                        <div id="admin-users-list" class="flex flex-col gap-2 max-h-64 overflow-y-auto pr-1">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER BRANDING -->
+        <footer class="w-full py-4 text-center border-t border-supercellCardBorder bg-black/40 mt-auto flex flex-col gap-2">
+            <!-- Social Media Icons -->
+            <div id="footer-socials" class="flex items-center justify-center gap-3 text-lg">
+                <a id="social-link-yt" href="#" target="_blank" class="text-red-500 hover:text-red-400 transition-colors"><i class="fa-brands fa-youtube"></i></a>
+                <a id="social-link-tik" href="#" target="_blank" class="text-white hover:text-gray-300 transition-colors"><i class="fa-brands fa-tiktok"></i></a>
+                <a id="social-link-ig" href="#" target="_blank" class="text-pink-500 hover:text-pink-400 transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                <a id="social-link-twi" href="#" target="_blank" class="text-purple-400 hover:text-purple-300 transition-colors"><i class="fa-brands fa-twitch"></i></a>
+                <a id="social-link-wa" href="#" target="_blank" class="text-emerald-500 hover:text-emerald-400 transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+            <p class="text-[10px] text-gray-400 font-bold">SAVO XP © 2026 - جميع الحقوق محفوظة لصانع المحتوى</p>
+            <p class="text-[9px] text-gray-500 mt-0.5">غير مرتبطة رسمياً بشركة Supercell (حقوق النشر محفوظة)</p>
+        </footer>
     </div>
 
-    <!-- Ticker Announcement -->
-    <div class="ticker-wrap">
-        <div class="ticker">
-            <i class="fa-solid fa-bullhorn"></i>
-            <span id="announcementText">أهلاً بك في منصة مكافآت صانع المحتوى SAVO XP - تابع مقاطعنا واجمع النقاط!</span>
-        </div>
-    </div>
+    <!-- MODALS -->
 
-    <!-- Main Container -->
-    <div class="container">
-        
-        <!-- Store View -->
-        <div id="storeView">
-            <h3 class="section-title"><i class="fa-solid fa-gift"></i> متجر المكافآت والأكواد</h3>
-            <div class="products-grid" id="productsGrid">
-                <!-- Products dynamically rendered here -->
-            </div>
-        </div>
-
-        <!-- Purchases View -->
-        <div id="purchasesView" style="display: none;">
-            <h3 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> سجل مشترياتك</h3>
-            <div id="purchasesList" class="products-grid">
-                <!-- Purchases dynamically rendered here -->
-            </div>
-        </div>
-
-        <!-- Admin View -->
-        <div id="adminView" style="display: none;">
-            <div class="admin-panel">
-                <h3 class="section-title" style="border-color: var(--accent-purple);">
-                    <i class="fa-solid fa-user-shield"></i> لوحة تحكم المشرف (Admin)
+    <!-- 1. LOGIN MODAL -->
+    <div id="login-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
+                <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5">
+                    <i class="fa-solid fa-user-shield"></i> تسجيل دخول المتابع
                 </h3>
-
-                <!-- Announcement Config -->
-                <div class="form-group">
-                    <label>نص الشريط الإعلاني:</label>
-                    <input type="text" id="adminTickerInput" class="form-control" placeholder="أدخل الإعلان الجديد...">
+                <button onclick="closeLoginModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex flex-col gap-2.5">
+                <!-- Google Sign In Button Container -->
+                <div class="w-full flex flex-col items-center py-1">
+                    <div id="google-signin-btn-container" class="w-full flex justify-center"></div>
+                    <p class="text-[9px] text-gray-400 mt-2">أو التسجيل اليدوي بالأسفل:</p>
                 </div>
 
-                <!-- Points Earn Rules Config -->
-                <div class="form-group">
-                    <label>شروط وتعليمات الحصول على النقاط (تظهر للزائر):</label>
-                    <textarea id="adminPointsRulesInput" class="form-control" rows="3" placeholder="اكتب الشروط هنا..."></textarea>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">اسم المتابع (الاسم الشخصي):</label>
+                    <input type="text" id="login-name" placeholder="مثال: أحمد" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                 </div>
-
-                <button class="btn-action" style="background: var(--accent-purple); color: #fff; margin-bottom: 25px;" onclick="saveAdminSettings()">
-                    <i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات والشروط سحابياً
-                </button>
-
-                <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
-
-                <!-- Product Creation -->
-                <h4 style="margin-bottom: 15px; color: var(--accent-gold);"><i class="fa-solid fa-plus-circle"></i> إضافة منتج جديد</h4>
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>اسم المنتج:</label>
-                        <input type="text" id="prodTitle" class="form-control" placeholder="مثال: باقة جواهر">
-                    </div>
-                    <div class="form-group">
-                        <label>السعر بالنظام (XP):</label>
-                        <input type="number" id="prodPrice" class="form-control" placeholder="100">
-                    </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">اسم قناة اليوتيوب:</label>
+                    <input type="text" id="login-yt-name" placeholder="مثال: Ahmed Gaming YT" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                 </div>
-                <div class="form-group">
-                    <label>الوصف:</label>
-                    <input type="text" id="prodDesc" class="form-control" placeholder="وصف قصير للمنتج">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">تاغ كلاش رويال (Clash Royale Tag):</label>
+                    <input type="text" id="login-tag" placeholder="مثال: #2PP98V" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                 </div>
-                <div class="form-group">
-                    <label>مخزون الأكواد / روابط التسليم (كل كود أو رابط في سطر):</label>
-                    <textarea id="prodCodes" class="form-control" rows="3" placeholder="CODE123&#10;CODE456"></textarea>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">الدولة:</label>
+                    <input type="text" id="login-country" placeholder="مثال: السعودية، العراق..." class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                 </div>
-                <button class="btn-action" style="background: var(--accent-gold); color: #000; font-weight: 800;" onclick="addNewProduct()">
-                    <i class="fa-solid fa-cart-plus"></i> حفظ ونشر المنتج سحابياً
-                </button>
+                <button onclick="submitLogin()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">دخول إلى الحساب</button>
             </div>
-        </div>
-
-    </div>
-
-    <!-- Modal: Profile Settings -->
-    <div class="modal-overlay" id="profileModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h4><i class="fa-solid fa-user-gear"></i> تعديل بيانات الملف الشخصي</h4>
-                <button class="modal-close" onclick="closeModal('profileModal')">&times;</button>
-            </div>
-            <div class="form-group">
-                <label>اسم المستخدم:</label>
-                <input type="text" id="editUserName" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>التايج في اللعبة (Clash Tag):</label>
-                <input type="text" id="editUserTag" class="form-control" placeholder="#XXXXXX">
-            </div>
-            <div class="form-group">
-                <label>اسم أو رابط قناة اليوتيوب:</label>
-                <input type="text" id="editUserYoutube" class="form-control" placeholder="اسم القناة">
-            </div>
-            <button class="btn-buy" onclick="saveUserProfile()"><i class="fa-solid fa-check"></i> حفظ التغييرات</button>
         </div>
     </div>
 
-    <!-- Modal: How to Get Points -->
-    <div class="modal-overlay" id="pointsModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h4 style="color: var(--accent-gold);"><i class="fa-solid fa-coins"></i> كيف تحصل على النقاط (XP)؟</h4>
-                <button class="modal-close" onclick="closeModal('pointsModal')">&times;</button>
+    <!-- GOOGLE COMPLETE PROFILE MODAL -->
+    <div id="google-profile-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
+                <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5">
+                    <i class="fa-solid fa-id-card"></i> إكمال ملف حساب جوجل
+                </h3>
             </div>
-            <div id="pointsRulesContent" style="color: var(--text-light); line-height: 1.6; white-space: pre-line; margin-bottom: 20px;">
-                <!-- Points Rules text loads here -->
+            <p class="text-[10px] text-gray-300">أهلاً بك! يرجى إكمال بياناتك الخاصة بلعبة كلاش رويال وقناتك:</p>
+            <input type="hidden" id="g-temp-email">
+            <input type="hidden" id="g-temp-name">
+            <input type="hidden" id="g-temp-avatar">
+            
+            <div class="flex flex-col gap-2.5">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">اسم قناة اليوتيوب:</label>
+                    <input type="text" id="g-profile-yt" placeholder="مثال: SAVO Gaming" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">تاغ كلاش رويال (Clash Royale Tag):</label>
+                    <input type="text" id="g-profile-tag" placeholder="مثال: #2PP98V" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">الدولة:</label>
+                    <input type="text" id="g-profile-country" placeholder="مثال: سوريا، السعودية..." class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                </div>
+                <button onclick="saveGoogleProfile()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حفظ ودخول المنصة</button>
             </div>
-            <button class="btn-action" style="width: 100%; justify-content: center;" onclick="closeModal('pointsModal')">فهمت ذلك</button>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="social-links" id="socialLinks">
-            <a href="#" class="social-icon"><i class="fa-brands fa-youtube"></i></a>
-            <a href="#" class="social-icon"><i class="fa-brands fa-tiktok"></i></a>
-            <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
-            <a href="#" class="social-icon"><i class="fa-brands fa-discord"></i></a>
+    <!-- 2. EARN POINTS MODAL -->
+    <div id="earn-points-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3 text-center">
+            <div class="w-12 h-12 rounded-full bg-supercellBlue/20 border-2 border-supercellBlue flex items-center justify-center text-supercellBlue text-2xl mx-auto">
+                <i class="fa-solid fa-coins"></i>
+            </div>
+            <h3 class="font-black text-base text-supercellGold">كيف تحصل على نقاط (XP)؟</h3>
+            <p class="text-xs text-gray-200 leading-relaxed">
+                يمكنك تحصيل وجمع النقاط بسهولة من خلال:
+            </p>
+            <ul class="text-right text-[11px] text-gray-300 bg-black/40 p-2.5 rounded border border-supercellCardBorder flex flex-col gap-1.5">
+                <li><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> حضور ومتابعة <b>البث المباشر</b> على اليوتيوب.</li>
+                <li><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> التفاعل والمشاركة في تحديات ودعم صانع المحتوى.</li>
+                <li><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> هدايا ومسابقات الأدمن أثناء البث المباشر.</li>
+            </ul>
+            <button onclick="closeEarnPointsModal()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حسناً، فهمت!</button>
         </div>
-        <p>© 2026 SAVO XP - جميع الحقوق محفوظة لصانع المحتوى</p>
-    </footer>
+    </div>
 
-    <!-- Application Script -->
-    <script>
-        // --- Firebase Configuration ---
+    <!-- 3. ADMIN PIN MODAL -->
+    <div id="admin-pin-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
+                <h3 class="font-black text-sm text-red-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-lock"></i> رمز دخول الأدمن
+                </h3>
+                <button onclick="closeAdminPinModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex flex-col gap-3">
+                <p class="text-[10px] text-gray-300 text-center">أدخل كلمة المرور السرية الخاصة بك</p>
+                <input type="password" id="admin-pin-input" placeholder="أدخل كلمة المرور..." class="bg-black/60 border border-supercellCardBorder rounded px-3 py-2 text-center text-sm text-white focus:outline-none focus:border-red-500">
+                <button onclick="verifyAdminPin()" class="btn-red py-2 rounded text-white font-black text-xs">تحقق ودخول</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. PRODUCT ADD/EDIT MODAL -->
+    <div id="product-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="panel-card w-full max-w-sm p-4 flex flex-col gap-3 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
+                <h3 id="product-modal-title" class="font-black text-sm text-supercellGold flex items-center gap-1.5">
+                    إضافة منتج جديد
+                </h3>
+                <button onclick="closeProductModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <input type="hidden" id="edit-product-id">
+            <div class="flex flex-col gap-2.5">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">اسم المنتج:</label>
+                    <input type="text" id="prod-name" placeholder="مثال: باقة جواهر 500" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">الوصف:</label>
+                    <input type="text" id="prod-desc" placeholder="مثال: جواهر كلاش رويال رسمية" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">السعر بالنقاط (XP):</label>
+                    <input type="number" id="prod-price" placeholder="100" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">رابط صورة المنتج (Image URL):</label>
+                    <input type="text" id="prod-img" placeholder="https://..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">مخزون الأكواد (ضع كل رابط/كود في سطر مستقل):</label>
+                    <textarea id="prod-links" rows="4" placeholder="https://link.clashroyale.com/?...&#10;https://link.clashroyale.com/?..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold resize-none"></textarea>
+                </div>
+                <button onclick="saveProduct()" class="btn-gold py-2 rounded text-black font-black text-xs mt-2">حفظ المنتج سحابياً</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. CUSTOM POINTS MODAL -->
+    <div id="custom-points-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
+                <h3 class="font-black text-sm text-supercellGold">تعديل نقاط المتابع</h3>
+                <button onclick="closeCustomPointsModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <input type="hidden" id="target-user-tag">
+            <p id="custom-points-user-label" class="text-xs text-gray-300 font-bold"></p>
+            <div class="flex flex-col gap-2">
+                <label class="text-[10px] text-gray-300">القيمة المراد إضافتها (أو خصمها بسالب مثل -50):</label>
+                <input type="number" id="custom-points-val" placeholder="مثال: 150 أو -50" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-supercellGold">
+                <button onclick="applyCustomPoints()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">تأكيد وتطبيق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUCCESS PURCHASE REDEEMED MODAL -->
+    <div id="redeem-success-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="panel-card w-full max-w-xs p-4 flex flex-col items-center text-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-2xl">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h3 class="font-black text-base text-supercellGold">مبروك! تم الاستبدال بنجاح</h3>
+            <p id="redeem-success-desc" class="text-xs text-gray-300">لقد حصلت على المكافأة بنجاح وتم خصم النقاط.</p>
+            
+            <div class="w-full bg-black/60 p-2.5 rounded border border-supercellCardBorder flex flex-col gap-1 items-center">
+                <span class="text-[10px] text-supercellBlue font-bold">رابط المكافأة الخاص بك:</span>
+                <input type="text" id="redeem-link-output" readonly class="w-full bg-black/80 text-center text-xs text-white p-1.5 rounded border border-gray-700 select-all" onclick="this.select()">
+            </div>
+
+            <div class="flex gap-2 w-full mt-2">
+                <button onclick="copyRedeemLink()" class="flex-1 btn-blue py-2 rounded text-black font-black text-xs"><i class="fa-solid fa-copy ml-1"></i> نسخ الرابط</button>
+                <button onclick="closeRedeemModal()" class="flex-1 btn-gold py-2 rounded text-black font-black text-xs">تم</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE SDKs & JAVASCRIPT LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, set, get, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
         const firebaseConfig = {
-            apiKey: "AIzaSyDummyKey_ForClientSideTemplate",
-            authDomain: "savo-xp.firebaseapp.com",
-            databaseURL: "https://savo-xp-default-rtdb.firebaseio.com",
-            projectId: "savo-xp",
-            storageBucket: "savo-xp.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef123456"
+            apiKey: "AIzaSyDWSRGPkdvSXK3LKzcgoifOnJgUW9k5SlI",
+            authDomain: "savo-xp-848d5.firebaseapp.com",
+            databaseURL: "https://savo-xp-848d5-default-rtdb.firebaseio.com",
+            projectId: "savo-xp-848d5",
+            storageBucket: "savo-xp-848d5.firebasestorage.app",
+            messagingSenderId: "278710848709",
+            appId: "1:278710848709:web:9d7b3e8f69f7bfef3734ac",
+            measurementId: "G-XL4ZDMTSVF"
         };
 
-        // Initialize Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const auth = firebase.auth();
-        const db = firebase.database();
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        // Admin Email List
-        const ADMIN_EMAILS = ["mohanadabukhader176@gmail.com"]; // ضع إيميل الأدمن هنا
+        let state = {
+            currentUser: null,
+            products: [],
+            history: [],
+            users: [],
+            settings: {
+                badge: 'تنويه',
+                announcement: 'أهلاً بك في منصة مكافآت صانع المحتوى SAVO XP - تابع البث المباشر واجمع النقاط!',
+                logoUrl: '',
+                socials: {
+                    youtube: 'https://youtube.com',
+                    tiktok: 'https://tiktok.com',
+                    instagram: 'https://instagram.com',
+                    twitch: 'https://twitch.tv',
+                    whatsapp: 'https://whatsapp.com'
+                }
+            },
+            adminPin: 'mohanad0939957279'
+        };
 
-        // Local State
-        let currentUser = null;
-        let userData = null;
-        let productsData = {};
-        let siteSettings = {};
+        function initFirebaseSync() {
+            // Settings
+            onValue(ref(db, 'settings'), (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    state.settings = val;
+                } else {
+                    set(ref(db, 'settings'), state.settings);
+                }
+                window.renderAnnouncement();
+                window.renderHeaderLogo();
+                window.renderFooterSocials();
+            });
 
-        // --- App Initialization ---
-        document.addEventListener("DOMContentLoaded", () => {
-            initAuthListener();
-            listenToProducts();
-            listenToSettings();
-        });
+            // Products (No forced default items, allowing full freedom)
+            onValue(ref(db, 'products'), (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    state.products = Object.values(val);
+                } else {
+                    state.products = [];
+                }
+                window.renderStore();
+                if(!document.getElementById('tab-admin').classList.contains('hidden')) {
+                    window.renderAdminProducts();
+                }
+            });
 
-        // --- Auth Listener ---
-        function initAuthListener() {
-            auth.onAuthStateChanged((user) => {
-                currentUser = user;
-                if (user) {
-                    // Check if Admin
-                    if (ADMIN_EMAILS.includes(user.email)) {
-                        document.getElementById("adminTabBtn").style.display = "flex";
+            // Users (Fixed persistence and auto-restoring session)
+            onValue(ref(db, 'users'), (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    state.users = Object.values(val);
+                    
+                    // Restore session from localStorage if exists
+                    const savedSessionTag = localStorage.getItem('savo_logged_tag');
+                    if (!state.currentUser && savedSessionTag) {
+                        const foundUser = state.users.find(u => u.tag === savedSessionTag);
+                        if (foundUser) {
+                            state.currentUser = foundUser;
+                        }
                     }
 
-                    // Listen to User Data
-                    db.ref("users/" + user.uid).on("value", (snapshot) => {
-                        userData = snapshot.val() || {
-                            name: user.displayName || "مستخدم جديد",
-                            email: user.email,
-                            points: 0,
-                            tag: "",
-                            youtube: ""
-                        };
-                        updateUserUI();
-                    });
+                    if (state.currentUser) {
+                        const updatedMe = state.users.find(u => u.tag === state.currentUser.tag);
+                        if (updatedMe) {
+                            const oldXp = state.currentUser.xp;
+                            state.currentUser = updatedMe;
+                            if (oldXp !== undefined && oldXp !== updatedMe.xp) {
+                                window.showToast(`تم تحديث رصيدك إلى 💎 ${updatedMe.xp} XP`);
+                            }
+                        }
+                    }
                 } else {
-                    document.getElementById("userWidget").innerHTML = `
-                        <button class="btn-action" onclick="loginWithGoogle()">
-                            <i class="fa-brands fa-google"></i> تسجيل الدخول
-                        </button>
-                    `;
-                    document.getElementById("userCardSection").style.display = "none";
-                    document.getElementById("adminTabBtn").style.display = "none";
+                    state.users = [];
+                }
+                window.renderUserProfile();
+                window.renderHistory();
+                if(!document.getElementById('tab-admin').classList.contains('hidden')) {
+                    window.renderAdminUsers();
+                }
+            });
+
+            // History
+            onValue(ref(db, 'history'), (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    state.history = Object.values(val);
+                } else {
+                    state.history = [];
+                }
+                window.renderHistory();
+                if(!document.getElementById('tab-admin').classList.contains('hidden')) {
+                    window.renderAdminAuditLog();
                 }
             });
         }
 
-        function loginWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch((error) => {
-                alert("حدث خطأ أثناء تسجيل الدخول: " + error.message);
-            });
-        }
+        // --- GLOBAL EXPORTS ---
 
-        function logout() {
-            auth.signOut().then(() => {
-                location.reload();
-            });
-        }
-
-        function updateUserUI() {
-            if (!userData) return;
-
-            // Header Widget
-            document.getElementById("userWidget").innerHTML = `
-                <div class="points-badge" onclick="openPointsModal()">
-                    <i class="fa-solid fa-gem"></i>
-                    <span>${userData.points || 0} XP</span>
-                    <div class="btn-add-points">+</div>
+        window.showToast = function(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-600 border-emerald-400' : 'bg-red-600 border-red-400';
+            
+            toast.className = `pointer-events-auto ${bgColor} text-white px-4 py-2.5 rounded-xl border-2 shadow-xl flex items-center justify-between gap-3 text-xs font-bold`;
+            toast.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid ${type === 'success' ? 'fa-circle-check text-supercellGold' : 'fa-triangle-exclamation'} text-sm"></i>
+                    <span>${message}</span>
                 </div>
             `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        };
 
-            // User Profile Card
-            document.getElementById("userCardSection").style.display = "block";
-            document.getElementById("userNameDisplay").innerText = userData.name || currentUser.displayName;
-            document.getElementById("userTagDisplay").innerText = 
-                `التايج: ${userData.tag || "غير محدد"} | اليوتيوب: ${userData.youtube || "غير محددة"}`;
-        }
+        window.renderAnnouncement = function() {
+            const badgeEl = document.getElementById('announcement-badge');
+            const badgeContainer = document.getElementById('announcement-badge-container');
+            const badgeText = state.settings.badge ? state.settings.badge.trim() : '';
+            if (badgeText !== '') {
+                badgeContainer.style.display = 'inline-block';
+                badgeEl.innerText = badgeText;
+            } else {
+                badgeContainer.style.display = 'none';
+            }
+            document.getElementById('announcement-text').innerText = state.settings.announcement;
+        };
 
-        // --- Database Realtime Listeners ---
-        function listenToProducts() {
-            db.ref("products").on("value", (snapshot) => {
-                productsData = snapshot.val() || {};
-                renderProducts();
-            });
-        }
+        window.renderHeaderLogo = function() {
+            const container = document.getElementById('logo-display');
+            if (state.settings.logoUrl && state.settings.logoUrl.trim() !== '') {
+                container.innerHTML = `<img src="${state.settings.logoUrl}" alt="Logo" class="h-7 w-auto object-contain" onerror="this.onerror=null; this.parentNode.innerHTML='SAVO XP';">`;
+            } else {
+                container.innerHTML = `SAVO XP`;
+            }
+        };
 
-        function listenToSettings() {
-            db.ref("settings").on("value", (snapshot) => {
-                siteSettings = snapshot.val() || {};
-                if (siteSettings.ticker) {
-                    document.getElementById("announcementText").innerText = siteSettings.ticker;
-                    document.getElementById("adminTickerInput").value = siteSettings.ticker;
+        window.renderFooterSocials = function() {
+            const socials = state.settings.socials || {};
+            document.getElementById('social-link-yt').href = socials.youtube || '#';
+            document.getElementById('social-link-tik').href = socials.tiktok || '#';
+            document.getElementById('social-link-ig').href = socials.instagram || '#';
+            document.getElementById('social-link-twi').href = socials.twitch || '#';
+            document.getElementById('social-link-wa').href = socials.whatsapp || '#';
+        };
+
+        window.renderUserProfile = function() {
+            const btn = document.getElementById('header-user-btn');
+            const card = document.getElementById('user-profile-card');
+            const xpDisplay = document.getElementById('header-xp-balance');
+            const avatarContainer = document.getElementById('profile-avatar-container');
+
+            if (state.currentUser) {
+                btn.classList.add('hidden');
+                card.classList.remove('hidden');
+                document.getElementById('profile-name').innerText = `${state.currentUser.name}`;
+                document.getElementById('profile-tag').innerText = state.currentUser.tag;
+                xpDisplay.innerText = state.currentUser.xp || 0;
+
+                if (state.currentUser.avatar) {
+                    avatarContainer.innerHTML = `<img src="${state.currentUser.avatar}" alt="Avatar" class="w-full h-full object-cover">`;
+                } else {
+                    avatarContainer.innerHTML = `<i class="fa-solid fa-crown"></i>`;
                 }
-                if (siteSettings.pointsRules) {
-                    document.getElementById("pointsRulesContent").innerText = siteSettings.pointsRules;
-                    document.getElementById("adminPointsRulesInput").value = siteSettings.pointsRules;
-                }
-            });
-        }
+            } else {
+                btn.classList.remove('hidden');
+                card.classList.add('hidden');
+                xpDisplay.innerText = '0';
+            }
+        };
 
-        // --- Render Products ---
-        function renderProducts() {
-            const grid = document.getElementById("productsGrid");
-            grid.innerHTML = "";
+        window.renderStore = function() {
+            const grid = document.getElementById('products-grid');
+            const countEl = document.getElementById('store-count');
+            grid.innerHTML = '';
+            countEl.innerText = `${state.products.length} منتج`;
 
-            const keys = Object.keys(productsData);
-            if (keys.length === 0) {
-                grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">لا توجد منتجات متاحة حالياً.</p>`;
+            if (state.products.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 text-center py-8 text-gray-400 text-xs">لا توجد منتجات متاحة حالياً. أضف منتجات من لوحة الأدمن.</div>`;
                 return;
             }
 
-            keys.forEach((key) => {
-                const item = productsData[key];
-                const isAdmin = currentUser && ADMIN_EMAILS.includes(currentUser.email);
-                
-                const card = document.createElement("div");
-                card.className = "product-card";
+            state.products.forEach(prod => {
+                const stockCount = prod.links ? prod.links.length : 0;
+                const isSoldOut = stockCount === 0;
+
+                const card = document.createElement('div');
+                card.className = 'panel-card p-2.5 flex flex-col justify-between gap-2 relative overflow-hidden';
                 card.innerHTML = `
-                    <span class="product-tag">مكافأة</span>
-                    <div class="product-icon"><i class="fa-solid fa-box-open"></i></div>
-                    <div class="product-title">${item.title}</div>
-                    <div class="product-desc">${item.desc || ""}</div>
-                    <div class="product-price"><i class="fa-solid fa-gem"></i> ${item.price} XP</div>
-                    <button class="btn-buy" onclick="redeemProduct('${key}')">استبدال الكود</button>
-                    ${isAdmin ? `
-                        <div class="admin-card-actions">
-                            <button class="btn-action btn-sm btn-danger" onclick="deleteProduct('${key}')">
-                                <i class="fa-solid fa-trash"></i> حذف
-                            </button>
+                    <div class="absolute top-2 left-2 bg-black/60 border border-supercellCardBorder px-1.5 py-0.5 rounded text-[9px] text-supercellGold font-bold">
+                        ${stockCount > 0 ? `متبقي: ${stockCount}` : 'نفذت'}
+                    </div>
+                    <div class="flex flex-col items-center gap-1.5 pt-2">
+                        <img src="${prod.image}" alt="${prod.name}" class="w-16 h-16 object-contain rounded-lg border border-supercellCardBorder bg-black/40" onerror="this.src='https://placehold.co/150x150/2B1055/FFD700?text=Item'">
+                        <h4 class="font-black text-xs text-white text-center truncate w-full">${prod.name}</h4>
+                        <p class="text-[10px] text-gray-300 text-center line-clamp-2 h-7">${prod.desc}</p>
+                    </div>
+                    <div class="flex flex-col gap-1.5 mt-1">
+                        <div class="flex items-center justify-center gap-1 bg-black/40 py-1 rounded border border-supercellCardBorder">
+                            <span class="text-supercellBlue text-xs">💎</span>
+                            <span class="font-black text-supercellBlue text-xs">${prod.price} XP</span>
                         </div>
-                    ` : ""}
+                        <button onclick="redeemProduct('${prod.id}')" class="w-full py-1.5 rounded text-black font-black text-xs ${isSoldOut ? 'bg-gray-600 text-gray-300 border-2 border-gray-500 cursor-not-allowed' : 'btn-gold'}">
+                            ${isSoldOut ? 'نفذت الكمية ❌' : 'استبدال الكود'}
+                        </button>
+                    </div>
                 `;
                 grid.appendChild(card);
             });
-        }
+        };
 
-        // --- Product Operations ---
-        function addNewProduct() {
-            const title = document.getElementById("prodTitle").value.trim();
-            const price = parseInt(document.getElementById("prodPrice").value);
-            const desc = document.getElementById("prodDesc").value.trim();
-            const codesText = document.getElementById("prodCodes").value.trim();
+        window.renderHistory = function() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = '';
 
-            if (!title || isNaN(price)) {
-                alert("يرجى إدخال اسم المنتج والسعر بشكل صحيح.");
+            if (!state.currentUser) {
+                list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">يرجى تسجيل الدخول لعرض سجل المشتريات.</div>`;
                 return;
             }
 
-            const codesList = codesText ? codesText.split("\n").map(c => c.trim()).filter(c => c) : [];
-
-            const newRef = db.ref("products").push();
-            newRef.set({
-                title: title,
-                price: price,
-                desc: desc,
-                codes: codesList
-            }).then(() => {
-                alert("تم إضافة المنتج بنجاح!");
-                document.getElementById("prodTitle").value = "";
-                document.getElementById("prodPrice").value = "";
-                document.getElementById("prodDesc").value = "";
-                document.getElementById("prodCodes").value = "";
-            });
-        }
-
-        function deleteProduct(key) {
-            if (confirm("هل أنت تأكد من رغبتك في حذف هذا المنتج نهائياً؟")) {
-                db.ref("products/" + key).remove().then(() => {
-                    alert("تم حذف المنتج بنجاح.");
-                });
-            }
-        }
-
-        function redeemProduct(key) {
-            if (!currentUser) {
-                alert("يرجى تسجيل الدخول أولاً لتتمكن من الشراء.");
+            const userHistory = state.history.filter(h => h.userTag === state.currentUser.tag);
+            if (userHistory.length === 0) {
+                list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لم تقم بشراء أي منتج بعد.</div>`;
                 return;
             }
 
-            const item = productsData[key];
-            if (!item) return;
-
-            if ((userData.points || 0) < item.price) {
-                alert("رصيدك من النقاط (XP) غير كافٍ لاستبدال هذا المنتج!");
-                return;
-            }
-
-            if (!item.codes || item.codes.length === 0) {
-                alert("عذراً، هذا المنتج نفد من المخزون حالياً.");
-                return;
-            }
-
-            // Pop code from list
-            const deliveredCode = item.codes.shift();
-            const newPoints = userData.points - item.price;
-
-            // Updates
-            const updates = {};
-            updates[`products/${key}/codes`] = item.codes;
-            updates[`users/${currentUser.uid}/points`] = newPoints;
-            
-            const purchaseRef = db.ref(`users/${currentUser.uid}/purchases`).push();
-            updates[`users/${currentUser.uid}/purchases/${purchaseRef.key}`] = {
-                title: item.title,
-                code: deliveredCode,
-                date: new Date().toLocaleDateString('ar-EG')
-            };
-
-            db.ref().update(updates).then(() => {
-                alert(`مبروك! تم استبدال المنتج بنجاح.\nالكود الخاص بك هو: ${deliveredCode}`);
-            });
-        }
-
-        // --- Profile Management ---
-        function openProfileModal() {
-            if (!userData) return;
-            document.getElementById("editUserName").value = userData.name || "";
-            document.getElementById("editUserTag").value = userData.tag || "";
-            document.getElementById("editUserYoutube").value = userData.youtube || "";
-            document.getElementById("profileModal").classList.add("active");
-        }
-
-        function saveUserProfile() {
-            const newName = document.getElementById("editUserName").value.trim();
-            const newTag = document.getElementById("editUserTag").value.trim();
-            const newYoutube = document.getElementById("editUserYoutube").value.trim();
-
-            if (!newName) {
-                alert("يرجى إدخال اسم المستخدم.");
-                return;
-            }
-
-            db.ref("users/" + currentUser.uid).update({
-                name: newName,
-                tag: newTag,
-                youtube: newYoutube
-            }).then(() => {
-                alert("تم تحديث معلومات حسابك بنجاح!");
-                closeModal("profileModal");
-            });
-        }
-
-        // --- Admin Settings ---
-        function saveAdminSettings() {
-            const ticker = document.getElementById("adminTickerInput").value.trim();
-            const pointsRules = document.getElementById("adminPointsRulesInput").value.trim();
-
-            db.ref("settings").update({
-                ticker: ticker,
-                pointsRules: pointsRules
-            }).then(() => {
-                alert("تم حفظ الإعدادات سحابياً بنجاح!");
-            });
-        }
-
-        // --- Modals & Tabs Navigation ---
-        function switchTab(tab) {
-            document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-            document.getElementById("storeView").style.display = "none";
-            document.getElementById("purchasesView").style.display = "none";
-            document.getElementById("adminView").style.display = "none";
-
-            if (tab === 'store') {
-                document.getElementById("storeView").style.display = "block";
-                event.currentTarget.classList.add("active");
-            } else if (tab === 'purchases') {
-                document.getElementById("purchasesView").style.display = "block";
-                event.currentTarget.classList.add("active");
-                renderPurchases();
-            } else if (tab === 'admin') {
-                document.getElementById("adminView").style.display = "block";
-                event.currentTarget.classList.add("active");
-            }
-        }
-
-        function renderPurchases() {
-            const list = document.getElementById("purchasesList");
-            list.innerHTML = "";
-
-            if (!userData || !userData.purchases) {
-                list.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">لا توجد مشتريات سابقة.</p>`;
-                return;
-            }
-
-            Object.values(userData.purchases).forEach(p => {
-                const card = document.createElement("div");
-                card.className = "product-card";
-                card.innerHTML = `
-                    <div class="product-icon" style="color: var(--accent-blue);"><i class="fa-solid fa-key"></i></div>
-                    <div class="product-title">${p.title}</div>
-                    <div class="product-desc">التاريخ: ${p.date}</div>
-                    <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; font-weight: 700; color: var(--accent-gold); text-align: center; user-select: all;">
-                        ${p.code}
+            userHistory.slice().reverse().forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'panel-card p-3 flex items-center justify-between gap-2';
+                el.innerHTML = `
+                    <div class="flex flex-col gap-0.5">
+                        <h4 class="font-black text-xs text-white">${item.productName}</h4>
+                        <span class="text-[9px] text-gray-400">${item.timestamp}</span>
+                        <span class="text-[9px] text-supercellBlue truncate max-w-[200px]">الرابط: ${item.assignedLink}</span>
+                    </div>
+                    <div class="flex items-center gap-1 bg-red-950/40 border border-red-500/30 px-2 py-1 rounded shrink-0">
+                        <span class="text-xs">💎</span>
+                        <span class="font-black text-red-400 text-xs">-${item.xpSpent} XP</span>
                     </div>
                 `;
-                list.appendChild(card);
+                list.appendChild(el);
             });
+        };
+
+        // Google Sign-In & Email/Google Linking Logic
+        window.handleGoogleSignIn = function(response) {
+            try {
+                const base64Url = response.credential.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                const payload = JSON.parse(jsonPayload);
+
+                const name = payload.name;
+                const email = payload.email;
+                const avatar = payload.picture;
+
+                // Check if user exists by email or if a user matches this Google email
+                let existingUser = state.users.find(u => u.email === email);
+                if (existingUser) {
+                    state.currentUser = existingUser;
+                    localStorage.setItem('savo_logged_tag', existingUser.tag);
+                    window.closeLoginModal();
+                    window.renderUserProfile();
+                    window.renderHistory();
+                    window.showToast(`مرحباً بك مجدداً ${existingUser.name}!`);
+                } else {
+                    window.closeLoginModal();
+                    document.getElementById('g-temp-email').value = email;
+                    document.getElementById('g-temp-name').value = name;
+                    document.getElementById('g-temp-avatar').value = avatar;
+                    document.getElementById('g-profile-yt').value = '';
+                    document.getElementById('g-profile-tag').value = '';
+                    document.getElementById('g-profile-country').value = '';
+                    document.getElementById('google-profile-modal').classList.remove('hidden');
+                }
+            } catch(e) {
+                window.showToast('حدث خطأ أثناء تسجيل الدخول عبر جوجل.', 'error');
+            }
+        };
+
+        window.saveGoogleProfile = function() {
+            const email = document.getElementById('g-temp-email').value;
+            const name = document.getElementById('g-temp-name').value;
+            const avatar = document.getElementById('g-temp-avatar').value;
+            const ytChannel = document.getElementById('g-profile-yt').value.trim() || 'قناة يوتيوب';
+            let tag = document.getElementById('g-profile-tag').value.trim();
+            const country = document.getElementById('g-profile-country').value.trim() || 'غير محدد';
+
+            if (!tag) {
+                window.showToast('يرجى إدخال تاغ كلاش رويال الخاص بك.', 'error');
+                return;
+            }
+            if (!tag.startsWith('#')) tag = '#' + tag;
+
+            // Check if tag already exists to preserve points if linked
+            let existingTagUser = state.users.find(u => u.tag === tag);
+            const currentXp = existingTagUser ? (existingTagUser.xp || 0) : 0;
+
+            const newUser = {
+                name,
+                email,
+                avatar,
+                ytChannel,
+                tag,
+                country,
+                xp: currentXp
+            };
+
+            const dbKey = tag.replace('#', '');
+            set(ref(db, 'users/' + dbKey), newUser);
+            state.currentUser = newUser;
+            localStorage.setItem('savo_logged_tag', tag);
+
+            document.getElementById('google-profile-modal').classList.add('hidden');
+            window.renderUserProfile();
+            window.renderHistory();
+            window.showToast(`أهلاً بك يا ${name}! تم حفظ حسابك بنجاح.`);
+        };
+
+        function initGoogleButton() {
+            const container = document.getElementById('google-signin-btn-container');
+            if (container && window.google && window.google.accounts) {
+                container.innerHTML = '';
+                try {
+                    google.accounts.id.initialize({
+                        client_id: "702112953676-htntgj2u2uqnci23frjsqvtvsvmsvvtl.apps.googleusercontent.com",
+                        callback: window.handleGoogleSignIn
+                    });
+                    google.accounts.id.renderButton(
+                        container,
+                        { type: "standard", size: "large", theme: "outline", text: "sign_in_with", shape: "rectangular", logo_alignment: "left" }
+                    );
+                } catch(err) {
+                    console.log('Google Auth init error:', err);
+                }
+            }
         }
 
-        function openPointsModal() {
-            document.getElementById("pointsModal").classList.add("active");
-        }
+        window.openLoginModal = function() {
+            document.getElementById('login-modal').classList.remove('hidden');
+            setTimeout(initGoogleButton, 100);
+        };
 
-        function closeModal(id) {
-            document.getElementById(id).classList.remove("active");
-        }
+        window.closeLoginModal = () => document.getElementById('login-modal').classList.add('hidden');
+        window.openEarnPointsModal = () => document.getElementById('earn-points-modal').classList.remove('hidden');
+        window.closeEarnPointsModal = () => document.getElementById('earn-points-modal').classList.add('hidden');
+
+        window.submitLogin = function() {
+            const name = document.getElementById('login-name').value.trim();
+            const ytChannel = document.getElementById('login-yt-name').value.trim();
+            let tag = document.getElementById('login-tag').value.trim();
+            const country = document.getElementById('login-country').value.trim();
+
+            if (!name || !tag) {
+                window.showToast('يرجى إدخال الاسم والتاغ.', 'error');
+                return;
+            }
+            if (!tag.startsWith('#')) tag = '#' + tag;
+
+            let existingUser = state.users.find(u => u.tag === tag);
+            if (!existingUser) {
+                existingUser = { name, ytChannel: ytChannel || 'قناة', tag, country: country || 'غير محدد', xp: 0, avatar: '', email: '' };
+            } else {
+                existingUser.name = name;
+                existingUser.ytChannel = ytChannel || existingUser.ytChannel;
+                existingUser.country = country || existingUser.country;
+            }
+
+            const dbKey = tag.replace('#','');
+            set(ref(db, 'users/' + dbKey), existingUser);
+
+            state.currentUser = existingUser;
+            localStorage.setItem('savo_logged_tag', tag);
+
+            window.closeLoginModal();
+            window.renderUserProfile();
+            window.renderHistory();
+            window.showToast(`أهلاً بك يا ${name}!`);
+        };
+
+        window.logoutUser = function() {
+            state.currentUser = null;
+            localStorage.removeItem('savo_logged_tag');
+            window.renderUserProfile();
+            window.renderHistory();
+            window.showToast('تم تسجيل الخروج.');
+        };
+
+        window.redeemProduct = function(productId) {
+            if (!state.currentUser) {
+                window.showToast('يجب تسجيل الدخول أولاً.', 'error');
+                window.openLoginModal();
+                return;
+            }
+
+            const product = state.products.find(p => p.id === productId);
+            if (!product || !product.links || product.links.length === 0) {
+                window.showToast('عذراً، المنتج نفذ من المخزون.', 'error');
+                return;
+            }
+
+            const userRef = state.users.find(u => u.tag === state.currentUser.tag);
+            if (!userRef || userRef.xp < product.price) {
+                window.showToast('رصيدك من النقاط لا يكفي!', 'error');
+                return;
+            }
+
+            const newXp = userRef.xp - product.price;
+            const assignedLink = product.links.shift();
+
+            update(ref(db, 'users/' + userRef.tag.replace('#','')), { xp: newXp });
+            update(ref(db, 'products/' + product.id), { links: product.links });
+
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+            
+            const historyItem = {
+                id: 'hist_' + Date.now(),
+                userName: state.currentUser.name,
+                userTag: state.currentUser.tag,
+                productName: product.name,
+                xpSpent: product.price,
+                assignedLink: assignedLink,
+                timestamp: timeStr
+            };
+
+            set(ref(db, 'history/' + historyItem.id), historyItem);
+
+            document.getElementById('redeem-success-desc').innerText = `تم شراء "${product.name}" بنجاح مقابل ${product.price} XP.`;
+            document.getElementById('redeem-link-output').value = assignedLink;
+            document.getElementById('redeem-success-modal').classList.remove('hidden');
+        };
+
+        window.closeRedeemModal = () => document.getElementById('redeem-success-modal').classList.add('hidden');
+        window.copyRedeemLink = function() {
+            const input = document.getElementById('redeem-link-output');
+            input.select();
+            document.execCommand('copy');
+            window.showToast('تم نسخ الرابط بنجاح!');
+        };
+
+        window.switchTab = function(tabName) {
+            document.getElementById('tab-store').classList.add('hidden');
+            document.getElementById('tab-history').classList.add('hidden');
+            document.getElementById('tab-admin').classList.add('hidden');
+
+            document.getElementById('tab-btn-store').className = 'py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300 hover:text-white';
+            document.getElementById('tab-btn-history').className = 'py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300 hover:text-white';
+            document.getElementById('tab-btn-admin').className = 'py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300 hover:text-white';
+
+            if (tabName === 'store') {
+                document.getElementById('tab-store').classList.remove('hidden');
+                document.getElementById('tab-btn-store').className = 'py-2 rounded-lg font-black text-xs text-center transition-all bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow';
+                window.renderStore();
+            } else if (tabName === 'history') {
+                document.getElementById('tab-history').classList.remove('hidden');
+                document.getElementById('tab-btn-history').className = 'py-2 rounded-lg font-black text-xs text-center transition-all bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow';
+                window.renderHistory();
+            }
+        };
+
+        window.openAdminPinModal = () => document.getElementById('admin-pin-modal').classList.remove('hidden');
+        window.closeAdminPinModal = () => document.getElementById('admin-pin-modal').classList.add('hidden');
+        
+        window.verifyAdminPin = function() {
+            const pin = document.getElementById('admin-pin-input').value.trim();
+            if (pin === state.adminPin) {
+                window.closeAdminPinModal();
+                window.openAdminDashboard();
+            } else {
+                window.showToast('كلمة المرور غير صحيحة!', 'error');
+            }
+        };
+
+        window.openAdminDashboard = function() {
+            document.getElementById('tab-store').classList.add('hidden');
+            document.getElementById('tab-history').classList.add('hidden');
+            document.getElementById('tab-admin').classList.remove('hidden');
+            document.getElementById('tab-btn-admin').className = 'py-2 rounded-lg font-black text-xs text-center transition-all bg-red-950 text-red-400 border border-red-500 shadow';
+
+            document.getElementById('admin-announcement-badge').value = state.settings.badge || '';
+            document.getElementById('admin-announcement-input').value = state.settings.announcement || '';
+            document.getElementById('admin-logo-input').value = state.settings.logoUrl || '';
+            
+            const socials = state.settings.socials || {};
+            document.getElementById('social-yt').value = socials.youtube || '';
+            document.getElementById('social-tik').value = socials.tiktok || '';
+            document.getElementById('social-ig').value = socials.instagram || '';
+            document.getElementById('social-twi').value = socials.twitch || '';
+            document.getElementById('social-wa').value = socials.whatsapp || '';
+
+            window.renderAdminProducts();
+            window.renderAdminUsers();
+            window.renderAdminAuditLog();
+        };
+
+        window.lockAdminPanel = () => { window.switchTab('store'); window.showToast('تم إقفال اللوحة.'); };
+
+        window.saveAdminSettings = function() {
+            const newSettings = {
+                badge: document.getElementById('admin-announcement-badge').value.trim(),
+                announcement: document.getElementById('admin-announcement-input').value.trim(),
+                logoUrl: document.getElementById('admin-logo-input').value.trim(),
+                socials: {
+                    youtube: document.getElementById('social-yt').value.trim(),
+                    tiktok: document.getElementById('social-tik').value.trim(),
+                    instagram: document.getElementById('social-ig').value.trim(),
+                    twitch: document.getElementById('social-twi').value.trim(),
+                    whatsapp: document.getElementById('social-wa').value.trim()
+                }
+            };
+            set(ref(db, 'settings'), newSettings);
+            window.showToast('تم حفظ الإعدادات وتحديثها سحابياً لجميع الزوار!');
+        };
+
+        window.renderAdminProducts = function() {
+            const list = document.getElementById('admin-products-list');
+            list.innerHTML = '';
+            if (state.products.length === 0) {
+                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا توجد منتجات حالياً. أضف منتجاً جديداً.</p>`;
+                return;
+            }
+            state.products.forEach(prod => {
+                const stockCount = prod.links ? prod.links.length : 0;
+                const el = document.createElement('div');
+                el.className = 'bg-black/50 border border-supercellCardBorder p-2 rounded flex items-center justify-between gap-2';
+                el.innerHTML = `
+                    <div class="flex items-center gap-2 overflow-hidden">
+                        <img src="${prod.image}" class="w-8 h-8 rounded object-cover border border-supercellCardBorder shrink-0" onerror="this.src='https://placehold.co/100x100/2B1055/FFD700?text=Item'">
+                        <div class="truncate">
+                            <h5 class="font-black text-xs text-white truncate">${prod.name}</h5>
+                            <p class="text-[10px] text-supercellGold">${prod.price} XP | مخزون: ${stockCount}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-1 shrink-0">
+                        <button onclick="editProduct('${prod.id}')" class="btn-blue px-2 py-1 rounded text-black font-black text-[10px]"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteProduct('${prod.id}')" class="btn-red px-2 py-1 rounded text-white font-black text-[10px]"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+        };
+
+        window.openProductModal = function(prodId = null) {
+            document.getElementById('edit-product-id').value = '';
+            document.getElementById('prod-name').value = '';
+            document.getElementById('prod-desc').value = '';
+            document.getElementById('prod-price').value = '';
+            document.getElementById('prod-img').value = '';
+            document.getElementById('prod-links').value = '';
+
+            if (prodId) {
+                document.getElementById('product-modal-title').innerText = 'تعديل المنتج';
+                const p = state.products.find(x => x.id === prodId);
+                if (p) {
+                    document.getElementById('edit-product-id').value = p.id;
+                    document.getElementById('prod-name').value = p.name;
+                    document.getElementById('prod-desc').value = p.desc;
+                    document.getElementById('prod-price').value = p.price;
+                    document.getElementById('prod-img').value = p.image;
+                    document.getElementById('prod-links').value = p.links ? p.links.join('\n') : '';
+                }
+            } else {
+                document.getElementById('product-modal-title').innerText = 'إضافة منتج جديد';
+            }
+            document.getElementById('product-modal').classList.remove('hidden');
+        };
+
+        window.closeProductModal = () => document.getElementById('product-modal').classList.add('hidden');
+
+        window.saveProduct = function() {
+            const id = document.getElementById('edit-product-id').value || ('prod_' + Date.now());
+            const name = document.getElementById('prod-name').value.trim();
+            const desc = document.getElementById('prod-desc').value.trim();
+            const price = parseInt(document.getElementById('prod-price').value) || 0;
+            const image = document.getElementById('prod-img').value.trim() || 'https://placehold.co/150x150/2B1055/FFD700?text=Item';
+            const rawLinks = document.getElementById('prod-links').value.trim();
+            const links = rawLinks ? rawLinks.split('\n').map(l => l.trim()).filter(l => l.length > 0) : [];
+
+            if (!name) {
+                window.showToast('يرجى إدخال اسم المنتج.', 'error');
+                return;
+            }
+
+            const prodObj = { id, name, desc, price, image, links };
+            set(ref(db, 'products/' + id), prodObj);
+            window.closeProductModal();
+            window.showToast('تم حفظ المنتج سحابياً بنجاح!');
+        };
+
+        window.editProduct = (id) => window.openProductModal(id);
+        window.deleteProduct = (id) => {
+            if (confirm('هل أنت متأكد من الحذف؟')) {
+                remove(ref(db, 'products/' + id));
+                window.showToast('تم الحذف.');
+            }
+        };
+
+        window.renderAdminAuditLog = function() {
+            const list = document.getElementById('admin-audit-log-list');
+            list.innerHTML = '';
+            if (!state.history || state.history.length === 0) {
+                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا توجد عمليات شراء.</p>`;
+                return;
+            }
+            state.history.slice().reverse().forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'bg-black/50 border border-supercellCardBorder p-2 rounded flex flex-col gap-1';
+                el.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="font-black text-xs text-supercellGold">${item.userName} (${item.userTag})</span>
+                        <span class="text-[9px] text-red-400 font-bold">-${item.xpSpent} XP</span>
+                    </div>
+                    <div class="flex items-center justify-between text-[10px] text-gray-300">
+                        <span>المنتج: <b>${item.productName}</b></span>
+                        <span class="text-[9px] text-gray-400">${item.timestamp}</span>
+                    </div>
+                    <div class="text-[9px] text-supercellBlue bg-black/60 p-1 rounded truncate select-all">رابط: ${item.assignedLink}</div>
+                `;
+                list.appendChild(el);
+            });
+        };
+
+        window.clearAdminHistory = () => {
+            if (confirm('مسح السجل بالكامل؟')) {
+                set(ref(db, 'history'), null);
+                state.history = [];
+                window.showToast('تم مسح السجل.');
+            }
+        };
+
+        window.renderAdminUsers = function() {
+            const list = document.getElementById('admin-users-list');
+            const searchVal = document.getElementById('admin-search-user').value.toLowerCase().trim();
+            list.innerHTML = '';
+
+            const filtered = state.users.filter(u => u.name.toLowerCase().includes(searchVal) || u.tag.toLowerCase().includes(searchVal));
+            if (filtered.length === 0) {
+                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا يوجد متابعين مطابقين.</p>`;
+                return;
+            }
+
+            filtered.forEach(u => {
+                const el = document.createElement('div');
+                el.className = 'bg-black/50 border border-supercellCardBorder p-2.5 rounded flex flex-col gap-2';
+                el.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h5 class="font-black text-xs text-white">${u.name}</h5>
+                            <p class="text-[10px] text-supercellBlue">${u.tag} | ${u.country}</p>
+                        </div>
+                        <div class="bg-black/70 px-2.5 py-1 rounded border border-supercellBlue/40 text-center">
+                            <span class="text-[10px] text-supercellBlue block font-bold">💎 ${u.xp || 0} XP</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 pt-1 border-t border-supercellCardBorder/50">
+                        <button onclick="quickAddXp('${u.tag}', 50)" class="btn-gold px-2 py-0.5 rounded text-black font-black text-[10px]">+50</button>
+                        <button onclick="quickAddXp('${u.tag}', 100)" class="btn-gold px-2 py-0.5 rounded text-black font-black text-[10px]">+100</button>
+                        <button onclick="quickAddXp('${u.tag}', 200)" class="btn-gold px-2 py-0.5 rounded text-black font-black text-[10px]">+200</button>
+                        <button onclick="openCustomPointsModal('${u.tag}')" class="btn-blue px-2 py-0.5 rounded text-black font-black text-[10px]">مخصص</button>
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+        };
+
+        window.quickAddXp = function(tag, amount) {
+            const user = state.users.find(u => u.tag === tag);
+            if (user) {
+                const newXp = (user.xp || 0) + amount;
+                update(ref(db, 'users/' + tag.replace('#','')), { xp: newXp });
+                window.showToast(`تم إضافة ${amount} XP للمتابع ${user.name}`);
+            }
+        };
+
+        window.openCustomPointsModal = function(tag) {
+            const user = state.users.find(u => u.tag === tag);
+            if (!user) return;
+            document.getElementById('target-user-tag').value = tag;
+            document.getElementById('custom-points-user-label').innerText = `المتابع: ${user.name} (${user.tag}) - الرصيد: ${user.xp || 0}`;
+            document.getElementById('custom-points-val').value = '';
+            document.getElementById('custom-points-modal').classList.remove('hidden');
+        };
+
+        window.closeCustomPointsModal = () => document.getElementById('custom-points-modal').classList.add('hidden');
+
+        window.applyCustomPoints = function() {
+            const tag = document.getElementById('target-user-tag').value;
+            const val = parseInt(document.getElementById('custom-points-val').value);
+            if (isNaN(val)) return;
+
+            const user = state.users.find(u => u.tag === tag);
+            if (user) {
+                let newXp = (user.xp || 0) + val;
+                if (newXp < 0) newXp = 0;
+                update(ref(db, 'users/' + tag.replace('#','')), { xp: newXp });
+                window.closeCustomPointsModal();
+                window.showToast('تم تعديل النقاط بنجاح!');
+            }
+        };
+
+        // Initialize Firebase Listeners on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            initFirebaseSync();
+        });
     </script>
 </body>
 </html>
