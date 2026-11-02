@@ -1,4 +1,4 @@
-index.html<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -325,6 +325,37 @@ index.html<!DOCTYPE html>
         </div>
     </div>
 
+    <!-- GOOGLE COMPLETE PROFILE MODAL -->
+    <div id="google-profile-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
+                <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5">
+                    <i class="fa-solid id-card"></i> إكمال ملف حساب جوجل
+                </h3>
+            </div>
+            <p class="text-[10px] text-gray-300">أهلاً بك! يرجى إكمال بياناتك الخاصة بلعبة كلاش رويال وقناتك:</p>
+            <input type="hidden" id="g-temp-email">
+            <input type="hidden" id="g-temp-name">
+            <input type="hidden" id="g-temp-avatar">
+            
+            <div class="flex flex-col gap-2.5">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">اسم قناة اليوتيوب:</label>
+                    <input type="text" id="g-profile-yt" placeholder="مثال: SAVO Gaming" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">تاغ كلاش رويال (Clash Royale Tag):</label>
+                    <input type="text" id="g-profile-tag" placeholder="مثال: #2PP98V" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">الدولة:</label>
+                    <input type="text" id="g-profile-country" placeholder="مثال: سوريا، السعودية..." class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                </div>
+                <button onclick="saveGoogleProfile()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حفظ ودخول المنصة</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 2. EARN POINTS MODAL -->
     <div id="earn-points-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3 text-center">
@@ -534,10 +565,10 @@ index.html<!DOCTYPE html>
                 if (val) {
                     state.users = Object.values(val);
                     if (state.currentUser) {
-                        const updatedMe = state.users.find(u => u.tag === state.currentUser.tag);
+                        const updatedMe = state.users.find(u => u.tag === state.currentUser.tag || u.email === state.currentUser.email);
                         if (updatedMe) {
                             const oldXp = state.currentUser.xp;
-                            state.currentUser.xp = updatedMe.xp;
+                            state.currentUser = updatedMe;
                             if (oldXp !== updatedMe.xp) {
                                 showToast(`تم تحديث رصيدك إلى 💎 ${updatedMe.xp} XP`);
                             }
@@ -717,7 +748,7 @@ index.html<!DOCTYPE html>
             });
         };
 
-        // Google Sign-In Callback
+        // Google Sign-In Callback (Prompts for profile completion if new)
         window.handleGoogleSignIn = function(response) {
             try {
                 const base64Url = response.credential.split('.')[1];
@@ -730,29 +761,66 @@ index.html<!DOCTYPE html>
                 const name = payload.name;
                 const email = payload.email;
                 const avatar = payload.picture;
-                const tag = '#G_' + payload.sub.slice(-6).toUpperCase();
 
-                let existingUser = state.users.find(u => u.tag === tag || u.email === email);
-                if (!existingUser) {
-                    existingUser = { name, ytChannel: email, tag, country: 'جوجل', xp: 0, avatar, email };
-                    set(ref(db, 'users/' + tag.replace('#','')), existingUser);
+                // Check if user already exists in DB
+                let existingUser = state.users.find(u => u.email === email);
+                if (existingUser) {
+                    state.currentUser = existingUser;
+                    closeLoginModal();
+                    renderUserProfile();
+                    renderHistory();
+                    showToast(`مرحباً بك مجدداً ${existingUser.name}!`);
                 } else {
-                    existingUser.name = name;
-                    existingUser.avatar = avatar;
-                    update(ref(db, 'users/' + tag.replace('#','')), { name, avatar });
+                    // Open Google Profile Completion Modal
+                    closeLoginModal();
+                    document.getElementById('g-temp-email').value = email;
+                    document.getElementById('g-temp-name').value = name;
+                    document.getElementById('g-temp-avatar').value = avatar;
+                    document.getElementById('g-profile-yt').value = '';
+                    document.getElementById('g-profile-tag').value = '';
+                    document.getElementById('g-profile-country').value = '';
+                    document.getElementById('google-profile-modal').classList.remove('hidden');
                 }
-
-                state.currentUser = existingUser;
-                closeLoginModal();
-                renderUserProfile();
-                renderHistory();
-                showToast(`مرحباً بك ${name}! تم تسجيل الدخول بجوجل بنجاح.`);
             } catch(e) {
                 showToast('حدث خطأ أثناء تسجيل الدخول عبر جوجل.', 'error');
             }
         };
 
-        // Dynamic Google Sign-In Initialization (Fixes Hidden Modal Bug)
+        window.saveGoogleProfile = function() {
+            const email = document.getElementById('g-temp-email').value;
+            const name = document.getElementById('g-temp-name').value;
+            const avatar = document.getElementById('g-temp-avatar').value;
+            const ytChannel = document.getElementById('g-profile-yt').value.trim() || 'قناة يوتيوب';
+            let tag = document.getElementById('g-profile-tag').value.trim();
+            const country = document.getElementById('g-profile-country').value.trim() || 'غير محدد';
+
+            if (!tag) {
+                showToast('يرجى إدخال تاغ كلاش رويال الخاص بك.', 'error');
+                return;
+            }
+            if (!tag.startsWith('#')) tag = '#' + tag;
+
+            const newUser = {
+                name,
+                email,
+                avatar,
+                ytChannel,
+                tag,
+                country,
+                xp: 0
+            };
+
+            const dbKey = tag.replace('#', '');
+            set(ref(db, 'users/' + dbKey), newUser);
+            state.currentUser = newUser;
+
+            document.getElementById('google-profile-modal').classList.add('hidden');
+            renderUserProfile();
+            renderHistory();
+            showToast(`أهلاً بك يا ${name}! تم إنشاء حسابك بنجاح.`);
+        };
+
+        // Dynamic Google Sign-In Initialization
         function initGoogleButton() {
             const container = document.getElementById('google-signin-btn-container');
             if (container && window.google && window.google.accounts) {
@@ -774,7 +842,7 @@ index.html<!DOCTYPE html>
 
         window.openLoginModal = function() {
             document.getElementById('login-modal').classList.remove('hidden');
-            setTimeout(initGoogleButton, 100); // Render button when modal opens
+            setTimeout(initGoogleButton, 100);
         }
 
         window.closeLoginModal = () => document.getElementById('login-modal').classList.add('hidden');
@@ -1099,7 +1167,6 @@ index.html<!DOCTYPE html>
         window.openCustomPointsModal = function(tag) {
             const user = state.users.find(u => u.tag === tag);
             if (!user) return;
-            document.getElementById('target-user-tag').value, tag;
             document.getElementById('target-user-tag').value = tag;
             document.getElementById('custom-points-user-label').innerText = `المتابع: ${user.name} (${user.tag}) - الرصيد: ${user.xp || 0}`;
             document.getElementById('custom-points-val').value = '';
