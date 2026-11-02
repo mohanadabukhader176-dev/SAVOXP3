@@ -90,6 +90,22 @@
         .game-badge {
             text-shadow: 2px 2px 0px #000, -2px -2px 0px #000, 2px -2px 0px #000, -2px 2px 0px #000;
         }
+        .social-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #2B1055;
+            border: 2px solid #53239e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .social-circle:hover {
+            transform: scale(1.1);
+            border-color: #FFD700;
+        }
     </style>
 </head>
 <body class="w-full min-h-screen flex flex-col justify-between m-0 p-0">
@@ -133,6 +149,12 @@
             <div class="overflow-hidden whitespace-nowrap w-full">
                 <p id="announcement-text" class="text-xs font-bold animate-marquee inline-block text-black">أهلاً بك في منصة مكافآت صانع المحتوى SAVO XP - تابع البث المباشر واجمع النقاط!</p>
             </div>
+        </div>
+
+        <!-- EVENT BAR (Dynamic Custom News Bar) -->
+        <div id="event-bar-container" class="w-full bg-[#1b0c30] border-b border-supercellCardBorder px-3 py-2 text-center text-xs text-supercellGold font-bold flex items-center justify-center gap-2 shadow-inner hidden">
+            <i class="fa-solid fa-bolt text-supercellBlue animate-pulse"></i>
+            <span id="event-bar-text"></span>
         </div>
 
         <!-- MAIN CONTENT AREA -->
@@ -209,18 +231,22 @@
                 </div>
 
                 <div class="flex flex-col gap-4">
-                    <!-- General Settings -->
+                    <!-- General Settings & Event Bar -->
                     <div class="panel-card p-3.5 flex flex-col gap-3">
-                        <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1">الإعدادات العامة والإعلانات</h4>
+                        <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1">الإعدادات العامة والأشرطة الإعلانية</h4>
                         <div class="flex gap-2">
                             <div class="flex flex-col gap-1 w-1/3">
                                 <label class="text-[10px] text-gray-300">عنوان التنبيه:</label>
-                                <input type="text" id="admin-announcement-badge" placeholder="مثال: تنويه / أخبار" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                                <input type="text" id="admin-announcement-badge" placeholder="مثال: تنويه" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                             </div>
                             <div class="flex flex-col gap-1 flex-1">
-                                <label class="text-[10px] text-gray-300">نص شريط الإعلان:</label>
+                                <label class="text-[10px] text-gray-300">نص شريط الإعلان المتحرك:</label>
                                 <input type="text" id="admin-announcement-input" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                             </div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] text-gray-300">نص بار الأحداث الجديدة (ترك فارغاً للإخفاء):</label>
+                            <input type="text" id="admin-event-bar-input" placeholder="مثال: البث المباشر القادم اليوم الساعة 9 مساءً!" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                         </div>
                         <div class="flex flex-col gap-1">
                             <label class="text-[10px] text-gray-300">رابط الشعار المخصص (Logo URL):</label>
@@ -240,7 +266,7 @@
                     <!-- Product Management -->
                     <div class="panel-card p-3.5 flex flex-col gap-3">
                         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
-                            <h4 class="font-black text-xs md:text-sm text-supercellGold">إدارة المنتجات والأكواد</h4>
+                            <h4 class="font-black text-xs md:text-sm text-supercellGold">إدارة المنتجات والأكواد (إضافة، تعديل، حذف تام)</h4>
                             <button onclick="openProductModal()" class="btn-blue px-2.5 py-1 rounded text-black font-black text-[10px]"><i class="fa-solid fa-plus"></i> إضافة منتج</button>
                         </div>
                         <div id="admin-products-list" class="flex flex-col gap-2 max-h-72 overflow-y-auto pr-1">
@@ -274,14 +300,14 @@
             </section>
         </main>
 
-        <!-- FOOTER BRANDING -->
-        <footer class="w-full py-4 text-center border-t border-supercellCardBorder bg-black/40 mt-auto flex flex-col gap-2">
-            <div id="footer-socials" class="flex items-center justify-center gap-4 text-lg">
-                <a id="social-link-yt" href="#" target="_blank" class="text-red-500 hover:text-red-400 transition-colors"><i class="fa-brands fa-youtube"></i></a>
-                <a id="social-link-tik" href="#" target="_blank" class="text-white hover:text-gray-300 transition-colors"><i class="fa-brands fa-tiktok"></i></a>
-                <a id="social-link-ig" href="#" target="_blank" class="text-pink-500 hover:text-pink-400 transition-colors"><i class="fa-brands fa-instagram"></i></a>
-                <a id="social-link-twi" href="#" target="_blank" class="text-purple-400 hover:text-purple-300 transition-colors"><i class="fa-brands fa-twitch"></i></a>
-                <a id="social-link-wa" href="#" target="_blank" class="text-emerald-500 hover:text-emerald-400 transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+        <!-- FOOTER BRANDING WITH CIRCULAR SOCIAL ICONS -->
+        <footer class="w-full py-4 text-center border-t border-supercellCardBorder bg-black/40 mt-auto flex flex-col gap-3">
+            <div id="footer-socials" class="flex items-center justify-center gap-3 text-base">
+                <a id="social-link-yt" href="#" target="_blank" class="social-circle text-red-500 hover:text-red-400" title="يوتيوب"><i class="fa-brands fa-youtube"></i></a>
+                <a id="social-link-tik" href="#" target="_blank" class="social-circle text-white hover:text-gray-300" title="تيك توك"><i class="fa-brands fa-tiktok"></i></a>
+                <a id="social-link-ig" href="#" target="_blank" class="social-circle text-pink-500 hover:text-pink-400" title="انستغرام"><i class="fa-brands fa-instagram"></i></a>
+                <a id="social-link-twi" href="#" target="_blank" class="social-circle text-purple-400 hover:text-purple-300" title="تويتش"><i class="fa-brands fa-twitch"></i></a>
+                <a id="social-link-wa" href="#" target="_blank" class="social-circle text-emerald-500 hover:text-emerald-400" title="واتساب"><i class="fa-brands fa-whatsapp"></i></a>
             </div>
             <p class="text-[10px] text-gray-400 font-bold">SAVO XP © 2026 - جميع الحقوق محفوظة لصانع المحتوى</p>
             <p class="text-[9px] text-gray-500 mt-0.5">غير مرتبطة رسمياً بشركة Supercell (حقوق النشر محفوظة)</p>
@@ -290,55 +316,35 @@
 
     <!-- MODALS -->
 
-    <!-- LOGIN MODAL -->
+    <!-- LOGIN MODAL (GOOGLE ONLY) -->
     <div id="login-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3 animate-scaleIn">
+        <div class="panel-card w-full max-w-xs p-5 flex flex-col gap-4 animate-scaleIn text-center">
             <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
                 <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5">
                     <i class="fa-solid fa-user-shield"></i> تسجيل دخول المتابع
                 </h3>
                 <button onclick="closeLoginModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="flex flex-col gap-3">
-                <div class="w-full flex flex-col items-center py-2">
-                    <div id="google-signin-btn-container" class="w-full flex justify-center"></div>
+            <div class="flex flex-col gap-3 py-2">
+                <p class="text-xs text-gray-300 leading-relaxed">
+                    يجب تسجيل الدخول باستخدام حساب جوجل للتمكن من حفظ رصيدك ونقاطك وسجل مشترياتك بأمان.
+                </p>
+                <div class="w-full flex justify-center py-2">
+                    <div id="google-signin-btn-container" class="flex justify-center"></div>
                 </div>
-                <div class="relative flex py-1 items-center">
-                    <div class="flex-grow border-t border-supercellCardBorder"></div>
-                    <span class="flex-shrink mx-2 text-[10px] text-gray-400">أو التسجيل اليدوي</span>
-                    <div class="flex-grow border-t border-supercellCardBorder"></div>
-                </div>
-
-                <div class="flex flex-col gap-1">
-                    <label class="text-[10px] text-gray-300">اسم المتابع (الاسم الشخصي):</label>
-                    <input type="text" id="login-name" placeholder="مثال: أحمد" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
-                </div>
-                <div class="flex flex-col gap-1">
-                    <label class="text-[10px] text-gray-300">اسم قناة اليوتيوب:</label>
-                    <input type="text" id="login-yt-name" placeholder="مثال: Ahmed Gaming YT" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
-                </div>
-                <div class="flex flex-col gap-1">
-                    <label class="text-[10px] text-gray-300">تاغ كلاش رويال (Clash Royale Tag):</label>
-                    <input type="text" id="login-tag" placeholder="مثال: #2PP98V" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
-                </div>
-                <div class="flex flex-col gap-1">
-                    <label class="text-[10px] text-gray-300">الدولة:</label>
-                    <input type="text" id="login-country" placeholder="مثال: السعودية، العراق..." class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
-                </div>
-                <button onclick="submitManualLogin()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">دخول أو إنشاء حساب</button>
             </div>
         </div>
     </div>
 
-    <!-- GOOGLE COMPLETE PROFILE MODAL -->
+    <!-- GOOGLE COMPLETE PROFILE MODAL (For New Users Sign Up) -->
     <div id="google-profile-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
             <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
                 <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5">
-                    <i class="fa-solid fa-id-card"></i> إكمال حساب جوجل الجديد
+                    <i class="fa-solid fa-id-card"></i> إكمال بيانات حسابك الجديد
                 </h3>
             </div>
-            <p class="text-[10px] text-gray-300">أهلاً بك! هذه المرة الأولى لك، يرجى إكمال بيانات كلاش رويال وقناتك لتسجيل حسابك:</p>
+            <p class="text-[10px] text-gray-300">أهلاً بك! هذه المرة الأولى لك عبر جوجل، يرجى إكمال بيانات كلاش رويال وقناتك:</p>
             <input type="hidden" id="g-temp-email">
             <input type="hidden" id="g-temp-name">
             <input type="hidden" id="g-temp-avatar">
@@ -527,6 +533,7 @@
             settings: {
                 badge: 'تنويه',
                 announcement: 'أهلاً بك في منصة مكافآت صانع المحتوى SAVO XP - تابع البث المباشر واجمع النقاط!',
+                eventBarText: '',
                 logoUrl: '',
                 socials: {
                     youtube: 'https://youtube.com',
@@ -545,6 +552,7 @@
                 const val = snapshot.val();
                 if (val) state.settings = val;
                 renderAnnouncement();
+                renderEventBar();
                 renderHeaderLogo();
                 renderFooterSocials();
             });
@@ -563,14 +571,14 @@
                 }
             });
 
-            // Users (Save as object map to preserve accurate Firebase keys)
+            // Users
             onValue(ref(db, 'users'), (snapshot) => {
                 if (snapshot.exists()) {
                     state.usersMap = snapshot.val();
                     
                     if (state.currentUser) {
                         const allUsers = Object.values(state.usersMap);
-                        const updatedMe = allUsers.find(u => u.tag === state.currentUser.tag || u.email === state.currentUser.email);
+                        const updatedMe = allUsers.find(u => u.email === state.currentUser.email);
                         if (updatedMe) {
                             const oldXp = state.currentUser.xp;
                             state.currentUser = updatedMe;
@@ -630,6 +638,19 @@
                 badgeContainer.style.display = 'none';
             }
             document.getElementById('announcement-text').innerText = state.settings.announcement;
+        };
+
+        window.renderEventBar = function() {
+            const container = document.getElementById('event-bar-container');
+            const textEl = document.getElementById('event-bar-text');
+            const eventText = state.settings.eventBarText ? state.settings.eventBarText.trim() : '';
+            
+            if (eventText !== '') {
+                textEl.innerText = eventText;
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
         };
 
         window.renderHeaderLogo = function() {
@@ -720,7 +741,7 @@
             list.innerHTML = '';
 
             if (!state.currentUser) {
-                list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">يرجى تسجيل الدخول لعرض سجل المشتريات.</div>`;
+                list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">يرجى تسجيل الدخول عبر جوجل لعرض سجل المشتريات.</div>`;
                 return;
             }
 
@@ -748,7 +769,7 @@
             });
         };
 
-        // Google Sign-In Callback
+        // Google Sign-In Callback (Strict Google Only Authentication)
         window.handleGoogleSignIn = function(response) {
             try {
                 const base64Url = response.credential.split('.')[1];
@@ -766,12 +787,14 @@
                 let existingUser = allUsers.find(u => u.email === email);
 
                 if (existingUser) {
+                    // Returning user login
                     state.currentUser = existingUser;
                     closeLoginModal();
                     renderUserProfile();
                     renderHistory();
                     showToast(`مرحباً بك مجدداً ${existingUser.name}!`);
                 } else {
+                    // New user sign up - Prompt for Clash Royale details
                     closeLoginModal();
                     document.getElementById('g-temp-email').value = email;
                     document.getElementById('g-temp-name').value = name;
@@ -815,7 +838,7 @@
                 authType: 'Google'
             };
 
-            const dbKey = tag.replace(/[^a-zA-Z0-9]/g, '_');
+            const dbKey = email.replace(/[^a-zA-Z0-9]/g, '_');
             set(ref(db, 'users/' + dbKey), newUser);
             state.currentUser = newUser;
 
@@ -846,48 +869,12 @@
 
         window.openLoginModal = function() {
             document.getElementById('login-modal').classList.remove('hidden');
-            setTimeout(initGoogleButton, 100);
+            setTimeout(initGoogleButton, 150);
         }
 
         window.closeLoginModal = () => document.getElementById('login-modal').classList.add('hidden');
         window.openEarnPointsModal = () => document.getElementById('earn-points-modal').classList.remove('hidden');
         window.closeEarnPointsModal = () => document.getElementById('earn-points-modal').classList.add('hidden');
-
-        window.submitManualLogin = function() {
-            const name = document.getElementById('login-name').value.trim();
-            const ytChannel = document.getElementById('login-yt-name').value.trim();
-            let tag = document.getElementById('login-tag').value.trim();
-            const country = document.getElementById('login-country').value.trim();
-
-            if (!name || !tag) {
-                showToast('يرجى إدخال الاسم والتاغ.', 'error');
-                return;
-            }
-            if (!tag.startsWith('#')) tag = '#' + tag;
-
-            const now = new Date();
-            const timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-            const allUsers = Object.values(state.usersMap);
-            let existingUser = allUsers.find(u => u.tag === tag);
-
-            if (!existingUser) {
-                existingUser = { name, ytChannel: ytChannel || 'قناة', tag, country: country || 'غير محدد', xp: 0, avatar: '', joinedAt: timeStr, authType: 'Manual' };
-            } else {
-                existingUser.name = name;
-                existingUser.ytChannel = ytChannel || existingUser.ytChannel;
-                existingUser.country = country || existingUser.country;
-            }
-
-            const dbKey = tag.replace(/[^a-zA-Z0-9]/g, '_');
-            set(ref(db, 'users/' + dbKey), existingUser);
-
-            state.currentUser = existingUser;
-            closeLoginModal();
-            renderUserProfile();
-            renderHistory();
-            showToast(`أهلاً بك يا ${name}!`);
-        };
 
         window.openEditProfileModal = function() {
             if (!state.currentUser) return;
@@ -913,18 +900,13 @@
             }
             if (!tag.startsWith('#')) tag = '#' + tag;
 
-            const oldKey = state.currentUser.tag.replace(/[^a-zA-Z0-9]/g, '_');
-            const newKey = tag.replace(/[^a-zA-Z0-9]/g, '_');
-
             state.currentUser.name = name;
             state.currentUser.ytChannel = ytChannel;
             state.currentUser.tag = tag;
             state.currentUser.country = country;
 
-            if (oldKey !== newKey) {
-                remove(ref(db, 'users/' + oldKey));
-            }
-            set(ref(db, 'users/' + newKey), state.currentUser);
+            const dbKey = state.currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+            set(ref(db, 'users/' + dbKey), state.currentUser);
 
             closeEditProfileModal();
             renderUserProfile();
@@ -940,7 +922,7 @@
 
         window.redeemProduct = function(productId) {
             if (!state.currentUser) {
-                showToast('يجب تسجيل الدخول أولاً.', 'error');
+                showToast('يجب تسجيل الدخول عبر جوجل أولاً.', 'error');
                 openLoginModal();
                 return;
             }
@@ -952,7 +934,7 @@
             }
 
             const allUsers = Object.values(state.usersMap);
-            const userRef = allUsers.find(u => u.tag === state.currentUser.tag);
+            const userRef = allUsers.find(u => u.email === state.currentUser.email);
 
             if (!userRef || userRef.xp < product.price) {
                 showToast('رصيدك من النقاط لا يكفي!', 'error');
@@ -962,7 +944,7 @@
             const newXp = userRef.xp - product.price;
             const assignedLink = product.links.shift();
 
-            const dbKey = userRef.tag.replace(/[^a-zA-Z0-9]/g, '_');
+            const dbKey = userRef.email.replace(/[^a-zA-Z0-9]/g, '_');
             update(ref(db, 'users/' + dbKey), { xp: newXp });
             update(ref(db, 'products/' + product.id), { links: product.links });
 
@@ -1039,6 +1021,7 @@
 
             document.getElementById('admin-announcement-badge').value = state.settings.badge || '';
             document.getElementById('admin-announcement-input').value = state.settings.announcement || '';
+            document.getElementById('admin-event-bar-input').value = state.settings.eventBarText || '';
             document.getElementById('admin-logo-input').value = state.settings.logoUrl || '';
             
             const socials = state.settings.socials || {};
@@ -1059,6 +1042,7 @@
             const newSettings = {
                 badge: document.getElementById('admin-announcement-badge').value.trim(),
                 announcement: document.getElementById('admin-announcement-input').value.trim(),
+                eventBarText: document.getElementById('admin-event-bar-input').value.trim(),
                 logoUrl: document.getElementById('admin-logo-input').value.trim(),
                 socials: {
                     youtube: document.getElementById('social-yt').value.trim(),
@@ -1128,7 +1112,8 @@
         window.closeProductModal = () => document.getElementById('product-modal').classList.add('hidden');
 
         window.saveProduct = function() {
-            const id = document.getElementById('edit-product-id').value || ('prod_' + Date.now());
+            const existingId = document.getElementById('edit-product-id').value.trim();
+            const id = existingId !== "" ? existingId : ('prod_' + Date.now());
             const name = document.getElementById('prod-name').value.trim();
             const desc = document.getElementById('prod-desc').value.trim();
             const price = parseInt(document.getElementById('prod-price').value) || 0;
@@ -1142,9 +1127,10 @@
             }
 
             const prodObj = { id, name, desc, price, image, links };
-            set(ref(db, 'products/' + id), prodObj);
-            closeProductModal();
-            showToast('تم حفظ المنتج سحابياً بنجاح!');
+            set(ref(db, 'products/' + id), prodObj).then(() => {
+                closeProductModal();
+                showToast('تم حفظ وتحديث المنتج سحابياً بنجاح!');
+            });
         };
 
         window.editProduct = function(id) {
@@ -1152,11 +1138,9 @@
         };
 
         window.deleteProduct = function(id) {
-            if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+            if (confirm('هل أنت متأكد من حذف هذا المنتج نهائياً؟')) {
                 remove(ref(db, 'products/' + id)).then(() => {
-                    showToast('تم حذف المنتج بنجاح من الفايربيز.');
-                }).catch((err) => {
-                    showToast('حدث خطأ أثناء الحذف', 'error');
+                    showToast('تم حذف المنتج بنجاح.');
                 });
             }
         };
@@ -1193,7 +1177,6 @@
             }
         };
 
-        // Render Admin Users (FIXED)
         window.renderAdminUsers = function() {
             const list = document.getElementById('admin-users-list');
             const countEl = document.getElementById('admin-users-count');
@@ -1218,10 +1201,10 @@
                         <div>
                             <div class="flex items-center gap-2">
                                 <h5 class="font-black text-xs md:text-sm text-white">${u.name}</h5>
-                                <span class="text-[9px] bg-purple-950 text-purple-300 px-1.5 py-0.5 rounded border border-purple-500/40">${u.authType || 'Manual'}</span>
+                                <span class="text-[9px] bg-purple-950 text-purple-300 px-1.5 py-0.5 rounded border border-purple-500/40">${u.authType || 'Google'}</span>
                             </div>
                             <p class="text-[10px] text-supercellBlue mt-0.5">${u.tag} | ${u.country} | قناة: ${u.ytChannel || 'غير محدد'}</p>
-                            <span class="text-[9px] text-gray-400 block mt-0.5">تاريخ التسجيل: ${u.joinedAt || 'غير متوفر'}</span>
+                            <span class="text-[9px] text-gray-400 block mt-0.5">الإيميل: ${u.email} | التسجيل: ${u.joinedAt || 'غير متوفر'}</span>
                         </div>
                         <div class="bg-black/70 px-3 py-1.5 rounded border border-supercellBlue/40 text-center shrink-0">
                             <span class="text-xs text-supercellBlue block font-black">💎 ${u.xp || 0} XP</span>
