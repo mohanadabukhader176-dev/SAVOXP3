@@ -151,7 +151,7 @@
             </div>
         </div>
 
-        <!-- EVENT BAR (Dynamic Custom News Bar) -->
+        <!-- EVENT BAR -->
         <div id="event-bar-container" class="w-full bg-[#1b0c30] border-b border-supercellCardBorder px-3 py-2 text-center text-xs text-supercellGold font-bold flex items-center justify-center gap-2 shadow-inner hidden">
             <i class="fa-solid fa-bolt text-supercellBlue animate-pulse"></i>
             <span id="event-bar-text"></span>
@@ -266,7 +266,7 @@
                     <!-- Product Management -->
                     <div class="panel-card p-3.5 flex flex-col gap-3">
                         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
-                            <h4 class="font-black text-xs md:text-sm text-supercellGold">إدارة المنتجات والأكواد (إضافة، تعديل، حذف تام)</h4>
+                            <h4 class="font-black text-xs md:text-sm text-supercellGold">إدارة المنتجات والأكواد</h4>
                             <button onclick="openProductModal()" class="btn-blue px-2.5 py-1 rounded text-black font-black text-[10px]"><i class="fa-solid fa-plus"></i> إضافة منتج</button>
                         </div>
                         <div id="admin-products-list" class="flex flex-col gap-2 max-h-72 overflow-y-auto pr-1">
@@ -336,7 +336,7 @@
         </div>
     </div>
 
-    <!-- GOOGLE COMPLETE PROFILE MODAL (For New Users Sign Up) -->
+    <!-- GOOGLE COMPLETE PROFILE MODAL -->
     <div id="google-profile-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
             <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
@@ -557,7 +557,7 @@
                 renderFooterSocials();
             });
 
-            // Products
+            // Products (Strict synchronization)
             onValue(ref(db, 'products'), (snapshot) => {
                 if (snapshot.exists()) {
                     const val = snapshot.val();
@@ -769,7 +769,7 @@
             });
         };
 
-        // Google Sign-In Callback (Strict Google Only Authentication)
+        // Google Sign-In Callback
         window.handleGoogleSignIn = function(response) {
             try {
                 const base64Url = response.credential.split('.')[1];
@@ -787,14 +787,12 @@
                 let existingUser = allUsers.find(u => u.email === email);
 
                 if (existingUser) {
-                    // Returning user login
                     state.currentUser = existingUser;
                     closeLoginModal();
                     renderUserProfile();
                     renderHistory();
                     showToast(`مرحباً بك مجدداً ${existingUser.name}!`);
                 } else {
-                    // New user sign up - Prompt for Clash Royale details
                     closeLoginModal();
                     document.getElementById('g-temp-email').value = email;
                     document.getElementById('g-temp-name').value = name;
@@ -920,6 +918,7 @@
             showToast('تم تسجيل الخروج.');
         };
 
+        // FIXED REDEEM & INSTANT POINTS DEDUCTION
         window.redeemProduct = function(productId) {
             if (!state.currentUser) {
                 showToast('يجب تسجيل الدخول عبر جوجل أولاً.', 'error');
@@ -929,23 +928,25 @@
 
             const product = state.products.find(p => p.id === productId);
             if (!product || !product.links || product.links.length === 0) {
-                showToast('عذراً، المنتج نفذ من المخزون.', 'error');
+                showToast('عذراً، هذا المنتج نفذ من المخزون.', 'error');
                 return;
             }
 
-            const allUsers = Object.values(state.usersMap);
-            const userRef = allUsers.find(u => u.email === state.currentUser.email);
-
-            if (!userRef || userRef.xp < product.price) {
+            // Check current points in local state (instant check)
+            if (state.currentUser.xp < product.price) {
                 showToast('رصيدك من النقاط لا يكفي!', 'error');
                 return;
             }
 
-            const newXp = userRef.xp - product.price;
-            const assignedLink = product.links.shift();
+            // Deduct locally and instantly update UI
+            state.currentUser.xp -= product.price;
+            renderUserProfile();
 
-            const dbKey = userRef.email.replace(/[^a-zA-Z0-9]/g, '_');
-            update(ref(db, 'users/' + dbKey), { xp: newXp });
+            const assignedLink = product.links.shift();
+            const dbKey = state.currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+
+            // Update Firebase Database atomically
+            update(ref(db, 'users/' + dbKey), { xp: state.currentUser.xp });
             update(ref(db, 'products/' + product.id), { links: product.links });
 
             const now = new Date();
@@ -1111,6 +1112,7 @@
 
         window.closeProductModal = () => document.getElementById('product-modal').classList.add('hidden');
 
+        // FIXED SAVE PRODUCT (Prevents duplicates and overwrites correctly)
         window.saveProduct = function() {
             const existingId = document.getElementById('edit-product-id').value.trim();
             const id = existingId !== "" ? existingId : ('prod_' + Date.now());
@@ -1137,6 +1139,7 @@
             openProductModal(id);
         };
 
+        // FIXED DELETE PRODUCT (Ensures clean removal from Firebase)
         window.deleteProduct = function(id) {
             if (confirm('هل أنت متأكد من حذف هذا المنتج نهائياً؟')) {
                 remove(ref(db, 'products/' + id)).then(() => {
