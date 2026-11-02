@@ -6,11 +6,11 @@
     <title>SAVO XP - Clash Royale Creator Rewards</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Cairo -->
+    <!-- Google Fonts: Cairo & Inter for Supercell gaming vibe -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
+    <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Identity Services SDK -->
+    <!-- Google Identity Services SDK for Google Sign-In -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         tailwind.config = {
@@ -90,39 +90,27 @@
         .game-badge {
             text-shadow: 2px 2px 0px #000, -2px -2px 0px #000, 2px -2px 0px #000, -2px 2px 0px #000;
         }
-        @keyframes marquee {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-        .animate-marquee {
-            display: inline-block;
-            white-space: nowrap;
-            animation: marquee 18s linear infinite;
-        }
-        .animate-marquee:hover {
-            animation-play-state: paused;
-        }
     </style>
 </head>
 <body class="w-full min-h-screen flex flex-col justify-between m-0 p-0">
 
     <!-- Toast Notifications Container -->
-    <div id="toast-container" class="fixed top-4 left-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+    <div id="toast-container" class="fixed top-4 left-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm mx-auto"></div>
 
-    <!-- Main Wrapper -->
-    <div class="w-full max-w-md mx-auto flex flex-col min-h-screen bg-supercellDark relative shadow-2xl pb-16">
+    <!-- Main Wrapper (Fully Responsive: Mobile & Desktop) -->
+    <div class="w-full max-w-md md:max-w-3xl lg:max-w-4xl mx-auto flex flex-col min-h-screen bg-supercellDark relative shadow-2xl pb-16">
 
         <!-- HEADER -->
-        <header class="w-full bg-supercellPurple border-b-4 border-supercellCardBorder px-3 py-3 flex items-center justify-between sticky top-0 z-40 shadow-md">
+        <header class="w-full bg-supercellPurple border-b-4 border-supercellCardBorder px-4 py-3 flex items-center justify-between sticky top-0 z-40 shadow-md">
             <div class="flex items-center gap-2">
                 <div id="header-logo-container" class="flex items-center">
                     <span id="logo-display" class="font-black text-xl italic tracking-tighter text-supercellGold game-badge">SAVO XP</span>
                 </div>
             </div>
             
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3">
                 <!-- XP Balance Pill with Info (+) Button -->
-                <div class="bg-black/50 border-2 border-supercellBlue px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-inner">
+                <div class="bg-black/50 border-2 border-supercellBlue px-3 py-1 rounded-full flex items-center gap-1.5 shadow-inner">
                     <span class="text-supercellBlue text-base">💎</span>
                     <span id="header-xp-balance" class="font-black text-supercellBlue text-sm">0</span>
                     <button onclick="openEarnPointsModal()" class="w-4 h-4 bg-supercellBlue text-black font-black rounded-full flex items-center justify-center text-[10px] hover:scale-110 transition-transform" title="كيف تحصل على نقاط؟">
@@ -148,48 +136,53 @@
         </div>
 
         <!-- MAIN CONTENT AREA -->
-        <main class="flex-1 p-3 flex flex-col gap-4">
+        <main class="flex-1 p-3 md:p-6 flex flex-col gap-4">
 
             <!-- Welcome / Profile Quick Card -->
-            <div id="user-profile-card" class="panel-card p-3 flex items-center justify-between hidden">
+            <div id="user-profile-card" class="panel-card p-3.5 flex items-center justify-between hidden">
                 <div class="flex items-center gap-3">
-                    <div id="profile-avatar-container" class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center border-2 border-supercellGold text-supercellGold font-black text-lg shadow overflow-hidden">
+                    <div id="profile-avatar-container" class="w-12 h-12 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center border-2 border-supercellGold text-supercellGold font-black text-lg shadow overflow-hidden">
                         <i class="fa-solid fa-crown" id="profile-fallback-icon"></i>
                     </div>
                     <div>
-                        <h4 id="profile-name" class="font-black text-sm text-white truncate max-w-[140px]">اسم المتابع</h4>
-                        <p id="profile-tag" class="text-[10px] text-supercellBlue font-bold">#TAG000</p>
+                        <h4 id="profile-name" class="font-black text-sm md:text-base text-white truncate max-w-[180px]">اسم المتابع</h4>
+                        <p id="profile-tag" class="text-[10px] md:text-xs text-supercellBlue font-bold">#TAG000</p>
                     </div>
                 </div>
-                <button onclick="logoutUser()" class="btn-red px-2 py-1 rounded text-white font-bold text-[10px] whitespace-nowrap">
-                    خروج
-                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="openEditProfileModal()" class="btn-blue px-2.5 py-1.5 rounded text-black font-bold text-[10px] md:text-xs whitespace-nowrap">
+                        <i class="fa-solid fa-pen-to-square ml-1"></i> تعديل
+                    </button>
+                    <button onclick="logoutUser()" class="btn-red px-2.5 py-1.5 rounded text-white font-bold text-[10px] md:text-xs whitespace-nowrap">
+                        خروج
+                    </button>
+                </div>
             </div>
 
             <!-- TABS NAVIGATION -->
-            <div class="grid grid-cols-3 gap-1.5 bg-black/40 p-1 rounded-xl border border-supercellCardBorder">
-                <button onclick="switchTab('store')" id="tab-btn-store" class="py-2 rounded-lg font-black text-xs text-center transition-all bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow">
+            <div class="grid grid-cols-3 gap-2 bg-black/40 p-1.5 rounded-xl border border-supercellCardBorder">
+                <button onclick="switchTab('store')" id="tab-btn-store" class="py-2.5 rounded-lg font-black text-xs md:text-sm text-center transition-all bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow">
                     <i class="fa-solid fa-store ml-1"></i> المتجر
                 </button>
-                <button onclick="switchTab('history')" id="tab-btn-history" class="py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300 hover:text-white">
+                <button onclick="switchTab('history')" id="tab-btn-history" class="py-2.5 rounded-lg font-black text-xs md:text-sm text-center transition-all text-gray-300 hover:text-white">
                     <i class="fa-solid fa-clock-rotate-left ml-1"></i> المشتريات
                 </button>
-                <button onclick="openAdminPinModal()" id="tab-btn-admin" class="py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300 hover:text-white">
+                <button onclick="openAdminPinModal()" id="tab-btn-admin" class="py-2.5 rounded-lg font-black text-xs md:text-sm text-center transition-all text-gray-300 hover:text-white">
                     <i class="fa-solid fa-gear ml-1"></i> الأدمن
                 </button>
             </div>
 
-            <!-- TAB 1: REWARD STORE (2x2 GRID) -->
+            <!-- TAB 1: REWARD STORE (Responsive Grid) -->
             <section id="tab-store" class="flex flex-col gap-3">
                 <div class="flex items-center justify-between">
-                    <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5">
+                    <h3 class="font-black text-sm md:text-base text-supercellGold flex items-center gap-1.5">
                         <i class="fa-solid fa-gift"></i> متجر المكافآت والأكواد
                     </h3>
-                    <span id="store-count" class="text-[10px] bg-supercellCard border border-supercellCardBorder px-2 py-0.5 rounded text-gray-300">0 منتج</span>
+                    <span id="store-count" class="text-[10px] md:text-xs bg-supercellCard border border-supercellCardBorder px-2.5 py-1 rounded text-gray-300">0 منتج</span>
                 </div>
 
-                <!-- Products Grid 2x2 -->
-                <div id="products-grid" class="grid grid-cols-2 gap-2.5">
+                <!-- Products Grid (2 cols on mobile, 3-4 cols on desktop) -->
+                <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     <!-- Populated dynamically -->
                 </div>
             </section>
@@ -197,7 +190,7 @@
             <!-- TAB 2: PURCHASE HISTORY -->
             <section id="tab-history" class="flex flex-col gap-3 hidden">
                 <div class="flex items-center justify-between">
-                    <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5">
+                    <h3 class="font-black text-sm md:text-base text-supercellGold flex items-center gap-1.5">
                         <i class="fa-solid fa-receipt"></i> سجل المشتريات الخاصة بك
                     </h3>
                 </div>
@@ -208,23 +201,23 @@
 
             <!-- TAB 3: ADMIN DASHBOARD (Hidden by default until PIN) -->
             <section id="tab-admin" class="flex flex-col gap-4 hidden">
-                <div class="bg-supercellCard border-2 border-red-500/50 p-3 rounded-xl flex items-center justify-between">
+                <div class="bg-supercellCard border-2 border-red-500/50 p-3.5 rounded-xl flex items-center justify-between">
                     <div>
-                        <h3 class="font-black text-sm text-red-400">لوحة تحكم المشرف (Admin)</h3>
-                        <p class="text-[10px] text-gray-300">تحكم كامل بالنقاط، المنتجات، الإعلانات والسجل (سحابي)</p>
+                        <h3 class="font-black text-sm md:text-base text-red-400">لوحة تحكم المشرف (Admin)</h3>
+                        <p class="text-[10px] md:text-xs text-gray-300">تحكم كامل بالنقاط، المنتجات، الإعلانات والمتابعين (سحابي 100%)</p>
                     </div>
-                    <button onclick="lockAdminPanel()" class="btn-red px-2.5 py-1 rounded text-white font-bold text-xs">قفل اللوحة</button>
+                    <button onclick="lockAdminPanel()" class="btn-red px-3 py-1.5 rounded text-white font-bold text-xs">قفل اللوحة</button>
                 </div>
 
                 <!-- Admin Sub-sections -->
-                <div class="flex flex-col gap-3">
+                <div class="flex flex-col gap-4">
                     <!-- General Settings -->
-                    <div class="panel-card p-3 flex flex-col gap-2.5">
-                        <h4 class="font-black text-xs text-supercellGold border-b border-supercellCardBorder pb-1">الإعدادات العامة والإعلانات</h4>
+                    <div class="panel-card p-3.5 flex flex-col gap-3">
+                        <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1">الإعدادات العامة والإعلانات</h4>
                         <div class="flex gap-2">
                             <div class="flex flex-col gap-1 w-1/3">
                                 <label class="text-[10px] text-gray-300">عنوان التنبيه:</label>
-                                <input type="text" id="admin-announcement-badge" placeholder="مثال: تنويه / أخبار" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                                <input type="text" id="admin-announcement-badge" placeholder="مثال: تنويه / أخبار" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                             </div>
                             <div class="flex flex-col gap-1 flex-1">
                                 <label class="text-[10px] text-gray-300">نص شريط الإعلان:</label>
@@ -237,45 +230,45 @@
                         </div>
                         <h5 class="font-black text-[11px] text-supercellGold mt-1 pt-1 border-t border-supercellCardBorder">روابط وسائل التواصل الاجتماعي (Footer)</h5>
                         <div class="grid grid-cols-2 gap-2">
-                            <input type="text" id="social-yt" placeholder="رابط اليوتيوب" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1 text-[11px] text-white">
-                            <input type="text" id="social-tik" placeholder="رابط تيك توك" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1 text-[11px] text-white">
-                            <input type="text" id="social-ig" placeholder="رابط انستغرام" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1 text-[11px] text-white">
-                            <input type="text" id="social-twi" placeholder="رابط تويتش" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1 text-[11px] text-white">
-                            <input type="text" id="social-wa" placeholder="رابط واتساب" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1 text-[11px] text-white col-span-2">
+                            <input type="text" id="social-yt" placeholder="رابط اليوتيوب" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
+                            <input type="text" id="social-tik" placeholder="رابط تيك توك" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
+                            <input type="text" id="social-ig" placeholder="رابط انستغرام" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
+                            <input type="text" id="social-twi" placeholder="رابط تويتش" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
+                            <input type="text" id="social-wa" placeholder="رابط واتساب" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
                         </div>
-                        <button onclick="saveAdminSettings()" class="btn-gold py-1.5 rounded text-black font-black text-xs mt-1">حفظ الإعدادات والتحديث السحابي</button>
+                        <button onclick="saveAdminSettings()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حفظ الإعدادات والتحديث السحابي</button>
                     </div>
 
                     <!-- Product Management -->
-                    <div class="panel-card p-3 flex flex-col gap-2.5">
-                        <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1">
-                            <h4 class="font-black text-xs text-supercellGold">إدارة المنتجات والأكواد</h4>
-                            <button onclick="openProductModal()" class="btn-blue px-2 py-0.5 rounded text-black font-black text-[10px]"><i class="fa-solid fa-plus"></i> إضافة منتج</button>
+                    <div class="panel-card p-3.5 flex flex-col gap-3">
+                        <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
+                            <h4 class="font-black text-xs md:text-sm text-supercellGold">إدارة المنتجات والأكواد (تحكم كامل بدون قيود)</h4>
+                            <button onclick="openProductModal()" class="btn-blue px-2.5 py-1 rounded text-black font-black text-[10px]"><i class="fa-solid fa-plus"></i> إضافة منتج</button>
                         </div>
-                        <div id="admin-products-list" class="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
+                        <div id="admin-products-list" class="flex flex-col gap-2 max-h-72 overflow-y-auto pr-1">
                             <!-- Populated dynamically -->
                         </div>
                     </div>
 
                     <!-- Master Audit Log -->
-                    <div class="panel-card p-3 flex flex-col gap-2.5">
-                        <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1">
-                            <h4 class="font-black text-xs text-supercellGold"><i class="fa-solid fa-clipboard-list ml-1"></i> سجل العمليات الشامل للأدمن</h4>
-                            <button onclick="clearAdminHistory()" class="text-[9px] text-red-400 hover:text-red-300 underline">مسح السجل</button>
+                    <div class="panel-card p-3.5 flex flex-col gap-3">
+                        <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
+                            <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-clipboard-list ml-1"></i> سجل العمليات الشامل للأدمن</h4>
+                            <button onclick="clearAdminHistory()" class="text-[10px] text-red-400 hover:text-red-300 underline">مسح السجل</button>
                         </div>
-                        <p class="text-[9px] text-gray-300">متابعة دقيقة لكل مشتريات المتابعين والروابط التي تم تسليمها:</p>
-                        <div id="admin-audit-log-list" class="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
+                        <p class="text-[10px] text-gray-300">متابعة دقيقة لكل مشتريات المتابعين والروابط التي تم تسليمها:</p>
+                        <div id="admin-audit-log-list" class="flex flex-col gap-2 max-h-64 overflow-y-auto pr-1">
                             <!-- Populated dynamically -->
                         </div>
                     </div>
 
-                    <!-- Users Management -->
-                    <div class="panel-card p-3 flex flex-col gap-2.5">
-                        <h4 class="font-black text-xs text-supercellGold border-b border-supercellCardBorder pb-1">إدارة المتابعين وشحن النقاط سحابياً</h4>
-                        <div class="flex gap-2">
-                            <input type="text" id="admin-search-user" oninput="renderAdminUsers()" placeholder="بحث بالاسم أو الـ Tag..." class="flex-1 bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                    <!-- Users Management (Clean List View without Search requirement) -->
+                    <div class="panel-card p-3.5 flex flex-col gap-3">
+                        <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
+                            <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-users ml-1"></i> إدارة المتابعين المسجلين (قائمة شاملة)</h4>
+                            <span id="admin-users-count" class="text-[10px] text-supercellBlue font-bold">0 متابع</span>
                         </div>
-                        <div id="admin-users-list" class="flex flex-col gap-2 max-h-64 overflow-y-auto pr-1">
+                        <div id="admin-users-list" class="flex flex-col gap-2 max-h-80 overflow-y-auto pr-1">
                             <!-- Populated dynamically -->
                         </div>
                     </div>
@@ -286,7 +279,7 @@
         <!-- FOOTER BRANDING -->
         <footer class="w-full py-4 text-center border-t border-supercellCardBorder bg-black/40 mt-auto flex flex-col gap-2">
             <!-- Social Media Icons -->
-            <div id="footer-socials" class="flex items-center justify-center gap-3 text-lg">
+            <div id="footer-socials" class="flex items-center justify-center gap-4 text-lg">
                 <a id="social-link-yt" href="#" target="_blank" class="text-red-500 hover:text-red-400 transition-colors"><i class="fa-brands fa-youtube"></i></a>
                 <a id="social-link-tik" href="#" target="_blank" class="text-white hover:text-gray-300 transition-colors"><i class="fa-brands fa-tiktok"></i></a>
                 <a id="social-link-ig" href="#" target="_blank" class="text-pink-500 hover:text-pink-400 transition-colors"><i class="fa-brands fa-instagram"></i></a>
@@ -302,18 +295,22 @@
 
     <!-- 1. LOGIN MODAL -->
     <div id="login-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
+        <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3 animate-scaleIn">
             <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
                 <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5">
                     <i class="fa-solid fa-user-shield"></i> تسجيل دخول المتابع
                 </h3>
                 <button onclick="closeLoginModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="flex flex-col gap-2.5">
+            <div class="flex flex-col gap-3">
                 <!-- Google Sign In Button Container -->
-                <div class="w-full flex flex-col items-center py-1">
+                <div class="w-full flex flex-col items-center py-2">
                     <div id="google-signin-btn-container" class="w-full flex justify-center"></div>
-                    <p class="text-[9px] text-gray-400 mt-2">أو التسجيل اليدوي بالأسفل:</p>
+                </div>
+                <div class="relative flex py-1 items-center">
+                    <div class="flex-grow border-t border-supercellCardBorder"></div>
+                    <span class="flex-shrink mx-2 text-[10px] text-gray-400">أو التسجيل اليدوي</span>
+                    <div class="flex-grow border-t border-supercellCardBorder"></div>
                 </div>
 
                 <div class="flex flex-col gap-1">
@@ -332,20 +329,20 @@
                     <label class="text-[10px] text-gray-300">الدولة:</label>
                     <input type="text" id="login-country" placeholder="مثال: السعودية، العراق..." class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                 </div>
-                <button onclick="submitLogin()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">دخول إلى الحساب</button>
+                <button onclick="submitManualLogin()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">دخول أو إنشاء حساب</button>
             </div>
         </div>
     </div>
 
-    <!-- GOOGLE COMPLETE PROFILE MODAL -->
+    <!-- GOOGLE COMPLETE PROFILE MODAL (For New Users Sign Up) -->
     <div id="google-profile-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
             <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
                 <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5">
-                    <i class="fa-solid fa-id-card"></i> إكمال ملف حساب جوجل
+                    <i class="fa-solid fa-id-card"></i> إكمال حساب جوجل الجديد
                 </h3>
             </div>
-            <p class="text-[10px] text-gray-300">أهلاً بك! يرجى إكمال بياناتك الخاصة بلعبة كلاش رويال وقناتك:</p>
+            <p class="text-[10px] text-gray-300">أهلاً بك! هذه المرة الأولى لك، يرجى إكمال بيانات كلاش رويال وقناتك لتسجيل حسابك:</p>
             <input type="hidden" id="g-temp-email">
             <input type="hidden" id="g-temp-name">
             <input type="hidden" id="g-temp-avatar">
@@ -363,7 +360,36 @@
                     <label class="text-[10px] text-gray-300">الدولة:</label>
                     <input type="text" id="g-profile-country" placeholder="مثال: سوريا، السعودية..." class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                 </div>
-                <button onclick="saveGoogleProfile()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حفظ ودخول المنصة</button>
+                <button onclick="saveGoogleProfile()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حفظ وإنشاء الحساب</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT PROFILE MODAL -->
+    <div id="edit-profile-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
+                <h3 class="font-black text-sm text-supercellGold">تعديل الملف الشخصي</h3>
+                <button onclick="closeEditProfileModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex flex-col gap-2.5">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">الاسم:</label>
+                    <input type="text" id="edit-name" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">اسم قناة اليوتيوب:</label>
+                    <input type="text" id="edit-yt" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">تاغ كلاش رويال (Clash Royale Tag):</label>
+                    <input type="text" id="edit-tag" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] text-gray-300">الدولة:</label>
+                    <input type="text" id="edit-country" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                </div>
+                <button onclick="saveEditedProfile()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حفظ التعديلات</button>
             </div>
         </div>
     </div>
@@ -433,7 +459,7 @@
                 </div>
                 <div class="flex flex-col gap-1">
                     <label class="text-[10px] text-gray-300">مخزون الأكواد (ضع كل رابط/كود في سطر مستقل):</label>
-                    <textarea id="prod-links" rows="4" placeholder="https://link.clashroyale.com/?...&#10;https://link.clashroyale.com/?..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold resize-none"></textarea>
+                    <textarea id="prod-links" rows="4" placeholder="https://link.clashroyale.com/?..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold resize-none"></textarea>
                 </div>
                 <button onclick="saveProduct()" class="btn-gold py-2 rounded text-black font-black text-xs mt-2">حفظ المنتج سحابياً</button>
             </div>
@@ -481,7 +507,7 @@
     <!-- FIREBASE SDKs & JAVASCRIPT LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, set, get, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getDatabase, ref, set, get, onValue, update, remove, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDWSRGPkdvSXK3LKzcgoifOnJgUW9k5SlI",
@@ -517,6 +543,7 @@
             adminPin: 'mohanad0939957279'
         };
 
+        // Initialize Firebase Realtime Listeners for instant sync
         function initFirebaseSync() {
             // Settings
             onValue(ref(db, 'settings'), (snapshot) => {
@@ -526,57 +553,46 @@
                 } else {
                     set(ref(db, 'settings'), state.settings);
                 }
-                window.renderAnnouncement();
-                window.renderHeaderLogo();
-                window.renderFooterSocials();
+                renderAnnouncement();
+                renderHeaderLogo();
+                renderFooterSocials();
             });
 
-            // Products (No forced default items, allowing full freedom)
+            // Products (Zero default forcing: Admins have full control)
             onValue(ref(db, 'products'), (snapshot) => {
-                const val = snapshot.val();
-                if (val) {
+                if (snapshot.exists()) {
+                    const val = snapshot.val();
                     state.products = Object.values(val);
                 } else {
                     state.products = [];
                 }
-                window.renderStore();
+                renderStore();
                 if(!document.getElementById('tab-admin').classList.contains('hidden')) {
-                    window.renderAdminProducts();
+                    renderAdminProducts();
                 }
             });
 
-            // Users (Fixed persistence and auto-restoring session)
+            // Users
             onValue(ref(db, 'users'), (snapshot) => {
-                const val = snapshot.val();
-                if (val) {
+                if (snapshot.exists()) {
+                    const val = snapshot.val();
                     state.users = Object.values(val);
-                    
-                    // Restore session from localStorage if exists
-                    const savedSessionTag = localStorage.getItem('savo_logged_tag');
-                    if (!state.currentUser && savedSessionTag) {
-                        const foundUser = state.users.find(u => u.tag === savedSessionTag);
-                        if (foundUser) {
-                            state.currentUser = foundUser;
-                        }
-                    }
-
                     if (state.currentUser) {
-                        const updatedMe = state.users.find(u => u.tag === state.currentUser.tag);
+                        const updatedMe = state.users.find(u => u.tag === state.currentUser.tag || u.email === state.currentUser.email);
                         if (updatedMe) {
                             const oldXp = state.currentUser.xp;
                             state.currentUser = updatedMe;
-                            if (oldXp !== undefined && oldXp !== updatedMe.xp) {
-                                window.showToast(`تم تحديث رصيدك إلى 💎 ${updatedMe.xp} XP`);
+                            if (oldXp !== updatedMe.xp) {
+                                showToast(`تم تحديث رصيدك إلى 💎 ${updatedMe.xp} XP`);
                             }
                         }
                     }
                 } else {
                     state.users = [];
                 }
-                window.renderUserProfile();
-                window.renderHistory();
+                renderUserProfile();
                 if(!document.getElementById('tab-admin').classList.contains('hidden')) {
-                    window.renderAdminUsers();
+                    renderAdminUsers();
                 }
             });
 
@@ -588,14 +604,12 @@
                 } else {
                     state.history = [];
                 }
-                window.renderHistory();
+                renderHistory();
                 if(!document.getElementById('tab-admin').classList.contains('hidden')) {
-                    window.renderAdminAuditLog();
+                    renderAdminAuditLog();
                 }
             });
         }
-
-        // --- GLOBAL EXPORTS ---
 
         window.showToast = function(message, type = 'success') {
             const container = document.getElementById('toast-container');
@@ -680,7 +694,7 @@
             countEl.innerText = `${state.products.length} منتج`;
 
             if (state.products.length === 0) {
-                grid.innerHTML = `<div class="col-span-2 text-center py-8 text-gray-400 text-xs">لا توجد منتجات متاحة حالياً. أضف منتجات من لوحة الأدمن.</div>`;
+                grid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400 text-xs">لا توجد منتجات متاحة حالياً في المتجر.</div>`;
                 return;
             }
 
@@ -689,20 +703,20 @@
                 const isSoldOut = stockCount === 0;
 
                 const card = document.createElement('div');
-                card.className = 'panel-card p-2.5 flex flex-col justify-between gap-2 relative overflow-hidden';
+                card.className = 'panel-card p-3 flex flex-col justify-between gap-2.5 relative overflow-hidden';
                 card.innerHTML = `
-                    <div class="absolute top-2 left-2 bg-black/60 border border-supercellCardBorder px-1.5 py-0.5 rounded text-[9px] text-supercellGold font-bold">
+                    <div class="absolute top-2 left-2 bg-black/70 border border-supercellCardBorder px-2 py-0.5 rounded text-[9px] text-supercellGold font-bold">
                         ${stockCount > 0 ? `متبقي: ${stockCount}` : 'نفذت'}
                     </div>
-                    <div class="flex flex-col items-center gap-1.5 pt-2">
-                        <img src="${prod.image}" alt="${prod.name}" class="w-16 h-16 object-contain rounded-lg border border-supercellCardBorder bg-black/40" onerror="this.src='https://placehold.co/150x150/2B1055/FFD700?text=Item'">
-                        <h4 class="font-black text-xs text-white text-center truncate w-full">${prod.name}</h4>
-                        <p class="text-[10px] text-gray-300 text-center line-clamp-2 h-7">${prod.desc}</p>
+                    <div class="flex flex-col items-center gap-2 pt-2">
+                        <img src="${prod.image}" alt="${prod.name}" class="w-16 h-16 md:w-20 md:h-20 object-contain rounded-lg border border-supercellCardBorder bg-black/40" onerror="this.src='https://placehold.co/150x150/2B1055/FFD700?text=Item'">
+                        <h4 class="font-black text-xs md:text-sm text-white text-center truncate w-full">${prod.name}</h4>
+                        <p class="text-[10px] md:text-xs text-gray-300 text-center line-clamp-2 h-8">${prod.desc}</p>
                     </div>
-                    <div class="flex flex-col gap-1.5 mt-1">
-                        <div class="flex items-center justify-center gap-1 bg-black/40 py-1 rounded border border-supercellCardBorder">
+                    <div class="flex flex-col gap-2 mt-1">
+                        <div class="flex items-center justify-center gap-1.5 bg-black/40 py-1.5 rounded border border-supercellCardBorder">
                             <span class="text-supercellBlue text-xs">💎</span>
-                            <span class="font-black text-supercellBlue text-xs">${prod.price} XP</span>
+                            <span class="font-black text-supercellBlue text-xs md:text-sm">${prod.price} XP</span>
                         </div>
                         <button onclick="redeemProduct('${prod.id}')" class="w-full py-1.5 rounded text-black font-black text-xs ${isSoldOut ? 'bg-gray-600 text-gray-300 border-2 border-gray-500 cursor-not-allowed' : 'btn-gold'}">
                             ${isSoldOut ? 'نفذت الكمية ❌' : 'استبدال الكود'}
@@ -730,14 +744,14 @@
 
             userHistory.slice().reverse().forEach(item => {
                 const el = document.createElement('div');
-                el.className = 'panel-card p-3 flex items-center justify-between gap-2';
+                el.className = 'panel-card p-3.5 flex items-center justify-between gap-2';
                 el.innerHTML = `
-                    <div class="flex flex-col gap-0.5">
-                        <h4 class="font-black text-xs text-white">${item.productName}</h4>
+                    <div class="flex flex-col gap-1 overflow-hidden">
+                        <h4 class="font-black text-xs md:text-sm text-white">${item.productName}</h4>
                         <span class="text-[9px] text-gray-400">${item.timestamp}</span>
-                        <span class="text-[9px] text-supercellBlue truncate max-w-[200px]">الرابط: ${item.assignedLink}</span>
+                        <span class="text-[10px] text-supercellBlue truncate select-all">الرابط: ${item.assignedLink}</span>
                     </div>
-                    <div class="flex items-center gap-1 bg-red-950/40 border border-red-500/30 px-2 py-1 rounded shrink-0">
+                    <div class="flex items-center gap-1 bg-red-950/40 border border-red-500/30 px-2.5 py-1.5 rounded shrink-0">
                         <span class="text-xs">💎</span>
                         <span class="font-black text-red-400 text-xs">-${item.xpSpent} XP</span>
                     </div>
@@ -746,7 +760,7 @@
             });
         };
 
-        // Google Sign-In & Email/Google Linking Logic
+        // Google Sign-In Callback (Differentiate New User Sign Up vs Returning User Login)
         window.handleGoogleSignIn = function(response) {
             try {
                 const base64Url = response.credential.split('.')[1];
@@ -760,17 +774,18 @@
                 const email = payload.email;
                 const avatar = payload.picture;
 
-                // Check if user exists by email or if a user matches this Google email
+                // Check if user already exists in DB by email
                 let existingUser = state.users.find(u => u.email === email);
                 if (existingUser) {
+                    // Returning User Login (Instant success with saved data)
                     state.currentUser = existingUser;
-                    localStorage.setItem('savo_logged_tag', existingUser.tag);
-                    window.closeLoginModal();
-                    window.renderUserProfile();
-                    window.renderHistory();
-                    window.showToast(`مرحباً بك مجدداً ${existingUser.name}!`);
+                    closeLoginModal();
+                    renderUserProfile();
+                    renderHistory();
+                    showToast(`مرحباً بك مجدداً ${existingUser.name}!`);
                 } else {
-                    window.closeLoginModal();
+                    // New User Sign Up (Prompt for Clash Royale Tag, YT Channel, Country)
+                    closeLoginModal();
                     document.getElementById('g-temp-email').value = email;
                     document.getElementById('g-temp-name').value = name;
                     document.getElementById('g-temp-avatar').value = avatar;
@@ -780,7 +795,7 @@
                     document.getElementById('google-profile-modal').classList.remove('hidden');
                 }
             } catch(e) {
-                window.showToast('حدث خطأ أثناء تسجيل الدخول عبر جوجل.', 'error');
+                showToast('حدث خطأ أثناء تسجيل الدخول عبر جوجل.', 'error');
             }
         };
 
@@ -793,14 +808,13 @@
             const country = document.getElementById('g-profile-country').value.trim() || 'غير محدد';
 
             if (!tag) {
-                window.showToast('يرجى إدخال تاغ كلاش رويال الخاص بك.', 'error');
+                showToast('يرجى إدخال تاغ كلاش رويال الخاص بك.', 'error');
                 return;
             }
             if (!tag.startsWith('#')) tag = '#' + tag;
 
-            // Check if tag already exists to preserve points if linked
-            let existingTagUser = state.users.find(u => u.tag === tag);
-            const currentXp = existingTagUser ? (existingTagUser.xp || 0) : 0;
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
             const newUser = {
                 name,
@@ -809,20 +823,22 @@
                 ytChannel,
                 tag,
                 country,
-                xp: currentXp
+                xp: 0,
+                joinedAt: timeStr,
+                authType: 'Google'
             };
 
-            const dbKey = tag.replace('#', '');
+            const dbKey = tag.replace(/[^a-zA-Z0-9]/g, '_');
             set(ref(db, 'users/' + dbKey), newUser);
             state.currentUser = newUser;
-            localStorage.setItem('savo_logged_tag', tag);
 
             document.getElementById('google-profile-modal').classList.add('hidden');
-            window.renderUserProfile();
-            window.renderHistory();
-            window.showToast(`أهلاً بك يا ${name}! تم حفظ حسابك بنجاح.`);
+            renderUserProfile();
+            renderHistory();
+            showToast(`أهلاً بك يا ${name}! تم إنشاء حسابك بنجاح.`);
         };
 
+        // Dynamic Google Sign-In Initialization
         function initGoogleButton() {
             const container = document.getElementById('google-signin-btn-container');
             if (container && window.google && window.google.accounts) {
@@ -830,7 +846,7 @@
                 try {
                     google.accounts.id.initialize({
                         client_id: "702112953676-htntgj2u2uqnci23frjsqvtvsvmsvvtl.apps.googleusercontent.com",
-                        callback: window.handleGoogleSignIn
+                        callback: handleGoogleSignIn
                     });
                     google.accounts.id.renderButton(
                         container,
@@ -845,76 +861,119 @@
         window.openLoginModal = function() {
             document.getElementById('login-modal').classList.remove('hidden');
             setTimeout(initGoogleButton, 100);
-        };
+        }
 
         window.closeLoginModal = () => document.getElementById('login-modal').classList.add('hidden');
         window.openEarnPointsModal = () => document.getElementById('earn-points-modal').classList.remove('hidden');
         window.closeEarnPointsModal = () => document.getElementById('earn-points-modal').classList.add('hidden');
 
-        window.submitLogin = function() {
+        window.submitManualLogin = function() {
             const name = document.getElementById('login-name').value.trim();
             const ytChannel = document.getElementById('login-yt-name').value.trim();
             let tag = document.getElementById('login-tag').value.trim();
             const country = document.getElementById('login-country').value.trim();
 
             if (!name || !tag) {
-                window.showToast('يرجى إدخال الاسم والتاغ.', 'error');
+                showToast('يرجى إدخال الاسم والتاغ.', 'error');
                 return;
             }
             if (!tag.startsWith('#')) tag = '#' + tag;
 
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
             let existingUser = state.users.find(u => u.tag === tag);
             if (!existingUser) {
-                existingUser = { name, ytChannel: ytChannel || 'قناة', tag, country: country || 'غير محدد', xp: 0, avatar: '', email: '' };
+                existingUser = { name, ytChannel: ytChannel || 'قناة', tag, country: country || 'غير محدد', xp: 0, avatar: '', joinedAt: timeStr, authType: 'Manual' };
             } else {
                 existingUser.name = name;
                 existingUser.ytChannel = ytChannel || existingUser.ytChannel;
                 existingUser.country = country || existingUser.country;
             }
 
-            const dbKey = tag.replace('#','');
+            const dbKey = tag.replace(/[^a-zA-Z0-9]/g, '_');
             set(ref(db, 'users/' + dbKey), existingUser);
 
             state.currentUser = existingUser;
-            localStorage.setItem('savo_logged_tag', tag);
+            closeLoginModal();
+            renderUserProfile();
+            renderHistory();
+            showToast(`أهلاً بك يا ${name}!`);
+        };
 
-            window.closeLoginModal();
-            window.renderUserProfile();
-            window.renderHistory();
-            window.showToast(`أهلاً بك يا ${name}!`);
+        window.openEditProfileModal = function() {
+            if (!state.currentUser) return;
+            document.getElementById('edit-name').value = state.currentUser.name || '';
+            document.getElementById('edit-yt').value = state.currentUser.ytChannel || '';
+            document.getElementById('edit-tag').value = state.currentUser.tag || '';
+            document.getElementById('edit-country').value = state.currentUser.country || '';
+            document.getElementById('edit-profile-modal').classList.remove('hidden');
+        };
+
+        window.closeEditProfileModal = () => document.getElementById('edit-profile-modal').classList.add('hidden');
+
+        window.saveEditedProfile = function() {
+            if (!state.currentUser) return;
+            const name = document.getElementById('edit-name').value.trim();
+            const ytChannel = document.getElementById('edit-yt').value.trim();
+            let tag = document.getElementById('edit-tag').value.trim();
+            const country = document.getElementById('edit-country').value.trim();
+
+            if (!name || !tag) {
+                showToast('الاسم والتاغ حقول إجبارية.', 'error');
+                return;
+            }
+            if (!tag.startsWith('#')) tag = '#' + tag;
+
+            const oldKey = state.currentUser.tag.replace(/[^a-zA-Z0-9]/g, '_');
+            const newKey = tag.replace(/[^a-zA-Z0-9]/g, '_');
+
+            state.currentUser.name = name;
+            state.currentUser.ytChannel = ytChannel;
+            state.currentUser.tag = tag;
+            state.currentUser.country = country;
+
+            if (oldKey !== newKey) {
+                remove(ref(db, 'users/' + oldKey));
+            }
+            set(ref(db, 'users/' + newKey), state.currentUser);
+
+            closeEditProfileModal();
+            renderUserProfile();
+            showToast('تم تحديث الملف الشخصي بنجاح!');
         };
 
         window.logoutUser = function() {
             state.currentUser = null;
-            localStorage.removeItem('savo_logged_tag');
-            window.renderUserProfile();
-            window.renderHistory();
-            window.showToast('تم تسجيل الخروج.');
+            renderUserProfile();
+            renderHistory();
+            showToast('تم تسجيل الخروج.');
         };
 
         window.redeemProduct = function(productId) {
             if (!state.currentUser) {
-                window.showToast('يجب تسجيل الدخول أولاً.', 'error');
-                window.openLoginModal();
+                showToast('يجب تسجيل الدخول أولاً.', 'error');
+                openLoginModal();
                 return;
             }
 
             const product = state.products.find(p => p.id === productId);
             if (!product || !product.links || product.links.length === 0) {
-                window.showToast('عذراً، المنتج نفذ من المخزون.', 'error');
+                showToast('عذراً، المنتج نفذ من المخزون.', 'error');
                 return;
             }
 
             const userRef = state.users.find(u => u.tag === state.currentUser.tag);
             if (!userRef || userRef.xp < product.price) {
-                window.showToast('رصيدك من النقاط لا يكفي!', 'error');
+                showToast('رصيدك من النقاط لا يكفي!', 'error');
                 return;
             }
 
             const newXp = userRef.xp - product.price;
             const assignedLink = product.links.shift();
 
-            update(ref(db, 'users/' + userRef.tag.replace('#','')), { xp: newXp });
+            const dbKey = userRef.tag.replace(/[^a-zA-Z0-9]/g, '_');
+            update(ref(db, 'users/' + dbKey), { xp: newXp });
             update(ref(db, 'products/' + product.id), { links: product.links });
 
             const now = new Date();
@@ -940,9 +999,13 @@
         window.closeRedeemModal = () => document.getElementById('redeem-success-modal').classList.add('hidden');
         window.copyRedeemLink = function() {
             const input = document.getElementById('redeem-link-output');
-            input.select();
-            document.execCommand('copy');
-            window.showToast('تم نسخ الرابط بنجاح!');
+            navigator.clipboard.writeText(input.value).then(() => {
+                showToast('تم نسخ الرابط بنجاح إلى الحافظة!');
+            }).catch(() => {
+                input.select();
+                document.execCommand('copy');
+                showToast('تم النسخ!');
+            });
         };
 
         window.switchTab = function(tabName) {
@@ -950,31 +1013,31 @@
             document.getElementById('tab-history').classList.add('hidden');
             document.getElementById('tab-admin').classList.add('hidden');
 
-            document.getElementById('tab-btn-store').className = 'py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300 hover:text-white';
-            document.getElementById('tab-btn-history').className = 'py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300 hover:text-white';
-            document.getElementById('tab-btn-admin').className = 'py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300 hover:text-white';
+            document.getElementById('tab-btn-store').className = 'py-2.5 rounded-lg font-black text-xs md:text-sm text-center transition-all text-gray-300';
+            document.getElementById('tab-btn-history').className = 'py-2.5 rounded-lg font-black text-xs md:text-sm text-center transition-all text-gray-300';
+            document.getElementById('tab-btn-admin').className = 'py-2.5 rounded-lg font-black text-xs md:text-sm text-center transition-all text-gray-300';
 
             if (tabName === 'store') {
                 document.getElementById('tab-store').classList.remove('hidden');
-                document.getElementById('tab-btn-store').className = 'py-2 rounded-lg font-black text-xs text-center transition-all bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow';
-                window.renderStore();
+                document.getElementById('tab-btn-store').className = 'py-2.5 rounded-lg font-black text-xs md:text-sm text-center transition-all bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow';
+                renderStore();
             } else if (tabName === 'history') {
                 document.getElementById('tab-history').classList.remove('hidden');
-                document.getElementById('tab-btn-history').className = 'py-2 rounded-lg font-black text-xs text-center transition-all bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow';
-                window.renderHistory();
+                document.getElementById('tab-btn-history').className = 'py-2.5 rounded-lg font-black text-xs md:text-sm text-center transition-all bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow';
+                renderHistory();
             }
         };
 
+        // Admin Dashboard
         window.openAdminPinModal = () => document.getElementById('admin-pin-modal').classList.remove('hidden');
         window.closeAdminPinModal = () => document.getElementById('admin-pin-modal').classList.add('hidden');
-        
         window.verifyAdminPin = function() {
             const pin = document.getElementById('admin-pin-input').value.trim();
             if (pin === state.adminPin) {
-                window.closeAdminPinModal();
-                window.openAdminDashboard();
+                closeAdminPinModal();
+                openAdminDashboard();
             } else {
-                window.showToast('كلمة المرور غير صحيحة!', 'error');
+                showToast('كلمة المرور غير صحيحة!', 'error');
             }
         };
 
@@ -982,7 +1045,7 @@
             document.getElementById('tab-store').classList.add('hidden');
             document.getElementById('tab-history').classList.add('hidden');
             document.getElementById('tab-admin').classList.remove('hidden');
-            document.getElementById('tab-btn-admin').className = 'py-2 rounded-lg font-black text-xs text-center transition-all bg-red-950 text-red-400 border border-red-500 shadow';
+            document.getElementById('tab-btn-admin').className = 'py-2.5 rounded-lg font-black text-xs md:text-sm text-center transition-all bg-red-950 text-red-400 border border-red-500 shadow';
 
             document.getElementById('admin-announcement-badge').value = state.settings.badge || '';
             document.getElementById('admin-announcement-input').value = state.settings.announcement || '';
@@ -995,12 +1058,12 @@
             document.getElementById('social-twi').value = socials.twitch || '';
             document.getElementById('social-wa').value = socials.whatsapp || '';
 
-            window.renderAdminProducts();
-            window.renderAdminUsers();
-            window.renderAdminAuditLog();
+            renderAdminProducts();
+            renderAdminUsers();
+            renderAdminAuditLog();
         };
 
-        window.lockAdminPanel = () => { window.switchTab('store'); window.showToast('تم إقفال اللوحة.'); };
+        window.lockAdminPanel = () => { switchTab('store'); showToast('تم إقفال اللوحة.'); };
 
         window.saveAdminSettings = function() {
             const newSettings = {
@@ -1016,31 +1079,31 @@
                 }
             };
             set(ref(db, 'settings'), newSettings);
-            window.showToast('تم حفظ الإعدادات وتحديثها سحابياً لجميع الزوار!');
+            showToast('تم حفظ الإعدادات وتحديثها سحابياً لجميع الزوار!');
         };
 
         window.renderAdminProducts = function() {
             const list = document.getElementById('admin-products-list');
             list.innerHTML = '';
             if (state.products.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا توجد منتجات حالياً. أضف منتجاً جديداً.</p>`;
+                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا توجد منتجات حالياً. يمكنك إضافة منتجات جديدة.</p>`;
                 return;
             }
             state.products.forEach(prod => {
                 const stockCount = prod.links ? prod.links.length : 0;
                 const el = document.createElement('div');
-                el.className = 'bg-black/50 border border-supercellCardBorder p-2 rounded flex items-center justify-between gap-2';
+                el.className = 'bg-black/50 border border-supercellCardBorder p-2.5 rounded flex items-center justify-between gap-2';
                 el.innerHTML = `
                     <div class="flex items-center gap-2 overflow-hidden">
-                        <img src="${prod.image}" class="w-8 h-8 rounded object-cover border border-supercellCardBorder shrink-0" onerror="this.src='https://placehold.co/100x100/2B1055/FFD700?text=Item'">
+                        <img src="${prod.image}" class="w-9 h-9 rounded object-cover border border-supercellCardBorder shrink-0" onerror="this.src='https://placehold.co/100x100/2B1055/FFD700?text=Item'">
                         <div class="truncate">
                             <h5 class="font-black text-xs text-white truncate">${prod.name}</h5>
-                            <p class="text-[10px] text-supercellGold">${prod.price} XP | مخزون: ${stockCount}</p>
+                            <p class="text-[10px] text-supercellGold">${prod.price} XP | مخزون الأكواد: ${stockCount}</p>
                         </div>
                     </div>
-                    <div class="flex gap-1 shrink-0">
-                        <button onclick="editProduct('${prod.id}')" class="btn-blue px-2 py-1 rounded text-black font-black text-[10px]"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteProduct('${prod.id}')" class="btn-red px-2 py-1 rounded text-white font-black text-[10px]"><i class="fa-solid fa-trash"></i></button>
+                    <div class="flex gap-1.5 shrink-0">
+                        <button onclick="editProduct('${prod.id}')" class="btn-blue px-2.5 py-1 rounded text-black font-black text-[10px]"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteProduct('${prod.id}')" class="btn-red px-2.5 py-1 rounded text-white font-black text-[10px]"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
                 list.appendChild(el);
@@ -1084,21 +1147,21 @@
             const links = rawLinks ? rawLinks.split('\n').map(l => l.trim()).filter(l => l.length > 0) : [];
 
             if (!name) {
-                window.showToast('يرجى إدخال اسم المنتج.', 'error');
+                showToast('يرجى إدخال اسم المنتج.', 'error');
                 return;
             }
 
             const prodObj = { id, name, desc, price, image, links };
             set(ref(db, 'products/' + id), prodObj);
-            window.closeProductModal();
-            window.showToast('تم حفظ المنتج سحابياً بنجاح!');
+            closeProductModal();
+            showToast('تم حفظ المنتج سحابياً بنجاح!');
         };
 
-        window.editProduct = (id) => window.openProductModal(id);
+        window.editProduct = (id) => openProductModal(id);
         window.deleteProduct = (id) => {
-            if (confirm('هل أنت متأكد من الحذف؟')) {
+            if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
                 remove(ref(db, 'products/' + id));
-                window.showToast('تم الحذف.');
+                showToast('تم الحذف بنجاح.');
             }
         };
 
@@ -1106,84 +1169,92 @@
             const list = document.getElementById('admin-audit-log-list');
             list.innerHTML = '';
             if (!state.history || state.history.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا توجد عمليات شراء.</p>`;
+                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا توجد عمليات شراء حتى الآن.</p>`;
                 return;
             }
             state.history.slice().reverse().forEach(item => {
                 const el = document.createElement('div');
-                el.className = 'bg-black/50 border border-supercellCardBorder p-2 rounded flex flex-col gap-1';
+                el.className = 'bg-black/50 border border-supercellCardBorder p-2.5 rounded flex flex-col gap-1.5';
                 el.innerHTML = `
                     <div class="flex items-center justify-between">
                         <span class="font-black text-xs text-supercellGold">${item.userName} (${item.userTag})</span>
-                        <span class="text-[9px] text-red-400 font-bold">-${item.xpSpent} XP</span>
+                        <span class="text-[10px] text-red-400 font-bold">-${item.xpSpent} XP</span>
                     </div>
                     <div class="flex items-center justify-between text-[10px] text-gray-300">
                         <span>المنتج: <b>${item.productName}</b></span>
                         <span class="text-[9px] text-gray-400">${item.timestamp}</span>
                     </div>
-                    <div class="text-[9px] text-supercellBlue bg-black/60 p-1 rounded truncate select-all">رابط: ${item.assignedLink}</div>
+                    <div class="text-[10px] text-supercellBlue bg-black/60 p-1.5 rounded truncate select-all">رابط: ${item.assignedLink}</div>
                 `;
                 list.appendChild(el);
             });
         };
 
         window.clearAdminHistory = () => {
-            if (confirm('مسح السجل بالكامل؟')) {
+            if (confirm('هل أنت متأكد من مسح السجل بالكامل؟')) {
                 set(ref(db, 'history'), null);
-                state.history = [];
-                window.showToast('تم مسح السجل.');
+                showToast('تم مسح السجل.');
             }
         };
 
+        // Admin Users List View (Showing all registered users cleanly without search dependency)
         window.renderAdminUsers = function() {
             const list = document.getElementById('admin-users-list');
-            const searchVal = document.getElementById('admin-search-user').value.toLowerCase().trim();
+            const countEl = document.getElementById('admin-users-count');
             list.innerHTML = '';
+            countEl.innerText = `${state.users.length} متابع مسجل`;
 
-            const filtered = state.users.filter(u => u.name.toLowerCase().includes(searchVal) || u.tag.toLowerCase().includes(searchVal));
-            if (filtered.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا يوجد متابعين مطابقين.</p>`;
+            if (state.users.length === 0) {
+                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-3">لا يوجد متابعون مسجلون حتى الآن.</p>`;
                 return;
             }
 
-            filtered.forEach(u => {
+            state.users.slice().reverse().forEach(u => {
+                const dbKey = u.tag.replace(/[^a-zA-Z0-9]/g, '_');
                 const el = document.createElement('div');
-                el.className = 'bg-black/50 border border-supercellCardBorder p-2.5 rounded flex flex-col gap-2';
+                el.className = 'bg-black/50 border border-supercellCardBorder p-3 rounded flex flex-col gap-2';
                 el.innerHTML = `
                     <div class="flex items-center justify-between">
                         <div>
-                            <h5 class="font-black text-xs text-white">${u.name}</h5>
-                            <p class="text-[10px] text-supercellBlue">${u.tag} | ${u.country}</p>
+                            <div class="flex items-center gap-2">
+                                <h5 class="font-black text-xs md:text-sm text-white">${u.name}</h5>
+                                <span class="text-[9px] bg-purple-950 text-purple-300 px-1.5 py-0.5 rounded border border-purple-500/40">${u.authType || 'Manual'}</span>
+                            </div>
+                            <p class="text-[10px] text-supercellBlue mt-0.5">${u.tag} | ${u.country} | قناة: ${u.ytChannel || 'غير محدد'}</p>
+                            <span class="text-[9px] text-gray-400 block mt-0.5">تاريخ التسجيل: ${u.joinedAt || 'غير متوفر'}</span>
                         </div>
-                        <div class="bg-black/70 px-2.5 py-1 rounded border border-supercellBlue/40 text-center">
-                            <span class="text-[10px] text-supercellBlue block font-bold">💎 ${u.xp || 0} XP</span>
+                        <div class="bg-black/70 px-3 py-1.5 rounded border border-supercellBlue/40 text-center shrink-0">
+                            <span class="text-xs text-supercellBlue block font-black">💎 ${u.xp || 0} XP</span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-1.5 pt-1 border-t border-supercellCardBorder/50">
-                        <button onclick="quickAddXp('${u.tag}', 50)" class="btn-gold px-2 py-0.5 rounded text-black font-black text-[10px]">+50</button>
-                        <button onclick="quickAddXp('${u.tag}', 100)" class="btn-gold px-2 py-0.5 rounded text-black font-black text-[10px]">+100</button>
-                        <button onclick="quickAddXp('${u.tag}', 200)" class="btn-gold px-2 py-0.5 rounded text-black font-black text-[10px]">+200</button>
-                        <button onclick="openCustomPointsModal('${u.tag}')" class="btn-blue px-2 py-0.5 rounded text-black font-black text-[10px]">مخصص</button>
+                    <div class="flex items-center justify-between pt-2 border-t border-supercellCardBorder/50">
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="quickAddXp('${dbKey}', 50)" class="btn-gold px-2.5 py-1 rounded text-black font-black text-[10px]">+50</button>
+                            <button onclick="quickAddXp('${dbKey}', 100)" class="btn-gold px-2.5 py-1 rounded text-black font-black text-[10px]">+100</button>
+                            <button onclick="quickAddXp('${dbKey}', 200)" class="btn-gold px-2.5 py-1 rounded text-black font-black text-[10px]">+200</button>
+                            <button onclick="openCustomPointsModal('${dbKey}')" class="btn-blue px-2.5 py-1 rounded text-black font-black text-[10px]">تعديل مخصص</button>
+                        </div>
+                        <button onclick="deleteUser('${dbKey}')" class="text-red-400 hover:text-red-300 text-xs px-2 py-1" title="حذف المستخدم"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
                 list.appendChild(el);
             });
         };
 
-        window.quickAddXp = function(tag, amount) {
-            const user = state.users.find(u => u.tag === tag);
+        window.quickAddXp = function(dbKey, amount) {
+            const user = state.users.find(u => u.tag.replace(/[^a-zA-Z0-9]/g, '_') === dbKey);
             if (user) {
                 const newXp = (user.xp || 0) + amount;
-                update(ref(db, 'users/' + tag.replace('#','')), { xp: newXp });
-                window.showToast(`تم إضافة ${amount} XP للمتابع ${user.name}`);
+                update(ref(db, 'users/' + dbKey), { xp: newXp });
+                showToast(`تم إضافة ${amount} XP للمتابع ${user.name}`);
             }
         };
 
-        window.openCustomPointsModal = function(tag) {
-            const user = state.users.find(u => u.tag === tag);
+        window.openCustomPointsModal = function(dbKey) {
+            const user = state.users.find(u => u.tag.replace(/[^a-zA-Z0-9]/g, '_') === dbKey);
             if (!user) return;
-            document.getElementById('target-user-tag').value = tag;
-            document.getElementById('custom-points-user-label').innerText = `المتابع: ${user.name} (${user.tag}) - الرصيد: ${user.xp || 0}`;
+            document.getElementById('target-user-tag').value = dbKey;
+            document.getElementById('custom-points-user-label').innerText = `المتابع: ${user.name} (${user.tag}) - الرصيد الحالي: ${user.xp || 0}`;
             document.getElementById('custom-points-val').value = '';
             document.getElementById('custom-points-modal').classList.remove('hidden');
         };
@@ -1191,24 +1262,31 @@
         window.closeCustomPointsModal = () => document.getElementById('custom-points-modal').classList.add('hidden');
 
         window.applyCustomPoints = function() {
-            const tag = document.getElementById('target-user-tag').value;
+            const dbKey = document.getElementById('target-user-tag').value;
             const val = parseInt(document.getElementById('custom-points-val').value);
             if (isNaN(val)) return;
 
-            const user = state.users.find(u => u.tag === tag);
+            const user = state.users.find(u => u.tag.replace(/[^a-zA-Z0-9]/g, '_') === dbKey);
             if (user) {
                 let newXp = (user.xp || 0) + val;
                 if (newXp < 0) newXp = 0;
-                update(ref(db, 'users/' + tag.replace('#','')), { xp: newXp });
-                window.closeCustomPointsModal();
-                window.showToast('تم تعديل النقاط بنجاح!');
+                update(ref(db, 'users/' + dbKey), { xp: newXp });
+                closeCustomPointsModal();
+                showToast('تم تعديل نقاط المتابع بنجاح!');
             }
         };
 
-        // Initialize Firebase Listeners on Load
-        window.addEventListener('DOMContentLoaded', () => {
+        window.deleteUser = function(dbKey) {
+            if (confirm('هل أنت متأكد من حذف هذا المستخدم من قاعدة البيانات؟')) {
+                remove(ref(db, 'users/' + dbKey));
+                showToast('تم حذف المستخدم.');
+            }
+        };
+
+        // Start App
+        window.onload = function() {
             initFirebaseSync();
-        });
+        };
     </script>
 </body>
 </html>
