@@ -151,6 +151,17 @@
             </div>
         </div>
 
+        <!-- WEEKLY EVENT / CHALLENGE BANNER -->
+        <div id="weekly-event-container" class="w-full bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-900 border-b-2 border-supercellBlue px-3 py-2.5 flex items-center justify-between gap-2 shadow-md hidden">
+            <div class="flex items-center gap-2 overflow-hidden">
+                <span class="bg-supercellBlue text-black font-black text-[10px] px-2 py-0.5 rounded uppercase tracking-wider shrink-0 animate-pulse">حدث أسبوعي</span>
+                <p id="weekly-event-text" class="text-xs font-bold text-supercellGold truncate">وصلوا الفيديو 1000 لايك لنوزع 50 نقطة للجميع!</p>
+            </div>
+            <a id="weekly-event-btn" href="#" target="_blank" class="btn-blue px-3 py-1 rounded text-black font-black text-[10px] whitespace-nowrap shrink-0">
+                فتح الرابط <i class="fa-solid fa-arrow-left mr-1"></i>
+            </a>
+        </div>
+
         <!-- EVENT BAR -->
         <div id="event-bar-container" class="w-full bg-[#1b0c30] border-b border-supercellCardBorder px-3 py-2 text-center text-xs text-supercellGold font-bold flex items-center justify-center gap-2 shadow-inner hidden">
             <i class="fa-solid fa-bolt text-supercellBlue animate-pulse"></i>
@@ -225,15 +236,16 @@
                 <div class="bg-supercellCard border-2 border-red-500/50 p-3.5 rounded-xl flex items-center justify-between">
                     <div>
                         <h3 class="font-black text-sm md:text-base text-red-400">لوحة تحكم المشرف (Admin)</h3>
-                        <p class="text-[10px] md:text-xs text-gray-300">تحكم كامل بالنقاط، المنتجات، الإعلانات والمتابعين (سحابي 100%)</p>
+                        <p class="text-[10px] md:text-xs text-gray-300">تحكم كامل بالنقاط، المنتجات، الإعلانات والأحداث الأسبوعية</p>
                     </div>
                     <button onclick="lockAdminPanel()" class="btn-red px-3 py-1.5 rounded text-white font-bold text-xs">قفل اللوحة</button>
                 </div>
 
                 <div class="flex flex-col gap-4">
-                    <!-- General Settings & Event Bar -->
+                    <!-- General Settings & Weekly Event & Whatsapp -->
                     <div class="panel-card p-3.5 flex flex-col gap-3">
-                        <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1">الإعدادات العامة والأشرطة الإعلانية</h4>
+                        <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1">الإعدادات العامة والأحداث</h4>
+                        
                         <div class="flex gap-2">
                             <div class="flex flex-col gap-1 w-1/3">
                                 <label class="text-[10px] text-gray-300">عنوان التنبيه:</label>
@@ -244,21 +256,49 @@
                                 <input type="text" id="admin-announcement-input" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                             </div>
                         </div>
+
+                        <!-- Weekly Event Settings -->
+                        <div class="bg-black/40 border border-supercellCardBorder p-2.5 rounded flex flex-col gap-2">
+                            <h5 class="font-black text-[11px] text-supercellBlue">إعدادات الحدث / التحدي الأسبوعي</h5>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[10px] text-gray-300">نص الحدث (ترك فارغاً للإخفاء):</label>
+                                <input type="text" id="admin-weekly-text" placeholder="مثال: وصلوا الفيديو 1000 لايك لنوزع 50 نقطة!" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="flex flex-col gap-1">
+                                    <label class="text-[10px] text-gray-300">نص الزر:</label>
+                                    <input type="text" id="admin-weekly-btn-text" placeholder="مثال: فتح الفيديو" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <label class="text-[10px] text-gray-300">رابط الزر:</label>
+                                    <input type="text" id="admin-weekly-btn-url" placeholder="https://youtube.com/..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="flex flex-col gap-1">
                             <label class="text-[10px] text-gray-300">نص بار الأحداث الجديدة (ترك فارغاً للإخفاء):</label>
                             <input type="text" id="admin-event-bar-input" placeholder="مثال: البث المباشر القادم اليوم الساعة 9 مساءً!" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                         </div>
+
                         <div class="flex flex-col gap-1">
                             <label class="text-[10px] text-gray-300">رابط الشعار المخصص (Logo URL):</label>
                             <input type="text" id="admin-logo-input" placeholder="ترك فارغاً لاستخدام اللوجو الافتراضي" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                         </div>
-                        <h5 class="font-black text-[11px] text-supercellGold mt-1 pt-1 border-t border-supercellCardBorder">روابط وسائل التواصل الاجتماعي (Footer)</h5>
+
+                        <h5 class="font-black text-[11px] text-supercellGold mt-1 pt-1 border-t border-supercellCardBorder">روابط وسائل التواصل الاجتماعي وقناة الواتساب</h5>
+                        
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] text-emerald-400 font-bold">تنويه قناة الواتساب (يظهر أسفل الموقع):</label>
+                            <input type="text" id="admin-whatsapp-notice" placeholder="مثال: تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية" class="bg-black/60 border border-emerald-500/50 rounded px-2.5 py-1.5 text-xs text-white">
+                        </div>
+
                         <div class="grid grid-cols-2 gap-2">
                             <input type="text" id="social-yt" placeholder="رابط اليوتيوب" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                             <input type="text" id="social-tik" placeholder="رابط تيك توك" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                             <input type="text" id="social-ig" placeholder="رابط انستغرام" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                             <input type="text" id="social-twi" placeholder="رابط تويتش" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
-                            <input type="text" id="social-wa" placeholder="رابط واتساب" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
+                            <input type="text" id="social-wa" placeholder="رابط قناة الواتساب" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
                         </div>
                         <button onclick="saveAdminSettings()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حفظ الإعدادات والتحديث السحابي</button>
                     </div>
@@ -289,7 +329,7 @@
                     <!-- Users Management -->
                     <div class="panel-card p-3.5 flex flex-col gap-3">
                         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
-                            <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-users ml-1"></i> إدارة المتابعين المسجلين (قائمة شاملة)</h4>
+                            <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-users ml-1"></i> إدارة المتابعين المسجلين</h4>
                             <span id="admin-users-count" class="text-[10px] text-supercellBlue font-bold">0 متابع</span>
                         </div>
                         <div id="admin-users-list" class="flex flex-col gap-2 max-h-80 overflow-y-auto pr-1">
@@ -300,14 +340,21 @@
             </section>
         </main>
 
-        <!-- FOOTER BRANDING WITH CIRCULAR SOCIAL ICONS -->
-        <footer class="w-full py-4 text-center border-t border-supercellCardBorder bg-black/40 mt-auto flex flex-col gap-3">
+        <!-- FOOTER BRANDING WITH CIRCULAR SOCIAL ICONS & WHATSAPP NOTICE -->
+        <footer class="w-full py-4 text-center border-t border-supercellCardBorder bg-black/40 mt-auto flex flex-col gap-3 px-3">
+            <div id="footer-whatsapp-notice-box" class="bg-emerald-950/40 border border-emerald-500/30 py-1.5 px-3 rounded-lg max-w-sm mx-auto w-full">
+                <a id="footer-whatsapp-link" href="#" target="_blank" class="text-emerald-400 hover:text-emerald-300 text-[11px] font-bold flex items-center justify-center gap-1.5">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span id="footer-whatsapp-text">تابع أحدث الأخبار والتحديثات في قناة الواتساب</span>
+                </a>
+            </div>
+
             <div id="footer-socials" class="flex items-center justify-center gap-3 text-base">
                 <a id="social-link-yt" href="#" target="_blank" class="social-circle text-red-500 hover:text-red-400" title="يوتيوب"><i class="fa-brands fa-youtube"></i></a>
                 <a id="social-link-tik" href="#" target="_blank" class="social-circle text-white hover:text-gray-300" title="تيك توك"><i class="fa-brands fa-tiktok"></i></a>
                 <a id="social-link-ig" href="#" target="_blank" class="social-circle text-pink-500 hover:text-pink-400" title="انستغرام"><i class="fa-brands fa-instagram"></i></a>
                 <a id="social-link-twi" href="#" target="_blank" class="social-circle text-purple-400 hover:text-purple-300" title="تويتش"><i class="fa-brands fa-twitch"></i></a>
-                <a id="social-link-wa" href="#" target="_blank" class="social-circle text-emerald-500 hover:text-emerald-400" title="واتساب"><i class="fa-brands fa-whatsapp"></i></a>
+                <a id="social-link-wa" href="#" target="_blank" class="social-circle text-emerald-500 hover:text-emerald-400" title="قناة الواتساب"><i class="fa-brands fa-whatsapp"></i></a>
             </div>
             <p class="text-[10px] text-gray-400 font-bold">SAVO XP © 2026 - جميع الحقوق محفوظة لصانع المحتوى</p>
             <p class="text-[9px] text-gray-500 mt-0.5">غير مرتبطة رسمياً بشركة Supercell (حقوق النشر محفوظة)</p>
@@ -485,7 +532,7 @@
         </div>
     </div>
 
-    <!-- SUCCESS PURCHASE REDEEMED MODAL -->
+    <!-- SUCCESS PURCHASE REDEEMED MODAL (UPDATED WITH 3 BUTTONS) -->
     <div id="redeem-success-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-4 flex flex-col items-center text-center gap-3">
             <div class="w-12 h-12 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-2xl">
@@ -499,9 +546,19 @@
                 <input type="text" id="redeem-link-output" readonly class="w-full bg-black/80 text-center text-xs text-white p-1.5 rounded border border-gray-700 select-all" onclick="this.select()">
             </div>
 
-            <div class="flex gap-2 w-full mt-2">
-                <button onclick="copyRedeemLink()" class="flex-1 btn-blue py-2 rounded text-black font-black text-xs"><i class="fa-solid fa-copy ml-1"></i> نسخ الرابط</button>
-                <button onclick="closeRedeemModal()" class="flex-1 btn-gold py-2 rounded text-black font-black text-xs">تم</button>
+            <!-- THREE OPTIONS BUTTONS -->
+            <div class="flex flex-col gap-2 w-full mt-1">
+                <a id="redeem-open-link-btn" href="#" target="_blank" class="w-full btn-blue py-2 rounded text-black font-black text-xs text-center block">
+                    <i class="fa-solid fa-external-link-alt ml-1"></i> فتح الرابط مباشرة
+                </a>
+                <div class="flex gap-2 w-full">
+                    <button onclick="copyRedeemLink()" class="flex-1 btn-gold py-2 rounded text-black font-black text-xs">
+                        <i class="fa-solid fa-copy ml-1"></i> نسخ الرابط
+                    </button>
+                    <button onclick="closeRedeemModal()" class="flex-1 btn-red py-2 rounded text-white font-black text-xs">
+                        إغلاق / تم
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -511,7 +568,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getDatabase, ref, set, get, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-        // Updated Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBbd45fxCNgCqIaTdBr7-k0lALPTr-VZDg",
             authDomain: "savo-xp-ba680.firebaseapp.com",
@@ -534,8 +590,12 @@
             settings: {
                 badge: 'تنويه',
                 announcement: 'أهلاً بك في منصة مكافآت صانع المحتوى SAVO XP - تابع البث المباشر واجمع النقاط!',
+                weeklyText: 'وصلوا الفيديو 1000 لايك لنوزع 50 نقطة للجميع!',
+                weeklyBtnText: 'فتح الفيديو',
+                weeklyBtnUrl: 'https://youtube.com',
                 eventBarText: '',
                 logoUrl: '',
+                whatsappNoticeText: 'تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية',
                 socials: {
                     youtube: 'https://youtube.com',
                     tiktok: 'https://tiktok.com',
@@ -553,12 +613,13 @@
                 const val = snapshot.val();
                 if (val) state.settings = val;
                 renderAnnouncement();
+                renderWeeklyEvent();
                 renderEventBar();
                 renderHeaderLogo();
                 renderFooterSocials();
             });
 
-            // Products (Strict synchronization)
+            // Products
             onValue(ref(db, 'products'), (snapshot) => {
                 if (snapshot.exists()) {
                     const val = snapshot.val();
@@ -641,6 +702,25 @@
             document.getElementById('announcement-text').innerText = state.settings.announcement;
         };
 
+        window.renderWeeklyEvent = function() {
+            const container = document.getElementById('weekly-event-container');
+            const textEl = document.getElementById('weekly-event-text');
+            const btnEl = document.getElementById('weekly-event-btn');
+
+            const text = state.settings.weeklyText ? state.settings.weeklyText.trim() : '';
+            const btnText = state.settings.weeklyBtnText ? state.settings.weeklyBtnText.trim() : 'فتح الرابط';
+            const btnUrl = state.settings.weeklyBtnUrl ? state.settings.weeklyBtnUrl.trim() : '#';
+
+            if (text !== '') {
+                textEl.innerText = text;
+                btnEl.innerText = btnText;
+                btnEl.href = btnUrl;
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        };
+
         window.renderEventBar = function() {
             const container = document.getElementById('event-bar-container');
             const textEl = document.getElementById('event-bar-text');
@@ -670,6 +750,11 @@
             document.getElementById('social-link-ig').href = socials.instagram || '#';
             document.getElementById('social-link-twi').href = socials.twitch || '#';
             document.getElementById('social-link-wa').href = socials.whatsapp || '#';
+
+            // Footer WhatsApp Notice
+            const waNoticeText = state.settings.whatsappNoticeText || 'تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية';
+            document.getElementById('footer-whatsapp-text').innerText = waNoticeText;
+            document.getElementById('footer-whatsapp-link').href = socials.whatsapp || '#';
         };
 
         window.renderUserProfile = function() {
@@ -759,7 +844,7 @@
                     <div class="flex flex-col gap-1 overflow-hidden">
                         <h4 class="font-black text-xs md:text-sm text-white">${item.productName}</h4>
                         <span class="text-[9px] text-gray-400">${item.timestamp}</span>
-                        <span class="text-[10px] text-supercellBlue truncate select-all">الرابط: ${item.assignedLink}</span>
+                        <a href="${item.assignedLink}" target="_blank" class="text-[10px] text-supercellBlue truncate underline select-all">فتح الرابط: ${item.assignedLink}</a>
                     </div>
                     <div class="flex items-center gap-1 bg-red-950/40 border border-red-500/30 px-2.5 py-1.5 rounded shrink-0">
                         <span class="text-xs">💎</span>
@@ -919,7 +1004,7 @@
             showToast('تم تسجيل الخروج.');
         };
 
-        // FIXED REDEEM & INSTANT POINTS DEDUCTION
+        // REDEEM & INSTANT POINTS DEDUCTION WITH 3 OPTIONS
         window.redeemProduct = function(productId) {
             if (!state.currentUser) {
                 showToast('يجب تسجيل الدخول عبر جوجل أولاً.', 'error');
@@ -933,20 +1018,17 @@
                 return;
             }
 
-            // Check current points in local state (instant check)
             if (state.currentUser.xp < product.price) {
                 showToast('رصيدك من النقاط لا يكفي!', 'error');
                 return;
             }
 
-            // Deduct locally and instantly update UI
             state.currentUser.xp -= product.price;
             renderUserProfile();
 
             const assignedLink = product.links.shift();
             const dbKey = state.currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
 
-            // Update Firebase Database atomically
             update(ref(db, 'users/' + dbKey), { xp: state.currentUser.xp });
             update(ref(db, 'products/' + product.id), { links: product.links });
 
@@ -967,6 +1049,7 @@
 
             document.getElementById('redeem-success-desc').innerText = `تم شراء "${product.name}" بنجاح مقابل ${product.price} XP.`;
             document.getElementById('redeem-link-output').value = assignedLink;
+            document.getElementById('redeem-open-link-btn').href = assignedLink;
             document.getElementById('redeem-success-modal').classList.remove('hidden');
         };
 
@@ -1023,8 +1106,12 @@
 
             document.getElementById('admin-announcement-badge').value = state.settings.badge || '';
             document.getElementById('admin-announcement-input').value = state.settings.announcement || '';
+            document.getElementById('admin-weekly-text').value = state.settings.weeklyText || '';
+            document.getElementById('admin-weekly-btn-text').value = state.settings.weeklyBtnText || '';
+            document.getElementById('admin-weekly-btn-url').value = state.settings.weeklyBtnUrl || '';
             document.getElementById('admin-event-bar-input').value = state.settings.eventBarText || '';
             document.getElementById('admin-logo-input').value = state.settings.logoUrl || '';
+            document.getElementById('admin-whatsapp-notice').value = state.settings.whatsappNoticeText || '';
             
             const socials = state.settings.socials || {};
             document.getElementById('social-yt').value = socials.youtube || '';
@@ -1044,8 +1131,12 @@
             const newSettings = {
                 badge: document.getElementById('admin-announcement-badge').value.trim(),
                 announcement: document.getElementById('admin-announcement-input').value.trim(),
+                weeklyText: document.getElementById('admin-weekly-text').value.trim(),
+                weeklyBtnText: document.getElementById('admin-weekly-btn-text').value.trim(),
+                weeklyBtnUrl: document.getElementById('admin-weekly-btn-url').value.trim(),
                 eventBarText: document.getElementById('admin-event-bar-input').value.trim(),
                 logoUrl: document.getElementById('admin-logo-input').value.trim(),
+                whatsappNoticeText: document.getElementById('admin-whatsapp-notice').value.trim(),
                 socials: {
                     youtube: document.getElementById('social-yt').value.trim(),
                     tiktok: document.getElementById('social-tik').value.trim(),
@@ -1113,7 +1204,6 @@
 
         window.closeProductModal = () => document.getElementById('product-modal').classList.add('hidden');
 
-        // FIXED SAVE PRODUCT (Prevents duplicates and overwrites correctly)
         window.saveProduct = function() {
             const existingId = document.getElementById('edit-product-id').value.trim();
             const id = existingId !== "" ? existingId : ('prod_' + Date.now());
@@ -1140,7 +1230,6 @@
             openProductModal(id);
         };
 
-        // FIXED DELETE PRODUCT (Ensures clean removal from Firebase)
         window.deleteProduct = function(id) {
             if (confirm('هل أنت متأكد من حذف هذا المنتج نهائياً؟')) {
                 remove(ref(db, 'products/' + id)).then(() => {
@@ -1168,7 +1257,7 @@
                         <span>المنتج: <b>${item.productName}</b></span>
                         <span class="text-[9px] text-gray-400">${item.timestamp}</span>
                     </div>
-                    <div class="text-[10px] text-supercellBlue bg-black/60 p-1.5 rounded truncate select-all">رابط: ${item.assignedLink}</div>
+                    <a href="${item.assignedLink}" target="_blank" class="text-[10px] text-supercellBlue bg-black/60 p-1.5 rounded truncate underline select-all">رابط: ${item.assignedLink}</a>
                 `;
                 list.appendChild(el);
             });
