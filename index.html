@@ -298,7 +298,8 @@
                             <input type="text" id="social-tik" placeholder="رابط تيك توك" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                             <input type="text" id="social-ig" placeholder="رابط انستغرام" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                             <input type="text" id="social-twi" placeholder="رابط تويتش" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
-                            <input type="text" id="social-wa" placeholder="رابط قناة الواتساب" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
+                            <input type="text" id="social-wa" placeholder="رابط تواصل الواتساب (الخاص)" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
+                            <input type="text" id="social-wa-channel" placeholder="رابط قناة الواتساب (للأخبار)" class="bg-black/60 border border-emerald-500/50 rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
                         </div>
                         <button onclick="saveAdminSettings()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حفظ الإعدادات والتحديث السحابي</button>
                     </div>
@@ -354,7 +355,8 @@
                 <a id="social-link-tik" href="#" target="_blank" class="social-circle text-white hover:text-gray-300" title="تيك توك"><i class="fa-brands fa-tiktok"></i></a>
                 <a id="social-link-ig" href="#" target="_blank" class="social-circle text-pink-500 hover:text-pink-400" title="انستغرام"><i class="fa-brands fa-instagram"></i></a>
                 <a id="social-link-twi" href="#" target="_blank" class="social-circle text-purple-400 hover:text-purple-300" title="تويتش"><i class="fa-brands fa-twitch"></i></a>
-                <a id="social-link-wa" href="#" target="_blank" class="social-circle text-emerald-500 hover:text-emerald-400" title="قناة الواتساب"><i class="fa-brands fa-whatsapp"></i></a>
+                <a id="social-link-wa" href="#" target="_blank" class="social-circle text-emerald-500 hover:text-emerald-400" title="تواصل واتساب"><i class="fa-brands fa-whatsapp"></i></a>
+                <a id="social-link-wa-channel" href="#" target="_blank" class="social-circle text-emerald-400 hover:text-emerald-300 border-emerald-500" title="قناة الواتساب"><i class="fa-solid fa-bullhorn"></i></a>
             </div>
             <p class="text-[10px] text-gray-400 font-bold">SAVO XP © 2026 - جميع الحقوق محفوظة لصانع المحتوى</p>
             <p class="text-[9px] text-gray-500 mt-0.5">غير مرتبطة رسمياً بشركة Supercell (حقوق النشر محفوظة)</p>
@@ -532,7 +534,7 @@
         </div>
     </div>
 
-    <!-- SUCCESS PURCHASE REDEEMED MODAL (UPDATED WITH 3 BUTTONS) -->
+    <!-- SUCCESS PURCHASE REDEEMED MODAL -->
     <div id="redeem-success-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-4 flex flex-col items-center text-center gap-3">
             <div class="w-12 h-12 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-2xl">
@@ -601,14 +603,14 @@
                     tiktok: 'https://tiktok.com',
                     instagram: 'https://instagram.com',
                     twitch: 'https://twitch.tv',
-                    whatsapp: 'https://whatsapp.com'
+                    whatsapp: 'https://whatsapp.com',
+                    whatsappChannel: 'https://whatsapp.com/channel/...'
                 }
             },
             adminPin: 'mohanad0939957279'
         };
 
         function initFirebaseSync() {
-            // Settings
             onValue(ref(db, 'settings'), (snapshot) => {
                 const val = snapshot.val();
                 if (val) state.settings = val;
@@ -619,7 +621,6 @@
                 renderFooterSocials();
             });
 
-            // Products
             onValue(ref(db, 'products'), (snapshot) => {
                 if (snapshot.exists()) {
                     const val = snapshot.val();
@@ -633,7 +634,6 @@
                 }
             });
 
-            // Users
             onValue(ref(db, 'users'), (snapshot) => {
                 if (snapshot.exists()) {
                     state.usersMap = snapshot.val();
@@ -658,7 +658,6 @@
                 }
             });
 
-            // History
             onValue(ref(db, 'history'), (snapshot) => {
                 const val = snapshot.val();
                 state.history = val ? Object.values(val) : [];
@@ -750,11 +749,12 @@
             document.getElementById('social-link-ig').href = socials.instagram || '#';
             document.getElementById('social-link-twi').href = socials.twitch || '#';
             document.getElementById('social-link-wa').href = socials.whatsapp || '#';
+            document.getElementById('social-link-wa-channel').href = socials.whatsappChannel || '#';
 
-            // Footer WhatsApp Notice
-            const waNoticeText = state.settings.whatsappNoticeText || 'تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية';
+            // Footer WhatsApp Notice links to WhatsApp Channel
+            const waNoticeText = state.settings.whatsappNoticeText || 'تابع أحدث الأخبار والتحديثات في قناة الواتساب';
             document.getElementById('footer-whatsapp-text').innerText = waNoticeText;
-            document.getElementById('footer-whatsapp-link').href = socials.whatsapp || '#';
+            document.getElementById('footer-whatsapp-link').href = socials.whatsappChannel || socials.whatsapp || '#';
         };
 
         window.renderUserProfile = function() {
@@ -855,7 +855,6 @@
             });
         };
 
-        // Google Sign-In Callback
         window.handleGoogleSignIn = function(response) {
             try {
                 const base64Url = response.credential.split('.')[1];
@@ -1004,7 +1003,6 @@
             showToast('تم تسجيل الخروج.');
         };
 
-        // REDEEM & INSTANT POINTS DEDUCTION WITH 3 OPTIONS
         window.redeemProduct = function(productId) {
             if (!state.currentUser) {
                 showToast('يجب تسجيل الدخول عبر جوجل أولاً.', 'error');
@@ -1085,7 +1083,6 @@
             }
         };
 
-        // Admin Dashboard
         window.openAdminPinModal = () => document.getElementById('admin-pin-modal').classList.remove('hidden');
         window.closeAdminPinModal = () => document.getElementById('admin-pin-modal').classList.add('hidden');
         window.verifyAdminPin = function() {
@@ -1119,6 +1116,7 @@
             document.getElementById('social-ig').value = socials.instagram || '';
             document.getElementById('social-twi').value = socials.twitch || '';
             document.getElementById('social-wa').value = socials.whatsapp || '';
+            document.getElementById('social-wa-channel').value = socials.whatsappChannel || '';
 
             renderAdminProducts();
             renderAdminUsers();
@@ -1142,7 +1140,8 @@
                     tiktok: document.getElementById('social-tik').value.trim(),
                     instagram: document.getElementById('social-ig').value.trim(),
                     twitch: document.getElementById('social-twi').value.trim(),
-                    whatsapp: document.getElementById('social-wa').value.trim()
+                    whatsapp: document.getElementById('social-wa').value.trim(),
+                    whatsappChannel: document.getElementById('social-wa-channel').value.trim()
                 }
             };
             set(ref(db, 'settings'), newSettings);
@@ -1338,7 +1337,7 @@
         window.closeCustomPointsModal = () => document.getElementById('custom-points-modal').classList.add('hidden');
 
         window.applyCustomPoints = function() {
-            const dbKey = document.getElementById('target-user-key').value;
+            const dbKey = document.getElementById('target-user-key'].value;
             const val = parseInt(document.getElementById('custom-points-val').value);
             if (isNaN(val)) return;
 
