@@ -200,7 +200,8 @@
                 <button onclick="switchTab('history')" id="tab-btn-history" class="py-2.5 rounded-lg font-black text-xs md:text-sm text-center transition-all text-gray-300 hover:text-white">
                     <i class="fa-solid fa-clock-rotate-left ml-1"></i> المشتريات
                 </button>
-                <button onclick="openAdminPinModal()" id="tab-btn-admin" class="py-2.5 rounded-lg font-black text-xs md:text-sm text-center transition-all text-gray-300 hover:text-white">
+                <!-- زر الأدمن يظهر فقط إن كان صاحب الإيميل المسجل هو مهند -->
+                <button onclick="checkAdminAccess()" id="tab-btn-admin" class="py-2.5 rounded-lg font-black text-xs md:text-sm text-center transition-all text-gray-300 hover:text-white">
                     <i class="fa-solid fa-gear ml-1"></i> الأدمن
                 </button>
             </div>
@@ -235,7 +236,7 @@
             <section id="tab-admin" class="flex flex-col gap-4 hidden">
                 <div class="bg-supercellCard border-2 border-red-500/50 p-3.5 rounded-xl flex items-center justify-between">
                     <div>
-                        <h3 class="font-black text-sm md:text-base text-red-400">لوحة تحكم المشرف (Admin)</h3>
+                        <h3 class="font-black text-sm md:text-base text-red-400">لوحة تحكم المشرف (Admin - مهند أبو خضر)</h3>
                         <p class="text-[10px] md:text-xs text-gray-300">تحكم كامل بالنقاط، المنتجات، الإعلانات والأحداث الأسبوعية</p>
                     </div>
                     <button onclick="lockAdminPanel()" class="btn-red px-3 py-1.5 rounded text-white font-bold text-xs">قفل اللوحة</button>
@@ -467,24 +468,7 @@
         </div>
     </div>
 
-    <!-- ADMIN PIN MODAL -->
-    <div id="admin-pin-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
-            <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
-                <h3 class="font-black text-sm text-red-400 flex items-center gap-1.5">
-                    <i class="fa-solid fa-lock"></i> رمز دخول الأدمن
-                </h3>
-                <button onclick="closeAdminPinModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="flex flex-col gap-3">
-                <p class="text-[10px] text-gray-300 text-center">أدخل كلمة المرور السرية الخاصة بك</p>
-                <input type="password" id="admin-pin-input" placeholder="أدخل كلمة المرور..." class="bg-black/60 border border-supercellCardBorder rounded px-3 py-2 text-center text-sm text-white focus:outline-none focus:border-red-500">
-                <button onclick="verifyAdminPin()" class="btn-red py-2 rounded text-white font-black text-xs">تحقق ودخول</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- PRODUCT CONFIRMATION MODAL (NEW) -->
+    <!-- PRODUCT CONFIRMATION MODAL -->
     <div id="confirm-purchase-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-4 flex flex-col items-center text-center gap-3">
             <div class="w-12 h-12 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-amber-400 text-2xl">
@@ -588,7 +572,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getDatabase, ref, set, get, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-        // (firebaseConfig كما طلبت تماماً ودون أي تعديل)
         const firebaseConfig = {
             apiKey: "AIzaSyBbd45fxCNgCqIaTdBr7-k0lALPTr-VZDg",
             authDomain: "savo-xp-ba680.firebaseapp.com",
@@ -602,6 +585,9 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+
+        // بريدك الإلكتروني المعتمد حصرياً للأدمن
+        const ADMIN_EMAIL = "mohanadabukhader176@gmail.com";
 
         let state = {
             currentUser: null,
@@ -624,18 +610,8 @@
                     twitch: 'https://twitch.tv',
                     whatsapp: 'https://whatsapp.com'
                 }
-            },
-            // تم تشفير كلمة المرور بـ SHA-256 (كلمة المرور الأصلية: mohanad0939957279)
-            adminPasswordHash: '6d97cff17e9282fa2eb44bdf9891c944445831557201c107f9c2d159a6858e99'
+            }
         };
-
-        // دالة تشفير SHA-256 لأمان كلمة المرور
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
 
         function initFirebaseSync() {
             // Settings
@@ -1033,7 +1009,6 @@
             showToast('تم تسجيل الخروج.');
         };
 
-        // NEW: CONFIRM PURCHASE MODAL FUNCTIONS
         window.confirmRedeem = function(productId) {
             if (!state.currentUser) {
                 showToast('يجب تسجيل الدخول عبر جوجل أولاً.', 'error');
@@ -1059,7 +1034,6 @@
 
         window.closeConfirmModal = () => document.getElementById('confirm-purchase-modal').classList.add('hidden');
 
-        // EXECUTING PURCHASE AFTER CONFIRMATION
         window.executeRedeem = function() {
             closeConfirmModal();
             const productId = document.getElementById('pending-product-id').value;
@@ -1133,19 +1107,18 @@
             }
         };
 
-        // Admin Dashboard & SHA-256 Verification
-        window.openAdminPinModal = () => document.getElementById('admin-pin-modal').classList.remove('hidden');
-        window.closeAdminPinModal = () => document.getElementById('admin-pin-modal').classList.add('hidden');
-        
-        window.verifyAdminPin = async function() {
-            const pin = document.getElementById('admin-pin-input').value.trim();
-            const hashedInput = await sha256(pin);
-            if (hashedInput === state.adminPasswordHash) {
-                closeAdminPinModal();
-                document.getElementById('admin-pin-input').value = '';
+        // التحقق الذكي من إيميل الأدمن (بدون كلمات مرور وبأمان تام)
+        window.checkAdminAccess = function() {
+            if (!state.currentUser) {
+                showToast('يرجى تسجيل الدخول أولاً بحساب الأدمن (Google).', 'error');
+                openLoginModal();
+                return;
+            }
+
+            if (state.currentUser.email === ADMIN_EMAIL) {
                 openAdminDashboard();
             } else {
-                showToast('كلمة المرور غير صحيحة!', 'error');
+                showToast('عذراً، هذه اللوحة مخصصة فقط لصانع المحتوى (مهند)!', 'error');
             }
         };
 
@@ -1321,7 +1294,6 @@
             }
         };
 
-        // RENDER USERS WITH REAL-TIME SEARCH FILTER
         window.renderAdminUsers = function() {
             const list = document.getElementById('admin-users-list');
             const countEl = document.getElementById('admin-users-count');
@@ -1332,7 +1304,6 @@
 
             let userEntries = Object.entries(state.usersMap || {});
             
-            // Filter users based on search query (Name, YouTube Channel, or Tag)
             if (searchQuery !== '') {
                 userEntries = userEntries.filter(([dbKey, u]) => {
                     const name = (u.name || '').toLowerCase();
