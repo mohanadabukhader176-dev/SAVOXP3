@@ -124,15 +124,28 @@
                 </div>
             </div>
             
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
+                <!-- Notification Bell Icon (New) -->
+                <div class="relative">
+                    <button onclick="openNotificationsModal()" class="w-9 h-9 bg-black/50 border-2 border-supercellCardBorder rounded-full flex items-center justify-center text-supercellGold hover:border-supercellGold transition-colors relative" title="الإشعارات والرسائل">
+                        <i class="fa-solid fa-bell text-sm"></i>
+                        <span id="notif-badge-dot" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white font-black rounded-full text-[9px] flex items-center justify-center border border-black hidden animate-pulse">1</span>
+                    </button>
+                </div>
+
                 <!-- XP Balance Pill -->
-                <div class="bg-black/50 border-2 border-supercellBlue px-3 py-1 rounded-full flex items-center gap-1.5 shadow-inner">
-                    <span class="text-supercellBlue text-base">💎</span>
-                    <span id="header-xp-balance" class="font-black text-supercellBlue text-sm">0</span>
+                <div class="bg-black/50 border-2 border-supercellBlue px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-inner">
+                    <span class="text-supercellBlue text-sm">💎</span>
+                    <span id="header-xp-balance" class="font-black text-supercellBlue text-xs">0</span>
                     <button onclick="openEarnPointsModal()" class="w-4 h-4 bg-supercellBlue text-black font-black rounded-full flex items-center justify-center text-[10px] hover:scale-110 transition-transform" title="كيف تحصل على نقاط؟">
                         <i class="fa-solid fa-plus"></i>
                     </button>
                 </div>
+
+                <!-- Daily Free Jewel Button (New) -->
+                <button onclick="openDailyJewelModal()" id="header-daily-btn" class="btn-gold px-2.5 py-1.5 rounded-lg text-black font-black text-[11px] whitespace-nowrap flex items-center gap-1 animate-bounce" title="جوهرة مجانية يومية!">
+                    <span>🎁</span> جوهرة مجانية
+                </button>
 
                 <!-- Login / Profile Button -->
                 <button onclick="openLoginModal()" id="header-user-btn" class="btn-gold px-3 py-1.5 rounded-lg text-black font-black text-xs whitespace-nowrap">
@@ -237,12 +250,30 @@
                 <div class="bg-supercellCard border-2 border-red-500/50 p-3.5 rounded-xl flex items-center justify-between">
                     <div>
                         <h3 class="font-black text-sm md:text-base text-red-400">لوحة تحكم المشرف (Admin - مهند أبو خضر)</h3>
-                        <p class="text-[10px] md:text-xs text-gray-300">تحكم كامل بالنقاط، المنتجات، الإعلانات والأحداث الأسبوعية</p>
+                        <p class="text-[10px] md:text-xs text-gray-300">تحكم كامل بالنقاط، المنتجات، الإشعارات والأحداث الأسبوعية</p>
                     </div>
                     <button onclick="lockAdminPanel()" class="btn-red px-3 py-1.5 rounded text-white font-bold text-xs">قفل اللوحة</button>
                 </div>
 
                 <div class="flex flex-col gap-4">
+                    <!-- Send Notification Panel (New Feature) -->
+                    <div class="panel-card p-3.5 flex flex-col gap-3 border-2 border-supercellBlue/60">
+                        <h4 class="font-black text-xs md:text-sm text-supercellBlue border-b border-supercellCardBorder pb-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-paper-plane"></i> إرسال إشعار / رسالة جماعية للمتابعين
+                        </h4>
+                        <div class="flex flex-col gap-2">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[10px] text-gray-300">عنوان الإشعار:</label>
+                                <input type="text" id="admin-notif-title" placeholder="مثال: تحديث جديد في متجر المكافآت!" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[10px] text-gray-300">نص الرسالة:</label>
+                                <textarea id="admin-notif-text" rows="2" placeholder="اكتب تفاصيل الرسالة هنا لتظهر في صندوق إشعارات جميع المتابعين..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold resize-none"></textarea>
+                            </div>
+                            <button onclick="sendGlobalNotification()" class="btn-blue py-2 rounded text-black font-black text-xs mt-1">إرسال الإشعار لجميع المتابعين الآن</button>
+                        </div>
+                    </div>
+
                     <!-- General Settings & Weekly Event & Whatsapp -->
                     <div class="panel-card p-3.5 flex flex-col gap-3">
                         <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1">الإعدادات العامة والأحداث</h4>
@@ -299,7 +330,7 @@
                             <input type="text" id="social-tik" placeholder="رابط تيك توك" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                             <input type="text" id="social-ig" placeholder="رابط انستغرام" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                             <input type="text" id="social-twi" placeholder="رابط تويتش" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
-                            <input type="text" id="social-wa" placeholder="رابط قناة الواتساب" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
+                            <input type="text" id="social-wa" placeholder="رابط قناة الواتساب" value="https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
                         </div>
                         <button onclick="saveAdminSettings()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حفظ الإعدادات والتحديث السحابي</button>
                     </div>
@@ -349,7 +380,7 @@
         <!-- FOOTER BRANDING WITH CIRCULAR SOCIAL ICONS & WHATSAPP NOTICE -->
         <footer class="w-full py-4 text-center border-t border-supercellCardBorder bg-black/40 mt-auto flex flex-col gap-3 px-3">
             <div id="footer-whatsapp-notice-box" class="bg-emerald-950/40 border border-emerald-500/30 py-1.5 px-3 rounded-lg max-w-sm mx-auto w-full">
-                <a id="footer-whatsapp-link" href="#" target="_blank" class="text-emerald-400 hover:text-emerald-300 text-[11px] font-bold flex items-center justify-center gap-1.5">
+                <a id="footer-whatsapp-link" href="https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L" target="_blank" class="text-emerald-400 hover:text-emerald-300 text-[11px] font-bold flex items-center justify-center gap-1.5">
                     <i class="fa-brands fa-whatsapp text-sm"></i>
                     <span id="footer-whatsapp-text">تابع أحدث الأخبار والتحديثات في قناة الواتساب</span>
                 </a>
@@ -360,7 +391,7 @@
                 <a id="social-link-tik" href="#" target="_blank" class="social-circle text-white hover:text-gray-300" title="تيك توك"><i class="fa-brands fa-tiktok"></i></a>
                 <a id="social-link-ig" href="#" target="_blank" class="social-circle text-pink-500 hover:text-pink-400" title="انستغرام"><i class="fa-brands fa-instagram"></i></a>
                 <a id="social-link-twi" href="#" target="_blank" class="social-circle text-purple-400 hover:text-purple-300" title="تويتش"><i class="fa-brands fa-twitch"></i></a>
-                <a id="social-link-wa" href="#" target="_blank" class="social-circle text-emerald-500 hover:text-emerald-400" title="قناة الواتساب"><i class="fa-brands fa-whatsapp"></i></a>
+                <a id="social-link-wa" href="https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L" target="_blank" class="social-circle text-emerald-500 hover:text-emerald-400" title="قناة الواتساب"><i class="fa-brands fa-whatsapp"></i></a>
             </div>
             <p class="text-[10px] text-gray-400 font-bold">SAVO XP © 2026 - جميع الحقوق محفوظة لصانع المحتوى</p>
             <p class="text-[9px] text-gray-500 mt-0.5">غير مرتبطة رسمياً بشركة Supercell (حقوق النشر محفوظة)</p>
@@ -420,6 +451,41 @@
         </div>
     </div>
 
+    <!-- DAILY FREE JEWEL MODAL (New Feature) -->
+    <div id="daily-jewel-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="panel-card w-full max-w-xs p-4 flex flex-col items-center text-center gap-3 animate-scaleIn">
+            <div class="w-14 h-14 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-3xl shadow">
+                🎁
+            </div>
+            <h3 class="font-black text-base text-supercellGold">الجواهر اليومية المجانية</h3>
+            <p id="daily-modal-desc" class="text-xs text-gray-200 leading-relaxed">
+                صل على النبي واجمع جوهرتك المجانية كل 24 ساعة!
+            </p>
+            <div id="daily-timer-box" class="bg-black/60 border border-supercellCardBorder py-2 px-4 rounded-xl w-full">
+                <span id="daily-timer-text" class="text-xs font-black text-supercellBlue">جاهز للمطالبة الآن!</span>
+            </div>
+            <div class="flex flex-col gap-2 w-full mt-1">
+                <button id="daily-claim-btn" onclick="claimDailyJewel()" class="btn-gold py-2.5 rounded text-black font-black text-xs">مطالبة بالجوهريين الآن</button>
+                <button onclick="closeDailyJewelModal()" class="btn-red py-2 rounded text-white font-black text-xs">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATIONS MODAL (New Feature) -->
+    <div id="notifications-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="panel-card w-full max-w-md p-4 flex flex-col gap-3 max-h-[85vh] overflow-hidden">
+            <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
+                <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5">
+                    <i class="fa-solid fa-bell"></i> صندوق الإشعارات والرسائل
+                </h3>
+                <button onclick="closeNotificationsModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="notifications-list" class="flex flex-col gap-2.5 overflow-y-auto max-h-[65vh] pr-1">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
     <!-- EDIT PROFILE MODAL -->
     <div id="edit-profile-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
@@ -460,9 +526,9 @@
                 يمكنك تحصيل وجمع النقاط بسهولة من خلال:
             </p>
             <ul class="text-right text-[11px] text-gray-300 bg-black/40 p-2.5 rounded border border-supercellCardBorder flex flex-col gap-1.5">
+                <li><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.</li>
                 <li><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> حضور ومتابعة <b>البث المباشر</b> على اليوتيوب.</li>
-                <li><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> التفاعل والمشاركة في تحديات ودعم صانع المحتوى.</li>
-                <li><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> هدايا ومسابقات الأدمن أثناء البث المباشر.</li>
+                <li><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> الهدايا والمسابقات أثناء البث المباشر.</li>
             </ul>
             <button onclick="closeEarnPointsModal()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حسناً، فهمت!</button>
         </div>
@@ -594,6 +660,7 @@
             products: [],
             history: [],
             usersMap: {},
+            notifications: [],
             settings: {
                 badge: 'تنويه',
                 announcement: 'أهلاً بك في منصة مكافآت صانع المحتوى SAVO XP - تابع البث المباشر واجمع النقاط!',
@@ -608,7 +675,7 @@
                     tiktok: 'https://tiktok.com',
                     instagram: 'https://instagram.com',
                     twitch: 'https://twitch.tv',
-                    whatsapp: 'https://whatsapp.com'
+                    whatsapp: 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L'
                 }
             }
         };
@@ -639,6 +706,17 @@
                 }
             });
 
+            // Notifications
+            onValue(ref(db, 'notifications'), (snapshot) => {
+                if (snapshot.exists()) {
+                    const val = snapshot.val();
+                    state.notifications = Object.values(val).sort((a, b) => b.timestamp - a.timestamp);
+                } else {
+                    state.notifications = [];
+                }
+                updateNotificationBadge();
+            });
+
             // Users
             onValue(ref(db, 'users'), (snapshot) => {
                 if (snapshot.exists()) {
@@ -659,6 +737,7 @@
                     state.usersMap = {};
                 }
                 renderUserProfile();
+                updateNotificationBadge();
                 if(!document.getElementById('tab-admin').classList.contains('hidden')) {
                     renderAdminUsers();
                 }
@@ -673,6 +752,27 @@
                     renderAdminAuditLog();
                 }
             });
+
+            // استعادة الجلسة المحفوظة تلقائياً لمنع تسجيل الدخول المتكرر
+            checkPersistentSession();
+        }
+
+        // فحص جلسة المستخدم المحفوظة في localStorage للحفاظ على تسجيل الدخول
+        function checkPersistentSession() {
+            const savedEmail = localStorage.getItem('savo_logged_email');
+            if (savedEmail && !state.currentUser) {
+                // الانتظار لحين تحميل قاعدة بيانات المستخدمين
+                setTimeout(() => {
+                    const allUsers = Object.values(state.usersMap);
+                    const found = allUsers.find(u => u.email === savedEmail);
+                    if (found) {
+                        state.currentUser = found;
+                        renderUserProfile();
+                        renderHistory();
+                        updateNotificationBadge();
+                    }
+                }, 1000);
+            }
         }
 
         window.showToast = function(message, type = 'success') {
@@ -755,11 +855,11 @@
             document.getElementById('social-link-tik').href = socials.tiktok || '#';
             document.getElementById('social-link-ig').href = socials.instagram || '#';
             document.getElementById('social-link-twi').href = socials.twitch || '#';
-            document.getElementById('social-link-wa').href = socials.whatsapp || '#';
+            document.getElementById('social-link-wa').href = socials.whatsapp || 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L';
+            document.getElementById('footer-whatsapp-link').href = socials.whatsapp || 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L';
 
             const waNoticeText = state.settings.whatsappNoticeText || 'تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية';
             document.getElementById('footer-whatsapp-text').innerText = waNoticeText;
-            document.getElementById('footer-whatsapp-link').href = socials.whatsapp || '#';
         };
 
         window.renderUserProfile = function() {
@@ -785,6 +885,151 @@
                 card.classList.add('hidden');
                 xpDisplay.innerText = '0';
             }
+        };
+
+        // إدارة إشعارات المتابعين والشارَة الحمراء
+        window.updateNotificationBadge = function() {
+            const dot = document.getElementById('notif-badge-dot');
+            if (!state.currentUser) {
+                dot.classList.add('hidden');
+                return;
+            }
+
+            const lastRead = state.currentUser.lastReadNotification || 0;
+            const unreadCount = state.notifications.filter(n => n.timestamp > lastRead).length;
+
+            if (unreadCount > 0) {
+                dot.innerText = unreadCount > 9 ? '9+' : unreadCount;
+                dot.classList.remove('hidden');
+            } else {
+                dot.classList.add('hidden');
+            }
+        };
+
+        window.openNotificationsModal = function() {
+            if (!state.currentUser) {
+                showToast('يرجى تسجيل الدخول أولاً لعرض الإشعارات.', 'error');
+                openLoginModal();
+                return;
+            }
+
+            const listContainer = document.getElementById('notifications-list');
+            listContainer.innerHTML = '';
+
+            if (state.notifications.length === 0) {
+                listContainer.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لا توجد إشعارات أو رسائل جديدة حالياً.</div>`;
+            } else {
+                state.notifications.forEach(notif => {
+                    const dateStr = new Date(notif.timestamp).toLocaleString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    const item = document.createElement('div');
+                    item.className = 'bg-black/50 border border-supercellCardBorder p-3 rounded-xl flex flex-col gap-1.5';
+                    item.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <h5 class="font-black text-xs text-supercellGold flex items-center gap-1.5">
+                                <i class="fa-solid fa-bullhorn text-supercellBlue"></i> ${notif.title}
+                            </h5>
+                            <span class="text-[9px] text-gray-400">${dateStr}</span>
+                        </div>
+                        <p class="text-xs text-gray-200 leading-relaxed">${notif.message}</p>
+                    `;
+                    listContainer.appendChild(item);
+                });
+            }
+
+            // بمجرد فتح صندوق الإشعارات، يتم تحديث وقت القراءة وتخزينها سحابياً لتختفي الشارة الحمراء فوراً
+            const nowTime = Date.now();
+            state.currentUser.lastReadNotification = nowTime;
+            const dbKey = state.currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+            update(ref(db, 'users/' + dbKey), { lastReadNotification: nowTime });
+            updateNotificationBadge();
+
+            document.getElementById('notifications-modal').classList.remove('hidden');
+        };
+
+        window.closeNotificationsModal = () => document.getElementById('notifications-modal').classList.add('hidden');
+
+        // إرسال إشعار جماعي من لوحة الأدمن
+        window.sendGlobalNotification = function() {
+            const title = document.getElementById('admin-notif-title').value.trim();
+            const message = document.getElementById('admin-notif-text').value.trim();
+
+            if (!title || !message) {
+                showToast('يرجى إدخال عنوان ونَص الإشعار أولاً.', 'error');
+                return;
+            }
+
+            const notifId = 'notif_' + Date.now();
+            const notifObj = {
+                id: notifId,
+                title,
+                message,
+                timestamp: Date.now()
+            };
+
+            set(ref(db, 'notifications/' + notifId), notifObj).then(() => {
+                document.getElementById('admin-notif-title').value = '';
+                document.getElementById('admin-notif-text').value = '';
+                showToast('تم إرسال الإشعار بنجاح لجميع المتابعين!');
+            });
+        };
+
+        // الجوهرة اليومية المجانية (كل 24 ساعة)
+        window.openDailyJewelModal = function() {
+            if (!state.currentUser) {
+                showToast('يرجى تسجيل الدخول أولاً للمطالبة بالجواهر اليومية.', 'error');
+                openLoginModal();
+                return;
+            }
+
+            const lastClaim = state.currentUser.lastDailyClaim || 0;
+            const now = Date.now();
+            const cooldownTime = 24 * 60 * 60 * 1000; // 24 ساعة
+
+            if (now - lastClaim < cooldownTime) {
+                const remaining = cooldownTime - (now - lastClaim);
+                const hours = Math.floor(remaining / (1000 * 60 * 60));
+                const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                
+                document.getElementById('daily-timer-text').innerText = `متبقي على جوهرتك القادمة: ${hours} ساعة و ${minutes} دقيقة`;
+                document.getElementById('daily-claim-btn').disabled = true;
+                document.getElementById('daily-claim-btn').className = 'btn-red py-2.5 rounded text-white font-black text-xs opacity-50 cursor-not-allowed';
+            } else {
+                document.getElementById('daily-timer-text').innerText = 'صلي على النبي وخذ جوهرتك المجانية الآن!';
+                document.getElementById('daily-claim-btn').disabled = false;
+                document.getElementById('daily-claim-btn').className = 'btn-gold py-2.5 rounded text-black font-black text-xs';
+            }
+
+            document.getElementById('daily-jewel-modal').classList.remove('hidden');
+        };
+
+        window.closeDailyJewelModal = () => document.getElementById('daily-jewel-modal').classList.add('hidden');
+
+        window.claimDailyJewel = function() {
+            if (!state.currentUser) return;
+
+            const lastClaim = state.currentUser.lastDailyClaim || 0;
+            const now = Date.now();
+            const cooldownTime = 24 * 60 * 60 * 1000;
+
+            if (now - lastClaim < cooldownTime) {
+                showToast('لقد استلمت جوهرتك اليومية مسبقاً، انتظر حتى انقضاء 24 ساعة.', 'error');
+                return;
+            }
+
+            // إضافة نقطة/جوهرة مجانية (مثلاً 1 جوهرة أو 10 نقاط حسب الرغبة، سنضيف 10 نقاط XP كهدية يومية رائعة)
+            const rewardAmount = 10;
+            state.currentUser.xp = (state.currentUser.xp || 0) + rewardAmount;
+            state.currentUser.lastDailyClaim = now;
+
+            const dbKey = state.currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
+            update(ref(db, 'users/' + dbKey), {
+                xp: state.currentUser.xp,
+                lastDailyClaim: now
+            });
+
+            renderUserProfile();
+            closeDailyJewelModal();
+            showToast(`مبروك! صليت على النبي وحصلت على ${rewardAmount} XP مجاناً! 💎`);
         };
 
         window.renderStore = function() {
@@ -874,6 +1119,9 @@
                 const email = payload.email;
                 const avatar = payload.picture;
 
+                // حفظ الإيميل في localStorage لضمان عدم الخروج المتكرر
+                localStorage.setItem('savo_logged_email', email);
+
                 const allUsers = Object.values(state.usersMap);
                 let existingUser = allUsers.find(u => u.email === email);
 
@@ -882,6 +1130,7 @@
                     closeLoginModal();
                     renderUserProfile();
                     renderHistory();
+                    updateNotificationBadge();
                     showToast(`مرحباً بك مجدداً ${existingUser.name}!`);
                 } else {
                     closeLoginModal();
@@ -923,6 +1172,7 @@
                 tag,
                 country,
                 xp: 0,
+                lastReadNotification: 0,
                 joinedAt: timeStr,
                 authType: 'Google'
             };
@@ -930,10 +1180,12 @@
             const dbKey = email.replace(/[^a-zA-Z0-9]/g, '_');
             set(ref(db, 'users/' + dbKey), newUser);
             state.currentUser = newUser;
+            localStorage.setItem('savo_logged_email', email);
 
             document.getElementById('google-profile-modal').classList.add('hidden');
             renderUserProfile();
             renderHistory();
+            updateNotificationBadge();
             showToast(`أهلاً بك يا ${name}! تم إنشاء حسابك بنجاح.`);
         };
 
@@ -1003,9 +1255,11 @@
         };
 
         window.logoutUser = function() {
+            localStorage.removeItem('savo_logged_email');
             state.currentUser = null;
             renderUserProfile();
             renderHistory();
+            updateNotificationBadge();
             showToast('تم تسجيل الخروج.');
         };
 
@@ -1107,7 +1361,7 @@
             }
         };
 
-        // التحقق الذكي من إيميل الأدمن (بدون كلمات مرور وبأمان تام)
+        // التحقق الذكي من إيميل الأدمن (مهند)
         window.checkAdminAccess = function() {
             if (!state.currentUser) {
                 showToast('يرجى تسجيل الدخول أولاً بحساب الأدمن (Google).', 'error');
@@ -1142,7 +1396,7 @@
             document.getElementById('social-tik').value = socials.tiktok || '';
             document.getElementById('social-ig').value = socials.instagram || '';
             document.getElementById('social-twi').value = socials.twitch || '';
-            document.getElementById('social-wa').value = socials.whatsapp || '';
+            document.getElementById('social-wa').value = socials.whatsapp || 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L';
 
             renderAdminProducts();
             renderAdminUsers();
@@ -1166,7 +1420,7 @@
                     tiktok: document.getElementById('social-tik').value.trim(),
                     instagram: document.getElementById('social-ig').value.trim(),
                     twitch: document.getElementById('social-twi').value.trim(),
-                    whatsapp: document.getElementById('social-wa').value.trim()
+                    whatsapp: document.getElementById('social-wa').value.trim() || 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L'
                 }
             };
             set(ref(db, 'settings'), newSettings);
