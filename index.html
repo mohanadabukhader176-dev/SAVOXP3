@@ -137,13 +137,13 @@
                 <div class="bg-black/50 border-2 border-supercellBlue px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-inner">
                     <span class="text-supercellBlue text-sm">💎</span>
                     <span id="header-xp-balance" class="font-black text-supercellBlue text-xs">0</span>
-                    <button onclick="openEarnPointsModal()" class="w-4 h-4 bg-supercellBlue text-black font-black rounded-full flex items-center justify-center text-[10px] hover:scale-110 transition-transform" title="كيف تحصل على نقاط؟">
+                    <button onclick="openEarnPointsModal()" class="w-4 h-4 bg-supercellBlue text-black font-black rounded-full flex items-center justify-center text-[10px] hover:scale-110 transition-transform" title="كيف تحصل على الجواهر؟">
                         <i class="fa-solid fa-plus"></i>
                     </button>
                 </div>
 
-                <!-- Daily Free Jewel Button (Hidden until logged in) -->
-                <button onclick="openDailyJewelModal()" id="header-daily-btn" class="btn-gold px-2.5 py-1.5 rounded-lg text-black font-black text-[11px] whitespace-nowrap flex items-center gap-1 animate-bounce hidden" title="جوهرة مجانية يومية!">
+                <!-- Daily Free Jewel Button (Hidden until logged in - without bounce when claimed) -->
+                <button onclick="openDailyJewelModal()" id="header-daily-btn" class="btn-gold px-2.5 py-1.5 rounded-lg text-black font-black text-[11px] whitespace-nowrap flex items-center gap-1 hidden" title="جوهرة مجانية يومية!">
                     <span>🎁</span> جوهرة يومية
                 </button>
 
@@ -317,11 +317,19 @@
                             <input type="text" id="admin-logo-input" placeholder="ترك فارغاً لاستخدام اللوجو الافتراضي" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                         </div>
 
-                        <h5 class="font-black text-[11px] text-supercellGold mt-1 pt-1 border-t border-supercellCardBorder">روابط وسائل التواصل الاجتماعي وقناة الواتساب</h5>
+                        <h5 class="font-black text-[11px] text-supercellGold mt-1 pt-1 border-t border-supercellCardBorder">إعدادات قنوات التواصل والتحصيل</h5>
                         
                         <div class="flex flex-col gap-1">
                             <label class="text-[10px] text-emerald-400 font-bold">تنويه قناة الواتساب (يظهر أسفل الموقع):</label>
                             <input type="text" id="admin-whatsapp-notice" placeholder="مثال: تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية" class="bg-black/60 border border-emerald-500/50 rounded px-2.5 py-1.5 text-xs text-white">
+                        </div>
+
+                        <!-- تعديل نص كيفية الحصول على الجواهر من لوحة التحكم -->
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] text-supercellBlue font-bold">نص نافذة (كيف تحصل على الجواهر؟):</label>
+                            <textarea id="admin-earn-instructions" rows="4" class="bg-black/60 border border-supercellBlue/50 rounded px-2.5 py-1.5 text-xs text-white resize-none" placeholder="اكتب هنا النقاط التي تظهر للمتابع عند النقر على زر (+) الجواهر...">• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.
+• حضور ومتابعة البث المباشر على اليوتيوب.
+• الهدايا والمسابقات أثناء البث المباشر.</textarea>
                         </div>
 
                         <div class="grid grid-cols-2 gap-2">
@@ -380,7 +388,7 @@
             <div id="footer-whatsapp-notice-box" class="bg-emerald-950/40 border border-emerald-500/30 py-1.5 px-3 rounded-lg max-w-sm mx-auto w-full">
                 <a id="footer-whatsapp-link" href="https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L" target="_blank" class="text-emerald-400 hover:text-emerald-300 text-[11px] font-bold flex items-center justify-center gap-1.5">
                     <i class="fa-brands fa-whatsapp text-sm"></i>
-                    <span id="footer-whatsapp-text">تابع أحدث الأخبار والتحديثات في قناة الواتساب</span>
+                    <span id="footer-whatsapp-text">تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية</span>
                 </a>
             </div>
 
@@ -449,7 +457,7 @@
         </div>
     </div>
 
-    <!-- DAILY FREE JEWEL MODAL (Modified to 1 Jewel) -->
+    <!-- DAILY FREE JEWEL MODAL -->
     <div id="daily-jewel-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-4 flex flex-col items-center text-center gap-3 animate-scaleIn">
             <div class="w-14 h-14 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-3xl shadow">
@@ -513,21 +521,19 @@
         </div>
     </div>
 
-    <!-- EARN POINTS MODAL -->
+    <!-- EARN POINTS MODAL (Updated to Jewels & dynamic text) -->
     <div id="earn-points-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3 text-center">
             <div class="w-12 h-12 rounded-full bg-supercellBlue/20 border-2 border-supercellBlue flex items-center justify-center text-supercellBlue text-2xl mx-auto">
                 <i class="fa-solid fa-coins"></i>
             </div>
-            <h3 class="font-black text-base text-supercellGold">كيف تحصل على نقاط (XP)؟</h3>
+            <h3 class="font-black text-base text-supercellGold">كيف تحصل على الجواهر؟</h3>
             <p class="text-xs text-gray-200 leading-relaxed">
-                يمكنك تحصيل وجمع النقاط بسهولة من خلال:
+                يمكنك تحصيل وجمع الجواهر بسهولة من خلال:
             </p>
-            <ul class="text-right text-[11px] text-gray-300 bg-black/40 p-2.5 rounded border border-supercellCardBorder flex flex-col gap-1.5">
-                <li><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.</li>
-                <li><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> حضور ومتابعة <b>البث المباشر</b> على اليوتيوب.</li>
-                <li><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> الهدايا والمسابقات أثناء البث المباشر.</li>
-            </ul>
+            <div id="earn-instructions-content" class="text-right text-[11px] text-gray-300 bg-black/40 p-2.5 rounded border border-supercellCardBorder flex flex-col gap-1.5 whitespace-pre-line">
+                <!-- Dynamically populated from settings -->
+            </div>
             <button onclick="closeEarnPointsModal()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حسناً، فهمت!</button>
         </div>
     </div>
@@ -667,6 +673,7 @@
                 eventBarText: '',
                 logoUrl: '',
                 whatsappNoticeText: 'تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية',
+                earnInstructions: '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• الهدايا والمسابقات أثناء البث المباشر.',
                 socials: {
                     youtube: 'https://youtube.com',
                     tiktok: 'https://tiktok.com',
@@ -680,12 +687,13 @@
         function initFirebaseSync() {
             onValue(ref(db, 'settings'), (snapshot) => {
                 const val = snapshot.val();
-                if (val) state.settings = val;
+                if (val) state.settings = { ...state.settings, ...val };
                 renderAnnouncement();
                 renderWeeklyEvent();
                 renderEventBar();
                 renderHeaderLogo();
                 renderFooterSocials();
+                renderEarnInstructions();
             });
 
             onValue(ref(db, 'products'), (snapshot) => {
@@ -840,15 +848,25 @@
 
         window.renderFooterSocials = function() {
             const socials = state.settings.socials || {};
+            const waUrl = socials.whatsapp || 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L';
+            
             document.getElementById('social-link-yt').href = socials.youtube || '#';
             document.getElementById('social-link-tik').href = socials.tiktok || '#';
             document.getElementById('social-link-ig').href = socials.instagram || '#';
             document.getElementById('social-link-twi').href = socials.twitch || '#';
-            document.getElementById('social-link-wa').href = socials.whatsapp || 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L';
-            document.getElementById('footer-whatsapp-link').href = socials.whatsapp || 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L';
+            document.getElementById('social-link-wa').href = waUrl;
+            document.getElementById('footer-whatsapp-link').href = waUrl;
 
             const waNoticeText = state.settings.whatsappNoticeText || 'تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية';
             document.getElementById('footer-whatsapp-text').innerText = waNoticeText;
+        };
+
+        window.renderEarnInstructions = function() {
+            const box = document.getElementById('earn-instructions-content');
+            if (box) {
+                const instructions = state.settings.earnInstructions || '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• الهدايا والمسابقات أثناء البث المباشر.';
+                box.innerHTML = instructions.split('\n').map(line => line.trim() ? `<div><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> ${line.replace(/^[•\-\*]\s*/, '')}</div>` : '').join('');
+            }
         };
 
         window.renderUserProfile = function() {
@@ -861,10 +879,20 @@
             if (state.currentUser) {
                 btn.classList.add('hidden');
                 card.classList.remove('hidden');
-                dailyBtn.classList.remove('hidden'); // إظهار زر الجائزة اليومية فقط عند تسجيل الدخول
+                dailyBtn.classList.remove('hidden'); 
                 document.getElementById('profile-name').innerText = `${state.currentUser.name}`;
                 document.getElementById('profile-tag').innerText = state.currentUser.tag;
                 xpDisplay.innerText = state.currentUser.xp || 0;
+
+                // التحقق مما إذا كان قد استلم الجائزة اليومية ليصبح الزر خافتاً وثابتاً بلا حركة
+                const lastClaim = state.currentUser.lastDailyClaim || 0;
+                const now = Date.now();
+                const cooldownTime = 24 * 60 * 60 * 1000;
+                if (now - lastClaim < cooldownTime) {
+                    dailyBtn.className = 'btn-gold px-2.5 py-1.5 rounded-lg text-black font-black text-[11px] whitespace-nowrap flex items-center gap-1 opacity-60';
+                } else {
+                    dailyBtn.className = 'btn-gold px-2.5 py-1.5 rounded-lg text-black font-black text-[11px] whitespace-nowrap flex items-center gap-1';
+                }
 
                 if (state.currentUser.avatar) {
                     avatarContainer.innerHTML = `<img src="${state.currentUser.avatar}" alt="Avatar" class="w-full h-full object-cover">`;
@@ -874,7 +902,7 @@
             } else {
                 btn.classList.remove('hidden');
                 card.classList.add('hidden');
-                dailyBtn.classList.add('hidden'); // إخفاء زر الجائزة اليومية قبل تسجيل الدخول
+                dailyBtn.classList.add('hidden');
                 xpDisplay.innerText = '0';
             }
         };
@@ -962,7 +990,7 @@
             });
         };
 
-        // الجوهرة اليومية (جوهرة واحدة كل 24 ساعة)
+        // الجوهرة اليومية
         window.openDailyJewelModal = function() {
             if (!state.currentUser) {
                 showToast('يرجى تسجيل الدخول أولاً للمطالبة بالجائزة اليومية.', 'error');
@@ -972,7 +1000,7 @@
 
             const lastClaim = state.currentUser.lastDailyClaim || 0;
             const now = Date.now();
-            const cooldownTime = 24 * 60 * 60 * 1000; // 24 ساعة
+            const cooldownTime = 24 * 60 * 60 * 1000;
 
             if (now - lastClaim < cooldownTime) {
                 const remaining = cooldownTime - (now - lastClaim);
@@ -1005,7 +1033,7 @@
                 return;
             }
 
-            const rewardAmount = 1; // جوهرة واحدة فقط
+            const rewardAmount = 1;
             state.currentUser.xp = (state.currentUser.xp || 0) + rewardAmount;
             state.currentUser.lastDailyClaim = now;
 
@@ -1263,12 +1291,12 @@
             }
 
             if (state.currentUser.xp < product.price) {
-                showToast('رصيدك من النقاط لا يكفي!', 'error');
+                showToast('رصيدك من الجواهر لا يكفي!', 'error');
                 return;
             }
 
             document.getElementById('pending-product-id').value = productId;
-            document.getElementById('confirm-purchase-text').innerText = `هل أنت متأكد من رغبتك في شراء "${product.name}" مقابل خصم ${product.price} XP من رصيدك؟`;
+            document.getElementById('confirm-purchase-text').innerText = `هل أنت متأكد من رغبتك في شراء "${product.name}" مقابل خصم ${product.price} جوهرة من رصيدك؟`;
             document.getElementById('confirm-purchase-modal').classList.remove('hidden');
         };
 
@@ -1281,7 +1309,7 @@
             if (!product || !product.links || product.links.length === 0) return;
 
             if (state.currentUser.xp < product.price) {
-                showToast('رصيدك من النقاط لا يكفي!', 'error');
+                showToast('رصيدك من الجواهر لا يكفي!', 'error');
                 return;
             }
 
@@ -1309,7 +1337,7 @@
 
             set(ref(db, 'history/' + historyItem.id), historyItem);
 
-            document.getElementById('redeem-success-desc').innerText = `تم شراء "${product.name}" بنجاح مقابل ${product.price} XP.`;
+            document.getElementById('redeem-success-desc').innerText = `تم شراء "${product.name}" بنجاح مقابل ${product.price} جوهرة.`;
             document.getElementById('redeem-link-output').value = assignedLink;
             document.getElementById('redeem-open-link-btn').href = assignedLink;
             document.getElementById('redeem-success-modal').classList.remove('hidden');
@@ -1375,6 +1403,7 @@
             document.getElementById('admin-event-bar-input').value = state.settings.eventBarText || '';
             document.getElementById('admin-logo-input').value = state.settings.logoUrl || '';
             document.getElementById('admin-whatsapp-notice').value = state.settings.whatsappNoticeText || '';
+            document.getElementById('admin-earn-instructions').value = state.settings.earnInstructions || '';
             
             const socials = state.settings.socials || {};
             document.getElementById('social-yt').value = socials.youtube || '';
@@ -1400,6 +1429,7 @@
                 eventBarText: document.getElementById('admin-event-bar-input').value.trim(),
                 logoUrl: document.getElementById('admin-logo-input').value.trim(),
                 whatsappNoticeText: document.getElementById('admin-whatsapp-notice').value.trim(),
+                earnInstructions: document.getElementById('admin-earn-instructions').value.trim(),
                 socials: {
                     youtube: document.getElementById('social-yt').value.trim(),
                     tiktok: document.getElementById('social-tik').value.trim(),
