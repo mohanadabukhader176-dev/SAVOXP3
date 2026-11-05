@@ -125,7 +125,7 @@
             </div>
             
             <div class="flex items-center gap-2">
-                <!-- Notification Bell Icon (New) -->
+                <!-- Notification Bell Icon -->
                 <div class="relative">
                     <button onclick="openNotificationsModal()" class="w-9 h-9 bg-black/50 border-2 border-supercellCardBorder rounded-full flex items-center justify-center text-supercellGold hover:border-supercellGold transition-colors relative" title="الإشعارات والرسائل">
                         <i class="fa-solid fa-bell text-sm"></i>
@@ -142,9 +142,9 @@
                     </button>
                 </div>
 
-                <!-- Daily Free Jewel Button (New) -->
-                <button onclick="openDailyJewelModal()" id="header-daily-btn" class="btn-gold px-2.5 py-1.5 rounded-lg text-black font-black text-[11px] whitespace-nowrap flex items-center gap-1 animate-bounce" title="جوهرة مجانية يومية!">
-                    <span>🎁</span> جوهرة مجانية
+                <!-- Daily Free Jewel Button (Hidden until logged in) -->
+                <button onclick="openDailyJewelModal()" id="header-daily-btn" class="btn-gold px-2.5 py-1.5 rounded-lg text-black font-black text-[11px] whitespace-nowrap flex items-center gap-1 animate-bounce hidden" title="جوهرة مجانية يومية!">
+                    <span>🎁</span> جوهرة يومية
                 </button>
 
                 <!-- Login / Profile Button -->
@@ -213,7 +213,6 @@
                 <button onclick="switchTab('history')" id="tab-btn-history" class="py-2.5 rounded-lg font-black text-xs md:text-sm text-center transition-all text-gray-300 hover:text-white">
                     <i class="fa-solid fa-clock-rotate-left ml-1"></i> المشتريات
                 </button>
-                <!-- زر الأدمن يظهر فقط إن كان صاحب الإيميل المسجل هو مهند -->
                 <button onclick="checkAdminAccess()" id="tab-btn-admin" class="py-2.5 rounded-lg font-black text-xs md:text-sm text-center transition-all text-gray-300 hover:text-white">
                     <i class="fa-solid fa-gear ml-1"></i> الأدمن
                 </button>
@@ -256,7 +255,7 @@
                 </div>
 
                 <div class="flex flex-col gap-4">
-                    <!-- Send Notification Panel (New Feature) -->
+                    <!-- Send Notification Panel -->
                     <div class="panel-card p-3.5 flex flex-col gap-3 border-2 border-supercellBlue/60">
                         <h4 class="font-black text-xs md:text-sm text-supercellBlue border-b border-supercellCardBorder pb-1 flex items-center gap-1.5">
                             <i class="fa-solid fa-paper-plane"></i> إرسال إشعار / رسالة جماعية للمتابعين
@@ -364,7 +363,6 @@
                             <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-users ml-1"></i> إدارة المتابعين المسجلين</h4>
                             <span id="admin-users-count" class="text-[10px] text-supercellBlue font-bold">0 متابع</span>
                         </div>
-                        <!-- Search Bar for Users -->
                         <div class="relative">
                             <span class="absolute right-3 top-2.5 text-gray-400 text-xs"><i class="fa-solid fa-magnifying-glass"></i></span>
                             <input type="text" id="admin-user-search" oninput="renderAdminUsers()" placeholder="بحث باسم قناة اليوتيوب أو تاغ كلاش (#)..." class="w-full bg-black/60 border border-supercellCardBorder rounded-lg pr-9 pl-3 py-2 text-xs text-white focus:outline-none focus:border-supercellGold">
@@ -377,7 +375,7 @@
             </section>
         </main>
 
-        <!-- FOOTER BRANDING WITH CIRCULAR SOCIAL ICONS & WHATSAPP NOTICE -->
+        <!-- FOOTER BRANDING -->
         <footer class="w-full py-4 text-center border-t border-supercellCardBorder bg-black/40 mt-auto flex flex-col gap-3 px-3">
             <div id="footer-whatsapp-notice-box" class="bg-emerald-950/40 border border-emerald-500/30 py-1.5 px-3 rounded-lg max-w-sm mx-auto w-full">
                 <a id="footer-whatsapp-link" href="https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L" target="_blank" class="text-emerald-400 hover:text-emerald-300 text-[11px] font-bold flex items-center justify-center gap-1.5">
@@ -400,7 +398,7 @@
 
     <!-- MODALS -->
 
-    <!-- LOGIN MODAL (GOOGLE ONLY) -->
+    <!-- LOGIN MODAL -->
     <div id="login-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-5 flex flex-col gap-4 animate-scaleIn text-center">
             <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
@@ -451,13 +449,13 @@
         </div>
     </div>
 
-    <!-- DAILY FREE JEWEL MODAL (New Feature) -->
+    <!-- DAILY FREE JEWEL MODAL (Modified to 1 Jewel) -->
     <div id="daily-jewel-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-xs p-4 flex flex-col items-center text-center gap-3 animate-scaleIn">
             <div class="w-14 h-14 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-3xl shadow">
                 🎁
             </div>
-            <h3 class="font-black text-base text-supercellGold">الجواهر اليومية المجانية</h3>
+            <h3 class="font-black text-base text-supercellGold">الجوهرة اليومية المجانية</h3>
             <p id="daily-modal-desc" class="text-xs text-gray-200 leading-relaxed">
                 صل على النبي واجمع جوهرتك المجانية كل 24 ساعة!
             </p>
@@ -465,13 +463,13 @@
                 <span id="daily-timer-text" class="text-xs font-black text-supercellBlue">جاهز للمطالبة الآن!</span>
             </div>
             <div class="flex flex-col gap-2 w-full mt-1">
-                <button id="daily-claim-btn" onclick="claimDailyJewel()" class="btn-gold py-2.5 rounded text-black font-black text-xs">مطالبة بالجوهريين الآن</button>
+                <button id="daily-claim-btn" onclick="claimDailyJewel()" class="btn-gold py-2.5 rounded text-black font-black text-xs">مطالبة بالجوهرة الآن</button>
                 <button onclick="closeDailyJewelModal()" class="btn-red py-2 rounded text-white font-black text-xs">إغلاق</button>
             </div>
         </div>
     </div>
 
-    <!-- NOTIFICATIONS MODAL (New Feature) -->
+    <!-- NOTIFICATIONS MODAL -->
     <div id="notifications-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="panel-card w-full max-w-md p-4 flex flex-col gap-3 max-h-[85vh] overflow-hidden">
             <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
@@ -652,7 +650,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // بريدك الإلكتروني المعتمد حصرياً للأدمن
         const ADMIN_EMAIL = "mohanadabukhader176@gmail.com";
 
         let state = {
@@ -681,7 +678,6 @@
         };
 
         function initFirebaseSync() {
-            // Settings
             onValue(ref(db, 'settings'), (snapshot) => {
                 const val = snapshot.val();
                 if (val) state.settings = val;
@@ -692,7 +688,6 @@
                 renderFooterSocials();
             });
 
-            // Products
             onValue(ref(db, 'products'), (snapshot) => {
                 if (snapshot.exists()) {
                     const val = snapshot.val();
@@ -706,7 +701,6 @@
                 }
             });
 
-            // Notifications
             onValue(ref(db, 'notifications'), (snapshot) => {
                 if (snapshot.exists()) {
                     const val = snapshot.val();
@@ -717,7 +711,6 @@
                 updateNotificationBadge();
             });
 
-            // Users
             onValue(ref(db, 'users'), (snapshot) => {
                 if (snapshot.exists()) {
                     state.usersMap = snapshot.val();
@@ -743,7 +736,6 @@
                 }
             });
 
-            // History
             onValue(ref(db, 'history'), (snapshot) => {
                 const val = snapshot.val();
                 state.history = val ? Object.values(val) : [];
@@ -753,15 +745,12 @@
                 }
             });
 
-            // استعادة الجلسة المحفوظة تلقائياً لمنع تسجيل الدخول المتكرر
             checkPersistentSession();
         }
 
-        // فحص جلسة المستخدم المحفوظة في localStorage للحفاظ على تسجيل الدخول
         function checkPersistentSession() {
             const savedEmail = localStorage.getItem('savo_logged_email');
             if (savedEmail && !state.currentUser) {
-                // الانتظار لحين تحميل قاعدة بيانات المستخدمين
                 setTimeout(() => {
                     const allUsers = Object.values(state.usersMap);
                     const found = allUsers.find(u => u.email === savedEmail);
@@ -867,10 +856,12 @@
             const card = document.getElementById('user-profile-card');
             const xpDisplay = document.getElementById('header-xp-balance');
             const avatarContainer = document.getElementById('profile-avatar-container');
+            const dailyBtn = document.getElementById('header-daily-btn');
 
             if (state.currentUser) {
                 btn.classList.add('hidden');
                 card.classList.remove('hidden');
+                dailyBtn.classList.remove('hidden'); // إظهار زر الجائزة اليومية فقط عند تسجيل الدخول
                 document.getElementById('profile-name').innerText = `${state.currentUser.name}`;
                 document.getElementById('profile-tag').innerText = state.currentUser.tag;
                 xpDisplay.innerText = state.currentUser.xp || 0;
@@ -883,11 +874,11 @@
             } else {
                 btn.classList.remove('hidden');
                 card.classList.add('hidden');
+                dailyBtn.classList.add('hidden'); // إخفاء زر الجائزة اليومية قبل تسجيل الدخول
                 xpDisplay.innerText = '0';
             }
         };
 
-        // إدارة إشعارات المتابعين والشارَة الحمراء
         window.updateNotificationBadge = function() {
             const dot = document.getElementById('notif-badge-dot');
             if (!state.currentUser) {
@@ -936,7 +927,6 @@
                 });
             }
 
-            // بمجرد فتح صندوق الإشعارات، يتم تحديث وقت القراءة وتخزينها سحابياً لتختفي الشارة الحمراء فوراً
             const nowTime = Date.now();
             state.currentUser.lastReadNotification = nowTime;
             const dbKey = state.currentUser.email.replace(/[^a-zA-Z0-9]/g, '_');
@@ -948,7 +938,6 @@
 
         window.closeNotificationsModal = () => document.getElementById('notifications-modal').classList.add('hidden');
 
-        // إرسال إشعار جماعي من لوحة الأدمن
         window.sendGlobalNotification = function() {
             const title = document.getElementById('admin-notif-title').value.trim();
             const message = document.getElementById('admin-notif-text').value.trim();
@@ -973,10 +962,10 @@
             });
         };
 
-        // الجوهرة اليومية المجانية (كل 24 ساعة)
+        // الجوهرة اليومية (جوهرة واحدة كل 24 ساعة)
         window.openDailyJewelModal = function() {
             if (!state.currentUser) {
-                showToast('يرجى تسجيل الدخول أولاً للمطالبة بالجواهر اليومية.', 'error');
+                showToast('يرجى تسجيل الدخول أولاً للمطالبة بالجائزة اليومية.', 'error');
                 openLoginModal();
                 return;
             }
@@ -1016,8 +1005,7 @@
                 return;
             }
 
-            // إضافة نقطة/جوهرة مجانية (مثلاً 1 جوهرة أو 10 نقاط حسب الرغبة، سنضيف 10 نقاط XP كهدية يومية رائعة)
-            const rewardAmount = 10;
+            const rewardAmount = 1; // جوهرة واحدة فقط
             state.currentUser.xp = (state.currentUser.xp || 0) + rewardAmount;
             state.currentUser.lastDailyClaim = now;
 
@@ -1029,7 +1017,7 @@
 
             renderUserProfile();
             closeDailyJewelModal();
-            showToast(`مبروك! صليت على النبي وحصلت على ${rewardAmount} XP مجاناً! 💎`);
+            showToast(`مبروك! صليت على النبي وحصلت على جوهرة واحدة مجاناً! 💎`);
         };
 
         window.renderStore = function() {
@@ -1105,7 +1093,6 @@
             });
         };
 
-        // Google Sign-In Callback
         window.handleGoogleSignIn = function(response) {
             try {
                 const base64Url = response.credential.split('.')[1];
@@ -1119,7 +1106,6 @@
                 const email = payload.email;
                 const avatar = payload.picture;
 
-                // حفظ الإيميل في localStorage لضمان عدم الخروج المتكرر
                 localStorage.setItem('savo_logged_email', email);
 
                 const allUsers = Object.values(state.usersMap);
@@ -1361,7 +1347,6 @@
             }
         };
 
-        // التحقق الذكي من إيميل الأدمن (مهند)
         window.checkAdminAccess = function() {
             if (!state.currentUser) {
                 showToast('يرجى تسجيل الدخول أولاً بحساب الأدمن (Google).', 'error');
