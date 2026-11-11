@@ -80,32 +80,46 @@
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes tabIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
     @keyframes riseIn { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: none; } }
-    @keyframes marqueeRightToLeft { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+    @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
     @keyframes confettiFall { to { transform: translateY(105vh) rotate(720deg); opacity: 0.9; } }
     .animate-scaleIn { animation: scaleIn 0.2s ease-out; }
     [id$="-modal"]:not(.hidden) { animation: fadeIn 0.2s ease-out; }
     [id$="-modal"]:not(.hidden) > .panel-card { animation: scaleIn 0.22s ease-out; }
     main > section:not(.hidden) { animation: tabIn 0.28s ease-out; }
     .podium-col { animation: riseIn 0.55s cubic-bezier(.2,.8,.2,1) both; }
-    .animate-marquee { display: inline-block; min-width: 100%; white-space: nowrap; animation: marqueeRightToLeft 18s linear infinite; }
-    .animate-marquee.paused { animation-play-state: paused !important; }
+    .animate-marquee { display: inline-block; min-width: 100%; white-space: nowrap; animation: marquee 18s linear infinite; }
     .animate-marquee:hover { animation-play-state: paused; }
     .confetti-piece { position: fixed; top: -14px; width: 8px; height: 12px; z-index: 110; pointer-events: none; animation: confettiFall 2s linear forwards; }
 
-    /* ---------- شاشة الترحيب والجسيمات الضوئية ---------- */
+    /* ---------- شاشة الترحيب ---------- */
     @keyframes bgShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    @keyframes particleFloat { 0% { transform: translateY(0) scale(0.6); opacity: 0; } 20% { opacity: 0.8; } 80% { opacity: 0.8; } 100% { transform: translateY(-115vh) scale(1.2); opacity: 0; } }
+    @keyframes gemFloat { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 12% { opacity: 0.75; } 88% { opacity: 0.75; } 100% { transform: translateY(-115vh) rotate(360deg); opacity: 0; } }
     @keyframes logoGlow { 0%,100% { filter: drop-shadow(0 0 8px rgba(255,215,0,0.35)); } 50% { filter: drop-shadow(0 0 22px rgba(255,215,0,0.8)); } }
     .ws-bgfx { background: linear-gradient(135deg, #150824, #2B1055, #1b0c30, #3a1473, #150824); background-size: 400% 400%; animation: bgShift 16s ease infinite; }
     .ws-bgfx::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 30%, rgba(255,215,0,0.14), transparent 55%); }
-    .ws-particle { position: absolute; bottom: -20px; border-radius: 50%; background: radial-gradient(circle, #FFD700 20%, rgba(255, 215, 0, 0.2) 80%); box-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700; animation: particleFloat linear infinite; will-change: transform, opacity; }
+    .ws-gem { position: absolute; bottom: -50px; animation: gemFloat linear infinite; will-change: transform; }
     .ws-logo-glow { animation: logoGlow 3.2s ease-in-out infinite; }
     #ws-about { max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease; }
     #ws-about.open { max-height: 55vh; opacity: 1; overflow-y: auto; }
 
+    /* ---------- التجاوب: هاتف / آيباد / لابتوب بدون زوم ---------- */
     @media (max-width: 767px) { input, textarea, select { font-size: 16px !important; } }
+    .text-\[9px\]:not(.keep-size) { font-size: 11px !important; }
+    .text-\[10px\]:not(.keep-size) { font-size: 12px !important; }
+    .text-\[11px\]:not(.keep-size) { font-size: 13px !important; }
+    @media (min-width: 768px) {
+        .text-xs:not(.keep-size) { font-size: 14px !important; }
+        .text-\[10px\]:not(.keep-size) { font-size: 13px !important; }
+        .text-\[11px\]:not(.keep-size) { font-size: 14px !important; }
+        [id$="-modal"] > .max-w-xs { max-width: 26rem; }
+    }
+    [id$="-modal"] > .panel-card { max-height: 92vh; max-height: 92dvh; overflow-y: auto; }
     header { padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
     #toast-container { top: calc(1rem + env(safe-area-inset-top, 0px)); }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+    }
 </style>
 </head>
 <body class="w-full min-h-screen flex flex-col justify-between m-0 p-0 splash-open">
@@ -158,7 +172,7 @@
     <!-- HEADER -->
     <header class="w-full bg-supercellPurple border-b-4 border-supercellCardBorder px-4 py-3 flex items-center justify-between sticky top-0 z-40 shadow-md">
         <div class="flex items-center gap-2">
-            <div id="header-brand-container" class="flex items-center">
+            <div id="header-logo-container" class="flex items-center">
                 <span id="logo-display" class="font-black text-xl italic tracking-tighter text-supercellGold game-badge">SAVO XP</span>
             </div>
         </div>
@@ -212,23 +226,47 @@
     <!-- MAIN CONTENT AREA -->
     <main class="flex-1 p-3 md:p-6 flex flex-col gap-4">
 
+        <!-- Profile Quick Card -->
+        <div id="user-profile-card" class="panel-card p-3.5 flex items-center justify-between hidden">
+            <div class="flex items-center gap-3 min-w-0">
+                <div id="profile-avatar-container" class="w-12 h-12 shrink-0 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center border-2 border-supercellGold text-supercellGold font-black text-lg shadow overflow-hidden">
+                    <i class="fa-solid fa-crown" id="profile-fallback-icon"></i>
+                </div>
+                <div class="min-w-0">
+                    <h4 id="profile-name" class="font-black text-sm md:text-base text-white truncate max-w-[160px] md:max-w-xs">اسم المتابع</h4>
+                    <p id="profile-tag" class="text-[10px] md:text-xs text-supercellBlue font-bold">#TAG000</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <button onclick="openEditProfileModal()" class="btn-blue px-2.5 py-1.5 rounded text-black font-bold text-[10px] md:text-xs whitespace-nowrap">
+                    <i class="fa-solid fa-pen-to-square ml-1"></i> تعديل
+                </button>
+                <button onclick="logoutUser()" class="btn-red px-2.5 py-1.5 rounded text-white font-bold text-[10px] md:text-xs whitespace-nowrap">
+                    خروج
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div id="user-actions-row" class="grid grid-cols-2 gap-2 hidden">
+            <button onclick="openPromoModal()" class="btn-blue py-2 rounded-lg text-black font-black text-xs">🎟️ كود هدية</button>
+            <button onclick="openReferralModal()" class="btn-gold py-2 rounded-lg text-black font-black text-xs">🤝 ادعُ أصدقاءك</button>
+            <button onclick="installApp()" class="install-btn hidden col-span-2 btn-blue py-2 rounded-lg text-black font-black text-xs"><i class="fa-solid fa-download ml-1"></i> ثبّت الموقع كتطبيق</button>
+        </div>
+
         <!-- TABS NAVIGATION -->
-        <div class="grid grid-cols-4 gap-1.5 bg-black/40 p-1.5 rounded-xl border border-supercellCardBorder">
-            <button onclick="switchTab('store')" id="tab-btn-store" class="py-2.5 px-1 rounded-lg font-black text-[11px] md:text-sm text-center transition-all bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow flex flex-col items-center justify-center gap-1">
-                <i class="fa-solid fa-store text-sm"></i>
-                <span>المتجر</span>
+        <div class="flex gap-1.5 bg-black/40 p-1.5 rounded-xl border border-supercellCardBorder">
+            <button onclick="switchTab('store')" id="tab-btn-store" class="flex-1 py-2.5 rounded-lg font-black text-[11px] md:text-sm text-center transition-all bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow">
+                <i class="fa-solid fa-store ml-1"></i> المتجر
             </button>
-            <button onclick="switchTab('history')" id="tab-btn-history" class="py-2.5 px-1 rounded-lg font-black text-[11px] md:text-sm text-center transition-all text-gray-300 hover:text-white flex flex-col items-center justify-center gap-1">
-                <i class="fa-solid fa-clock-rotate-left text-sm"></i>
-                <span>المشتريات</span>
+            <button onclick="switchTab('history')" id="tab-btn-history" class="flex-1 py-2.5 rounded-lg font-black text-[11px] md:text-sm text-center transition-all text-gray-300 hover:text-white">
+                <i class="fa-solid fa-clock-rotate-left ml-1"></i> المشتريات
             </button>
-            <button onclick="switchTab('leaderboard')" id="tab-btn-leaderboard" class="py-2.5 px-1 rounded-lg font-black text-[11px] md:text-sm text-center transition-all text-gray-300 hover:text-white flex flex-col items-center justify-center gap-1">
-                <i class="fa-solid fa-trophy text-sm"></i>
-                <span>المتصدرين</span>
+            <button onclick="switchTab('leaderboard')" id="tab-btn-leaderboard" class="flex-1 py-2.5 rounded-lg font-black text-[11px] md:text-sm text-center transition-all text-gray-300 hover:text-white">
+                <i class="fa-solid fa-trophy ml-1"></i> المتصدرين
             </button>
-            <button onclick="checkAdminAccess()" id="tab-btn-admin" class="hidden py-2.5 px-1 rounded-lg font-black text-[11px] md:text-sm text-center transition-all text-gray-300 hover:text-white flex flex-col items-center justify-center gap-1">
-                <i class="fa-solid fa-gear text-sm"></i>
-                <span>الأدمن</span>
+            <button onclick="checkAdminAccess()" id="tab-btn-admin" class="hidden flex-1 py-2.5 rounded-lg font-black text-[11px] md:text-sm text-center transition-all text-gray-300 hover:text-white">
+                <i class="fa-solid fa-gear ml-1"></i> الأدمن
             </button>
         </div>
 
@@ -265,95 +303,115 @@
             <div id="leaderboard-list" class="flex flex-col gap-3 max-w-xl w-full mx-auto"></div>
         </section>
 
-        <!-- TAB 3: ADMIN DASHBOARD (Organized with Sub-tabs) -->
+        <!-- TAB 3: ADMIN DASHBOARD -->
         <section id="tab-admin" class="flex flex-col gap-4 hidden">
             <div class="bg-supercellCard border-2 border-red-500/50 p-3.5 rounded-xl flex items-center justify-between">
                 <div>
                     <h3 class="font-black text-sm md:text-base text-red-400">لوحة تحكم المشرف (Admin - مهند أبو خضر)</h3>
-                    <p class="text-[10px] md:text-xs text-gray-300">تحكم كامل بالنقاط، المنتجات، الإشعارات، المهام والأحداث</p>
+                    <p class="text-[10px] md:text-xs text-gray-300">تحكم كامل بالنقاط، المنتجات، الإشعارات والأحداث الأسبوعية</p>
                 </div>
                 <button onclick="lockAdminPanel()" class="btn-red px-3 py-1.5 rounded text-white font-bold text-xs">قفل اللوحة</button>
             </div>
 
-            <!-- Admin Sub-tabs Navigation -->
-            <div class="grid grid-cols-4 gap-1 bg-black/50 p-1 rounded-lg border border-supercellCardBorder text-center">
-                <button onclick="switchAdminSubTab('announcements')" id="adm-tab-announcements" class="py-2 px-1 rounded font-black text-[10px] md:text-xs bg-supercellPurple text-supercellGold border border-supercellCardBorder">الإعلانات والرسائل</button>
-                <button onclick="switchAdminSubTab('products')" id="adm-tab-products" class="py-2 px-1 rounded font-black text-[10px] md:text-xs text-gray-300 hover:text-white">المنتجات والأكواد</button>
-                <button onclick="switchAdminSubTab('users')" id="adm-tab-users" class="py-2 px-1 rounded font-black text-[10px] md:text-xs text-gray-300 hover:text-white">المتابعين</button>
-                <button onclick="switchAdminSubTab('audit')" id="adm-tab-audit" class="py-2 px-1 rounded font-black text-[10px] md:text-xs text-gray-300 hover:text-white">السجل الشامل</button>
-            </div>
-
-            <!-- SUB-TAB 1: Announcements & Settings -->
-            <div id="adm-sec-announcements" class="flex flex-col gap-3">
+            <div class="flex flex-col gap-4">
+                <!-- Send Notification Panel -->
                 <div class="panel-card p-3.5 flex flex-col gap-3 border-2 border-supercellBlue/60">
                     <h4 class="font-black text-xs md:text-sm text-supercellBlue border-b border-supercellCardBorder pb-1 flex items-center gap-1.5">
                         <i class="fa-solid fa-paper-plane"></i> إرسال إشعار / رسالة جماعية للمتابعين
                     </h4>
                     <div class="flex flex-col gap-2">
-                        <input type="text" id="admin-notif-title" placeholder="عنوان الإشعار..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
-                        <textarea id="admin-notif-text" rows="2" placeholder="نص الرسالة..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold resize-none"></textarea>
-                        <button onclick="sendGlobalNotification()" class="btn-blue py-2 rounded text-black font-black text-xs">إرسال الإشعار لجميع المتابعين</button>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] text-gray-300">عنوان الإشعار:</label>
+                            <input type="text" id="admin-notif-title" placeholder="مثال: تحديث جديد في متجر المكافآت!" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] text-gray-300">نص الرسالة:</label>
+                            <textarea id="admin-notif-text" rows="2" placeholder="اكتب تفاصيل الرسالة هنا لتظهر في صندوق إشعارات جميع المتابعين..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold resize-none"></textarea>
+                        </div>
+                        <button onclick="sendGlobalNotification()" class="btn-blue py-2 rounded text-black font-black text-xs mt-1">إرسال الإشعار لجميع المتابعين الآن</button>
                     </div>
                 </div>
 
+                <!-- General Settings & Weekly Event & Whatsapp -->
                 <div class="panel-card p-3.5 flex flex-col gap-3">
-                    <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1">الإعدادات العامة والشريط المتحرك والأحداث</h4>
-                    
-                    <div class="flex items-center justify-between bg-black/40 p-2.5 rounded border border-supercellCardBorder">
-                        <span class="text-xs text-gray-200 font-bold">حركة الشريط المتحرك (إعلان العلوي):</span>
-                        <select id="admin-marquee-motion" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-supercellGold">
-                            <option value="running">متحرك (تلقائي)</option>
-                            <option value="paused">ثابت (متوقف)</option>
-                        </select>
-                    </div>
-
+                    <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1">الإعدادات العامة والأحداث</h4>
                     <div class="flex gap-2">
-                        <div class="w-1/3 flex flex-col gap-1">
+                        <div class="flex flex-col gap-1 w-1/3">
                             <label class="text-[10px] text-gray-300">عنوان التنبيه:</label>
-                            <input type="text" id="admin-announcement-badge" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+                            <input type="text" id="admin-announcement-badge" placeholder="مثال: تنويه" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                         </div>
-                        <div class="flex-1 flex flex-col gap-1">
-                            <label class="text-[10px] text-gray-300">نص شريط الإعلان:</label>
-                            <input type="text" id="admin-announcement-input" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+                        <div class="flex flex-col gap-1 flex-1">
+                            <label class="text-[10px] text-gray-300">نص شريط الإعلان المتحرك:</label>
+                            <input type="text" id="admin-announcement-input" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                         </div>
                     </div>
 
                     <div class="bg-black/40 border border-supercellCardBorder p-2.5 rounded flex flex-col gap-2">
-                        <h5 class="font-black text-[11px] text-supercellBlue">إعدادات الحدث الأسبوعي</h5>
-                        <input type="text" id="admin-weekly-text" placeholder="نص الحدث..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+                        <h5 class="font-black text-[11px] text-supercellBlue">إعدادات الحدث / التحدي الأسبوعي</h5>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] text-gray-300">نص الحدث (ترك فارغاً للإخفاء):</label>
+                            <input type="text" id="admin-weekly-text" placeholder="مثال: وصلوا الفيديو 1000 لايك لنوزع 50 نقطة!" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+                        </div>
                         <div class="grid grid-cols-2 gap-2">
-                            <input type="text" id="admin-weekly-btn-text" placeholder="نص الزر..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
-                            <input type="text" id="admin-weekly-btn-url" placeholder="رابط الزر..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[10px] text-gray-300">نص الزر:</label>
+                                <input type="text" id="admin-weekly-btn-text" placeholder="مثال: فتح الفيديو" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[10px] text-gray-300">رابط الزر:</label>
+                                <input type="text" id="admin-weekly-btn-url" placeholder="https://youtube.com/..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Daily Task Configuration -->
-                    <div class="bg-black/40 border border-supercellGold/40 p-2.5 rounded flex flex-col gap-2">
-                        <h5 class="font-black text-[11px] text-supercellGold">إعدادات المهمة اليومية (اترك الرابط فارغاً لإخفائها)</h5>
-                        <input type="text" id="admin-task-title" placeholder="عنوان المهمة (مثال: شاهد فيديو اليوتيوب الجديد)" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" id="admin-task-url" placeholder="رابط المهمة (YouTube/Social)" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
-                            <input type="number" id="admin-task-reward" placeholder="عدد الجواهر (XP)" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
-                        </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] text-gray-300">نص بار الأحداث الجديدة (ترك فارغاً للإخفاء):</label>
+                        <input type="text" id="admin-event-bar-input" placeholder="مثال: البث المباشر القادم اليوم الساعة 9 مساءً!" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                     </div>
 
-                    <input type="text" id="admin-logo-input" placeholder="رابط الشعار المخصص (Logo URL)" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
-                    <textarea id="admin-about-text" rows="3" placeholder="وصف الموقع..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white resize-none"></textarea>
-                    
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] text-gray-300">رابط الشعار المخصص (Logo URL):</label>
+                        <input type="text" id="admin-logo-input" placeholder="ترك فارغاً لاستخدام اللوجو الافتراضي" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] text-supercellGold font-bold">وصف الموقع (يظهر عند الضغط على "اقرأ المزيد" في شاشة الترحيب):</label>
+                        <textarea id="admin-about-text" rows="5" placeholder="اكتب هنا وصفاً يعرّف الزائر بالموقع قبل تسجيل الدخول... (ترك فارغاً لاستخدام الوصف الافتراضي)" class="bg-black/60 border border-supercellGold/50 rounded px-2.5 py-1.5 text-xs text-white resize-none"></textarea>
+                    </div>
+
+                    <h5 class="font-black text-[11px] text-supercellGold mt-1 pt-1 border-t border-supercellCardBorder">إعدادات قنوات التواصل والتحصيل</h5>
+
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] text-emerald-400 font-bold">تنويه قناة الواتساب (يظهر أسفل الموقع):</label>
+                        <input type="text" id="admin-whatsapp-notice" placeholder="مثال: تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية" class="bg-black/60 border border-emerald-500/50 rounded px-2.5 py-1.5 text-xs text-white">
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] text-supercellBlue font-bold">نص نافذة (كيف تحصل على الجواهر؟):</label>
+                        <textarea id="admin-earn-instructions" rows="4" class="bg-black/60 border border-supercellBlue/50 rounded px-2.5 py-1.5 text-xs text-white resize-none" placeholder="اكتب هنا النقاط التي تظهر للمتابع عند النقر على زر (+) الجواهر...">• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.
+• حضور ومتابعة البث المباشر على اليوتيوب.
+• الهدايا والمسابقات أثناء البث المباشر.</textarea>
+                    </div>
+
                     <div class="grid grid-cols-2 gap-2">
                         <input type="text" id="social-yt" placeholder="رابط اليوتيوب" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                         <input type="text" id="social-tik" placeholder="رابط تيك توك" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                         <input type="text" id="social-ig" placeholder="رابط انستغرام" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                         <input type="text" id="social-twi" placeholder="رابط تويتش" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
-                        <input type="text" id="social-wa" placeholder="رابط قناة الواتساب" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
+                        <input type="text" id="social-wa" placeholder="رابط قناة الواتساب" value="https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
                     </div>
 
-                    <button onclick="saveAdminSettings()" class="btn-gold py-2 rounded text-black font-black text-xs">حفظ الإعدادات والتحديث السحابي</button>
+                    <h5 class="font-black text-[11px] text-supercellGold mt-1 pt-1 border-t border-supercellCardBorder">أيقونات الألعاب (الصق رابط الصورة من GitHub)</h5>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="game-icon-cr" placeholder="أيقونة كلاش رويال" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
+                        <input type="text" id="game-icon-coc" placeholder="أيقونة كلاش أوف كلانس" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
+                        <input type="text" id="game-icon-hd" placeholder="أيقونة هاي داي" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
+                        <input type="text" id="game-icon-bs" placeholder="أيقونة براول ستارز" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
+                    </div>
+                    <button onclick="saveAdminSettings()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حفظ الإعدادات والتحديث السحابي</button>
                 </div>
-            </div>
 
-            <!-- SUB-TAB 2: Products & Promo Codes -->
-            <div id="adm-sec-products" class="flex flex-col gap-3 hidden">
+                <!-- Product Management -->
                 <div class="panel-card p-3.5 flex flex-col gap-3">
                     <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
                         <h4 class="font-black text-xs md:text-sm text-supercellGold">إدارة المنتجات والأكواد</h4>
@@ -362,38 +420,39 @@
                     <div id="admin-products-list" class="flex flex-col gap-2 max-h-72 overflow-y-auto pr-1"></div>
                 </div>
 
+                <!-- Promo Codes -->
                 <div class="panel-card p-3.5 flex flex-col gap-3">
                     <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1.5">🎟️ الأكواد الترويجية (جواهر مجانية)</h4>
                     <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="promo-new-code" placeholder="الكود (SAVO100)" dir="ltr" maxlength="30" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
+                        <input type="text" id="promo-new-code" placeholder="الكود (حروف إنجليزية وأرقام)" dir="ltr" maxlength="30" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
                         <input type="number" id="promo-new-reward" placeholder="عدد الجواهر" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
-                        <input type="number" id="promo-new-max" placeholder="عدد الاستخدامات" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
+                        <input type="number" id="promo-new-max" placeholder="عدد مرات الاستخدام" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                     </div>
                     <button onclick="createPromoCode()" class="btn-blue py-2 rounded text-black font-black text-xs">إنشاء الكود</button>
                     <div id="admin-promo-list" class="flex flex-col gap-2 max-h-64 overflow-y-auto pr-1"></div>
                 </div>
-            </div>
 
-            <!-- SUB-TAB 3: Users Management -->
-            <div id="adm-sec-users" class="flex flex-col gap-3 hidden">
-                <div class="panel-card p-3.5 flex flex-col gap-3">
-                    <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
-                        <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-users ml-1"></i> إدارة المتابعين (انقر على المتابع لعرض تفاصيله)</h4>
-                        <span id="admin-users-count" class="text-[10px] text-supercellBlue font-bold">0 متابع</span>
-                    </div>
-                    <input type="text" id="admin-user-search" oninput="renderAdminUsers()" placeholder="بحث باسم اليوتيوب أو البريد أو التاغ..." class="bg-black/60 border border-supercellCardBorder rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-supercellGold">
-                    <div id="admin-users-list" class="flex flex-col gap-2 max-h-80 overflow-y-auto pr-1"></div>
-                </div>
-            </div>
-
-            <!-- SUB-TAB 4: Audit Log -->
-            <div id="adm-sec-audit" class="flex flex-col gap-3 hidden">
+                <!-- Master Audit Log -->
                 <div class="panel-card p-3.5 flex flex-col gap-3">
                     <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
                         <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-clipboard-list ml-1"></i> سجل العمليات الشامل للأدمن</h4>
                         <button onclick="clearAdminHistory()" class="text-[10px] text-red-400 hover:text-red-300 underline">مسح السجل</button>
                     </div>
-                    <div id="admin-audit-log-list" class="flex flex-col gap-2 max-h-80 overflow-y-auto pr-1"></div>
+                    <p class="text-[10px] text-gray-300">متابعة دقيقة لكل مشتريات المتابعين والروابط التي تم تسليمها:</p>
+                    <div id="admin-audit-log-list" class="flex flex-col gap-2 max-h-64 overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- Users Management -->
+                <div class="panel-card p-3.5 flex flex-col gap-3">
+                    <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
+                        <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-users ml-1"></i> إدارة المتابعين المسجلين</h4>
+                        <span id="admin-users-count" class="text-[10px] text-supercellBlue font-bold">0 متابع</span>
+                    </div>
+                    <div class="relative">
+                        <span class="absolute right-3 top-2.5 text-gray-400 text-xs"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" id="admin-user-search" oninput="renderAdminUsers()" placeholder="بحث باسم قناة اليوتيوب أو تاغ كلاش (#)..." class="w-full bg-black/60 border border-supercellCardBorder rounded-lg pr-9 pl-3 py-2 text-xs text-white focus:outline-none focus:border-supercellGold">
+                    </div>
+                    <div id="admin-users-list" class="flex flex-col gap-2 max-h-80 overflow-y-auto pr-1"></div>
                 </div>
             </div>
         </section>
@@ -431,7 +490,9 @@
             <button onclick="closeLoginModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="flex flex-col gap-3 py-2">
-            <p class="text-xs text-gray-300 leading-relaxed">يرجى تسجيل الدخول بحساب جوجل لحفظ رصيدك ومشترياتك.</p>
+            <p class="text-xs text-gray-300 leading-relaxed">
+                يجب تسجيل الدخول باستخدام حساب جوجل للتمكن من حفظ رصيدك ونقاطك وسجل مشترياتك بأمان.
+            </p>
             <div class="w-full flex justify-center py-2">
                 <div id="google-signin-btn-container" class="flex justify-center"></div>
             </div>
@@ -443,15 +504,27 @@
 <div id="google-profile-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
-            <h3 class="font-black text-sm text-supercellGold">إكمال بيانات حسابك الجديد</h3>
+            <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5">
+                <i class="fa-solid fa-id-card"></i> إكمال بيانات حسابك الجديد
+            </h3>
         </div>
+        <p class="text-[10px] text-gray-300">أهلاً بك! هذه المرة الأولى لك عبر جوجل، يرجى إكمال بيانات كلاش رويال وقناتك:</p>
         <input type="hidden" id="g-temp-email">
         <input type="hidden" id="g-temp-name">
         <input type="hidden" id="g-temp-avatar">
         <div class="flex flex-col gap-2.5">
-            <input type="text" id="g-profile-yt" placeholder="اسم قناة اليوتيوب" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white">
-            <input type="text" id="g-profile-tag" placeholder="تاغ كلاش رويال (#2PP98V)" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white">
-            <input type="text" id="g-profile-country" placeholder="الدولة" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white">
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">اسم قناة اليوتيوب:</label>
+                <input type="text" id="g-profile-yt" placeholder="مثال: SAVO Gaming" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">تاغ كلاش رويال (Clash Royale Tag):</label>
+                <input type="text" id="g-profile-tag" placeholder="مثال: #2PP98V" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">الدولة:</label>
+                <input type="text" id="g-profile-country" placeholder="مثال: سوريا، السعودية..." class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+            </div>
             <button onclick="saveGoogleProfile()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حفظ وإنشاء الحساب</button>
         </div>
     </div>
@@ -460,9 +533,11 @@
 <!-- DAILY FREE JEWEL MODAL -->
 <div id="daily-jewel-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-xs p-4 flex flex-col items-center text-center gap-3 animate-scaleIn">
-        <div class="w-14 h-14 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-3xl">🎁</div>
+        <div class="w-14 h-14 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-3xl shadow">🎁</div>
         <h3 class="font-black text-base text-supercellGold">الجوهرة اليومية المجانية</h3>
-        <p id="daily-modal-desc" class="text-xs text-gray-200">صلِّ على النبي ﷺ واستلم جوهرتك المجانية.</p>
+        <p id="daily-modal-desc" class="text-xs text-gray-200 leading-relaxed">
+            صلِّ على النبي ﷺ واستلم جوهرتك المجانية كل 24 ساعة.
+        </p>
         <div id="daily-timer-box" class="bg-black/60 border border-supercellCardBorder py-2 px-4 rounded-xl w-full">
             <span id="daily-timer-text" class="text-xs font-black text-supercellBlue">جاهز للمطالبة الآن!</span>
         </div>
@@ -473,64 +548,43 @@
     </div>
 </div>
 
+<!-- PROMO CODE MODAL -->
+<div id="promo-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3 animate-scaleIn text-center">
+        <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
+            <h3 class="font-black text-sm text-supercellGold">🎟️ كود هدية</h3>
+            <button onclick="closePromoModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <p class="text-xs text-gray-300">أدخل الكود للحصول على جواهر مجانية. يمكنك استخدام كل كود مرة واحدة فقط.</p>
+        <input type="text" id="promo-code-input" maxlength="30" dir="ltr" placeholder="مثال: SAVO100" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-2 text-sm text-center text-white uppercase focus:outline-none focus:border-supercellGold">
+        <button onclick="redeemPromo()" class="btn-gold py-2 rounded text-black font-black text-xs">تفعيل الكود</button>
+    </div>
+</div>
+
+<!-- REFERRAL MODAL -->
+<div id="referral-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3 animate-scaleIn text-center">
+        <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
+            <h3 class="font-black text-sm text-supercellGold">🤝 ادعُ أصدقاءك</h3>
+            <button onclick="closeReferralModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <p class="text-xs text-gray-300 leading-relaxed">شارك رابطك الخاص. تحصل على جوهرة عن كل شخص جديد يسجّل الدخول بحساب جوجل عبر رابطك.</p>
+        <input type="text" id="referral-link-output" readonly dir="ltr" class="w-full bg-black/80 text-center text-[11px] text-white p-2 rounded border border-gray-700" onclick="this.select()">
+        <div class="bg-black/40 border border-supercellCardBorder rounded py-1.5 text-[11px] text-supercellBlue font-bold">عدد الإحالات: <span id="referral-count">0</span></div>
+        <button onclick="copyReferralLink()" class="btn-gold py-2 rounded text-black font-black text-xs"><i class="fa-solid fa-copy ml-1"></i> نسخ الرابط</button>
+    </div>
+</div>
+
 <!-- NOTIFICATIONS MODAL -->
 <div id="notifications-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-md p-4 flex flex-col gap-3 max-h-[85vh] overflow-hidden">
         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
-            <h3 class="font-black text-sm text-supercellGold"><i class="fa-solid fa-bell"></i> صندوق الإشعارات</h3>
+            <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5">
+                <i class="fa-solid fa-bell"></i> صندوق الإشعارات والرسائل
+            </h3>
             <button onclick="closeNotificationsModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div id="notifications-list" class="flex flex-col gap-2.5 overflow-y-auto max-h-[65vh] pr-1"></div>
-    </div>
-</div>
-
-<!-- USER PROFILE / ACCOUNT OPTIONS MODAL -->
-<div id="user-options-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="panel-card w-full max-w-sm p-4 flex flex-col gap-3 max-h-[90vh] overflow-y-auto animate-scaleIn">
-        <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
-            <h3 class="font-black text-sm text-supercellGold">ملفك الشخصي وإدارتك</h3>
-            <button onclick="closeUserOptionsModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="flex flex-col items-center gap-2 py-1">
-            <div id="modal-user-avatar" class="w-16 h-16 rounded-full border-2 border-supercellGold overflow-hidden bg-purple-900 flex items-center justify-center text-supercellGold text-xl"></div>
-            <h4 id="modal-user-name" class="font-black text-sm text-white"></h4>
-            <p id="modal-user-tag" class="text-xs text-supercellBlue font-bold"></p>
-        </div>
-
-        <!-- Daily Task Section -->
-        <div id="modal-daily-task-box" class="hidden bg-black/50 border-2 border-supercellGold p-3 rounded-xl flex flex-col gap-2">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-black text-supercellGold">🌟 مهمة يومية متاحة!</span>
-                <span class="text-[10px] bg-supercellBlue text-black font-black px-1.5 py-0.5 rounded">+ <span id="modal-task-reward-val">1</span> 💎</span>
-            </div>
-            <p id="modal-task-title-text" class="text-xs text-gray-200"></p>
-            <div class="flex gap-2">
-                <a id="modal-task-link-btn" href="#" target="_blank" rel="noopener" class="flex-1 btn-blue py-1.5 rounded text-black font-black text-xs text-center">فتح المهمة</a>
-                <button onclick="completeDailyTask()" class="flex-1 btn-gold py-1.5 rounded text-black font-black text-xs">استلام الجواهر</button>
-            </div>
-        </div>
-
-        <!-- Promo Code section -->
-        <div class="bg-black/40 border border-supercellCardBorder p-2.5 rounded flex flex-col gap-2">
-            <span class="text-[11px] font-black text-supercellGold">🎟️ تفعيل كود هدية</span>
-            <div class="flex gap-2">
-                <input type="text" id="profile-promo-input" placeholder="أدخل الكود..." dir="ltr" class="flex-1 bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1 text-xs text-white uppercase">
-                <button onclick="redeemPromoFromProfile()" class="btn-gold px-3 py-1 rounded text-black font-black text-xs">تفعيل</button>
-            </div>
-        </div>
-
-        <!-- Referral Link section -->
-        <div class="bg-black/40 border border-supercellCardBorder p-2.5 rounded flex flex-col gap-2">
-            <span class="text-[11px] font-black text-supercellBlue">🤝 ادعُ أصدقاءك (احصل على جوهرتك)</span>
-            <input type="text" id="profile-referral-link" readonly dir="ltr" class="w-full bg-black/80 text-center text-[10px] text-white p-1.5 rounded border border-gray-700 select-all" onclick="this.select()">
-            <div class="text-[10px] text-gray-300 text-center">عدد الإحالات المسجلة: <span id="profile-referral-count" class="text-supercellGold font-bold">0</span></div>
-            <button onclick="copyReferralLink()" class="btn-blue py-1.5 rounded text-black font-black text-xs"><i class="fa-solid fa-copy ml-1"></i> نسخ رابط الإحالة</button>
-        </div>
-
-        <div class="flex flex-col gap-2 w-full pt-1">
-            <button onclick="closeUserOptionsModal(); openEditProfileModal();" class="btn-blue py-2 rounded text-black font-black text-xs">تعديل البيانات</button>
-            <button onclick="closeUserOptionsModal(); logoutUser();" class="btn-red py-2 rounded text-white font-black text-xs">تسجيل الخروج</button>
-        </div>
     </div>
 </div>
 
@@ -542,10 +596,22 @@
             <button onclick="closeEditProfileModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="flex flex-col gap-2.5">
-            <input type="text" id="edit-name" placeholder="الاسم" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white">
-            <input type="text" id="edit-yt" placeholder="قناة اليوتيوب" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white">
-            <input type="text" id="edit-tag" placeholder="تاغ كلاش رويال" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white">
-            <input type="text" id="edit-country" placeholder="الدولة" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white">
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">الاسم:</label>
+                <input type="text" id="edit-name" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">اسم قناة اليوتيوب:</label>
+                <input type="text" id="edit-yt" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">تاغ كلاش رويال (Clash Royale Tag):</label>
+                <input type="text" id="edit-tag" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">الدولة:</label>
+                <input type="text" id="edit-country" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+            </div>
             <button onclick="saveEditedProfile()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حفظ التعديلات</button>
         </div>
     </div>
@@ -554,62 +620,27 @@
 <!-- EARN POINTS MODAL -->
 <div id="earn-points-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3 text-center">
-        <div class="w-12 h-12 rounded-full bg-supercellBlue/25 border-2 border-supercellBlue flex items-center justify-center text-supercellBlue text-2xl mx-auto"><i class="fa-solid fa-coins"></i></div>
+        <div class="w-12 h-12 rounded-full bg-supercellBlue/20 border-2 border-supercellBlue flex items-center justify-center text-supercellBlue text-2xl mx-auto">
+            <i class="fa-solid fa-coins"></i>
+        </div>
         <h3 class="font-black text-base text-supercellGold">كيف تحصل على الجواهر؟</h3>
+        <p class="text-xs text-gray-200 leading-relaxed">يمكنك تحصيل وجمع الجواهر بسهولة من خلال:</p>
         <div id="earn-instructions-content" class="text-right text-[11px] text-gray-300 bg-black/40 p-2.5 rounded border border-supercellCardBorder flex flex-col gap-1.5 whitespace-pre-line"></div>
         <button onclick="closeEarnPointsModal()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حسناً، فهمت!</button>
-    </div>
-</div>
-
-<!-- ADMIN USER DETAILS MODAL -->
-<div id="admin-user-details-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="panel-card w-full max-w-sm p-4 flex flex-col gap-3 max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
-            <h3 class="font-black text-sm text-supercellGold">تفاصيل المتابع وإدارة رصيده</h3>
-            <button onclick="closeAdminUserDetailsModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <input type="hidden" id="adm-detail-user-key">
-        <div class="flex flex-col gap-2.5 text-xs">
-            <div class="flex items-center gap-3 bg-black/40 p-2.5 rounded border border-supercellCardBorder">
-                <div id="adm-detail-avatar" class="w-12 h-12 rounded-full bg-purple-900 border border-supercellGold flex items-center justify-center text-supercellGold text-lg overflow-hidden"></div>
-                <div class="truncate">
-                    <div id="adm-detail-name" class="font-black text-white"></div>
-                    <div id="adm-detail-tag" class="text-supercellBlue font-bold"></div>
-                    <div id="adm-detail-email" class="text-[10px] text-gray-300"></div>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-                <div class="bg-black/50 p-2 rounded border border-supercellCardBorder">
-                    <span class="text-[10px] text-gray-400 block">الدولة:</span>
-                    <span id="adm-detail-country" class="font-bold text-white"></span>
-                </div>
-                <div class="bg-black/50 p-2 rounded border border-supercellCardBorder">
-                    <span class="text-[10px] text-gray-400 block">تاريخ الانضمام:</span>
-                    <span id="adm-detail-joined" class="font-bold text-white text-[10px]"></span>
-                </div>
-            </div>
-            <div class="bg-black/50 p-2.5 rounded border border-supercellCardBorder flex flex-col gap-1.5">
-                <span class="text-[11px] text-supercellGold font-bold">رصيد الجواهر الحالي: <span id="adm-detail-xp" class="text-supercellBlue text-sm"></span> XP</span>
-                <label class="text-[10px] text-gray-300">إضافة أو خصم جواهر (مثال: 50 أو -20):</label>
-                <div class="flex gap-2">
-                    <input type="number" id="adm-detail-adjust-val" placeholder="الكمية..." class="flex-1 bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1 text-xs text-white">
-                    <button onclick="applyAdminUserXpAdjustment()" class="btn-gold px-3 py-1 rounded text-black font-black text-xs">تطبيق</button>
-                </div>
-            </div>
-            <button onclick="deleteUserAccountFromDetails()" class="btn-red py-2 rounded text-white font-black text-xs mt-1">حذف هذا الحساب نهائياً</button>
-        </div>
     </div>
 </div>
 
 <!-- PRODUCT CONFIRMATION MODAL -->
 <div id="confirm-purchase-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-xs p-4 flex flex-col items-center text-center gap-3">
-        <div class="w-12 h-12 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-amber-400 text-2xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="w-12 h-12 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-amber-400 text-2xl">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
         <h3 class="font-black text-base text-supercellGold">تأكيد عملية الشراء</h3>
-        <p id="confirm-purchase-text" class="text-xs text-gray-200">هل أنت متأكد من رغبتك في شراء هذا المنتج؟</p>
+        <p id="confirm-purchase-text" class="text-xs text-gray-200">هل أنت متأكد من رغبتك في شراء هذا المنتج وخصم النقاط من رصيدك؟</p>
         <input type="hidden" id="pending-product-id">
         <div class="flex gap-2 w-full mt-2">
-            <button onclick="executeRedeem()" class="flex-1 btn-gold py-2 rounded text-black font-black text-xs">تأكيد الشراء</button>
+            <button onclick="executeRedeem()" class="flex-1 btn-gold py-2 rounded text-black font-black text-xs">نعم، تأكيد الشراء</button>
             <button onclick="closeConfirmModal()" class="flex-1 btn-red py-2 rounded text-white font-black text-xs">إلغاء</button>
         </div>
     </div>
@@ -619,24 +650,59 @@
 <div id="product-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-sm p-4 flex flex-col gap-3 max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
-            <h3 id="product-modal-title" class="font-black text-sm text-supercellGold">إضافة منتج جديد</h3>
+            <h3 id="product-modal-title" class="font-black text-sm text-supercellGold flex items-center gap-1.5">إضافة منتج جديد</h3>
             <button onclick="closeProductModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <input type="hidden" id="edit-product-id">
         <div class="flex flex-col gap-2.5">
-            <select id="prod-game" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
-                <option value="">بدون لعبة (الكل)</option>
-                <option value="cr">كلاش رويال</option>
-                <option value="coc">كلاش أوف كلانس</option>
-                <option value="hd">هاي داي</option>
-                <option value="bs">براول ستارز</option>
-            </select>
-            <input type="text" id="prod-name" placeholder="اسم المنتج" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
-            <input type="text" id="prod-desc" placeholder="الوصف" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
-            <input type="number" id="prod-price" placeholder="السعر بالنقاط" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
-            <input type="text" id="prod-img" placeholder="رابط صورة المنتج" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
-            <textarea id="prod-links" rows="4" placeholder="روابط الأكواد (كل رابط في سطر)" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white resize-none"></textarea>
-            <button onclick="saveProduct()" class="btn-gold py-2 rounded text-black font-black text-xs mt-2">حفظ المنتج</button>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">اللعبة:</label>
+                <select id="prod-game" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                    <option value="">بدون لعبة (يظهر في قسم "الكل" فقط)</option>
+                    <option value="cr">كلاش رويال</option>
+                    <option value="coc">كلاش أوف كلانس</option>
+                    <option value="hd">هاي داي</option>
+                    <option value="bs">براول ستارز</option>
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">اسم المنتج:</label>
+                <input type="text" id="prod-name" placeholder="مثال: باقة جواهر 500" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">الوصف:</label>
+                <input type="text" id="prod-desc" placeholder="مثال: جواهر كلاش رويال رسمية" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">السعر بالنقاط (XP):</label>
+                <input type="number" id="prod-price" placeholder="100" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">رابط صورة المنتج (Image URL):</label>
+                <input type="text" id="prod-img" placeholder="https://..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">مخزون الأكواد (ضع كل رابط/كود في سطر مستقل):</label>
+                <textarea id="prod-links" rows="4" placeholder="https://link.clashroyale.com/?..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold resize-none"></textarea>
+            </div>
+            <button onclick="saveProduct()" class="btn-gold py-2 rounded text-black font-black text-xs mt-2">حفظ المنتج سحابياً</button>
+        </div>
+    </div>
+</div>
+
+<!-- CUSTOM POINTS MODAL -->
+<div id="custom-points-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
+        <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
+            <h3 class="font-black text-sm text-supercellGold">تعديل نقاط المتابع</h3>
+            <button onclick="closeCustomPointsModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <input type="hidden" id="target-user-key">
+        <p id="custom-points-user-label" class="text-xs text-gray-300 font-bold"></p>
+        <div class="flex flex-col gap-2">
+            <label class="text-[10px] text-gray-300">القيمة المراد إضافتها (أو خصمها بسالب مثل -50):</label>
+            <input type="number" id="custom-points-val" placeholder="مثال: 150 أو -50" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-supercellGold">
+            <button onclick="applyCustomPoints()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">تأكيد وتطبيق</button>
         </div>
     </div>
 </div>
@@ -644,13 +710,27 @@
 <!-- SUCCESS PURCHASE REDEEMED MODAL -->
 <div id="redeem-success-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-xs p-4 flex flex-col items-center text-center gap-3">
-        <div class="w-12 h-12 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-2xl"><i class="fa-solid fa-trophy"></i></div>
+        <div class="w-12 h-12 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-2xl">
+            <i class="fa-solid fa-trophy"></i>
+        </div>
         <h3 class="font-black text-base text-supercellGold">مبروك! تم الاستبدال بنجاح</h3>
-        <p id="redeem-success-desc" class="text-xs text-gray-300">لقد حصلت على المكافأة بنجاح.</p>
-        <input type="text" id="redeem-link-output" readonly class="w-full bg-black/80 text-center text-xs text-white p-1.5 rounded border border-gray-700 select-all">
+        <p id="redeem-success-desc" class="text-xs text-gray-300">لقد حصلت على المكافأة بنجاح وتم خصم النقاط.</p>
+        <div class="w-full bg-black/60 p-2.5 rounded border border-supercellCardBorder flex flex-col gap-1 items-center">
+            <span class="text-[10px] text-supercellBlue font-bold">رابط المكافأة الخاص بك:</span>
+            <input type="text" id="redeem-link-output" readonly class="w-full bg-black/80 text-center text-xs text-white p-1.5 rounded border border-gray-700 select-all" onclick="this.select()">
+        </div>
         <div class="flex flex-col gap-2 w-full mt-1">
-            <a id="redeem-open-link-btn" href="#" target="_blank" rel="noopener" class="w-full btn-blue py-2 rounded text-black font-black text-xs text-center block">فتح الرابط مباشرة</a>
-            <button onclick="closeRedeemModal()" class="w-full btn-red py-2 rounded text-white font-black text-xs">إغلاق / تم</button>
+            <a id="redeem-open-link-btn" href="#" target="_blank" rel="noopener" class="w-full btn-blue py-2 rounded text-black font-black text-xs text-center block">
+                <i class="fa-solid fa-external-link-alt ml-1"></i> فتح الرابط مباشرة
+            </a>
+            <div class="flex gap-2 w-full">
+                <button onclick="copyRedeemLink()" class="flex-1 btn-gold py-2 rounded text-black font-black text-xs">
+                    <i class="fa-solid fa-copy ml-1"></i> نسخ الرابط
+                </button>
+                <button onclick="closeRedeemModal()" class="flex-1 btn-red py-2 rounded text-white font-black text-xs">
+                    إغلاق / تم
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -675,6 +755,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const ADMIN_EMAIL = "mohanadabukhader176@gmail.com";
+
 const DEFAULT_ABOUT = 'SAVO XP هو متجر مكافآت لمتابعي القناة.\n\n١. سجّل الدخول بحساب جوجل.\n٢. اجمع الجواهر: جوهرة مجانية كل 24 ساعة، ومن البث المباشر والمسابقات.\n٣. استبدل جواهرك بالمكافآت من المتجر.';
 
 let state = {
@@ -688,16 +769,12 @@ let state = {
     settings: {
         badge: 'تنويه',
         announcement: 'أهلاً بك في منصة مكافآت صانع المحتوى SAVO XP - تابع البث المباشر واجمع النقاط!',
-        marqueeMotion: 'running',
         weeklyText: 'وصلوا الفيديو 1000 لايك لنوزع 50 نقطة للجميع!',
         weeklyBtnText: 'فتح الفيديو',
         weeklyBtnUrl: 'https://youtube.com',
         eventBarText: '',
         logoUrl: '',
         aboutText: '',
-        taskTitle: '',
-        taskUrl: '',
-        taskReward: 1,
         whatsappNoticeText: 'تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية',
         earnInstructions: '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• الهدايا والمسابقات أثناء البث المباشر.',
         gameIcons: {},
@@ -711,13 +788,17 @@ let state = {
     }
 };
 
+// ===================== أدوات مساعدة =====================
 const el = (id) => document.getElementById(id);
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const safeUrl = (u) => {
     const s = String(u ?? '').trim();
     if (!s) return '#';
     for (const c of [s, 'https://' + s]) {
-        try { const x = new URL(c); if (x.protocol === 'https:' || x.protocol === 'http:') return x.href; } catch (e) {}
+        try {
+            const x = new URL(c);
+            if (x.protocol === 'https:' || x.protocol === 'http:') return x.href;
+        } catch (e) {}
     }
     return '#';
 };
@@ -725,6 +806,7 @@ const dbKeyOf = (email) => String(email).replace(/[^a-zA-Z0-9]/g, '_');
 
 let serverOffset = 0;
 const serverNow = () => Date.now() + serverOffset;
+
 const DAILY_COOLDOWN = 24 * 60 * 60 * 1000;
 const MAX_REFERRALS = 1000;
 const GAMES = [
@@ -768,6 +850,7 @@ function refreshLeaderboardIfOpen() {
     if (sec && !sec.classList.contains('hidden')) renderLeaderboard();
 }
 
+// ===================== شاشة الترحيب =====================
 let welcomeHideTimer = null;
 function syncWelcomeScreen() {
     const ws = el('welcome-screen');
@@ -800,27 +883,20 @@ window.renderAbout = function () {
     el('ws-about-text').innerText = t !== '' ? t : DEFAULT_ABOUT;
 };
 
-// بناء الجسيمات الضوئية
-(function buildFloatingParticles() {
+(function buildFloatingGems() {
     const bg = el('ws-bg');
     if (!bg) return;
-    bg.innerHTML = '';
-    for (let i = 0; i < 25; i++) {
-        const p = document.createElement('span');
-        p.className = 'ws-particle';
-        const size = Math.random() * 6 + 3;
-        p.style.cssText = `
-            left: ${Math.random() * 98}%;
-            width: ${size}px;
-            height: ${size}px;
-            animation-duration: ${6 + Math.random() * 8}s;
-            animation-delay: ${-Math.random() * 10}s;
-            opacity: ${Math.random() * 0.7 + 0.3};
-        `;
-        bg.appendChild(p);
+    for (let i = 0; i < 16; i++) {
+        const s = document.createElement('span');
+        s.className = 'ws-gem';
+        const star = i % 3 === 0;
+        s.textContent = star ? '✦' : '💎';
+        s.style.cssText = `left:${Math.random() * 96}%;font-size:${14 + Math.random() * 22}px;animation-duration:${9 + Math.random() * 10}s;animation-delay:${-Math.random() * 16}s;${star ? 'color:#FFD700;' : ''}`;
+        bg.appendChild(s);
     }
 })();
 
+// ===================== المزامنة مع Firebase =====================
 function initFirebaseSync() {
     onValue(ref(db, '.info/serverTimeOffset'), (snap) => {
         serverOffset = Number(snap.val()) || 0;
@@ -841,25 +917,41 @@ function initFirebaseSync() {
     });
 
     onValue(ref(db, 'products'), (snapshot) => {
-        state.products = snapshot.exists() ? Object.values(snapshot.val()) : [];
+        if (snapshot.exists()) {
+            const val = snapshot.val();
+            state.products = Object.values(val);
+        } else {
+            state.products = [];
+        }
         renderStore();
-        if (!el('tab-admin').classList.contains('hidden')) renderAdminProducts();
+        if (!el('tab-admin').classList.contains('hidden')) {
+            renderAdminProducts();
+        }
     });
 
     onValue(ref(db, 'notifications'), (snapshot) => {
-        state.notifications = snapshot.exists() ? Object.values(snapshot.val()).sort((a, b) => b.timestamp - a.timestamp) : [];
+        if (snapshot.exists()) {
+            const val = snapshot.val();
+            state.notifications = Object.values(val).sort((a, b) => b.timestamp - a.timestamp);
+        } else {
+            state.notifications = [];
+        }
         updateNotificationBadge();
     });
 
     onValue(ref(db, 'users'), (snapshot) => {
         if (snapshot.exists()) {
             state.usersMap = snapshot.val();
+
             if (state.currentUser) {
-                const updatedMe = Object.values(state.usersMap).find(u => u && u.email === state.currentUser.email);
+                const allUsers = Object.values(state.usersMap);
+                const updatedMe = allUsers.find(u => u && u.email === state.currentUser.email);
                 if (updatedMe) {
                     const oldXp = state.currentUser.xp;
                     state.currentUser = updatedMe;
-                    if (oldXp !== updatedMe.xp) showToast(`تم تحديث رصيدك إلى 💎 ${updatedMe.xp || 0} XP`);
+                    if (oldXp !== updatedMe.xp) {
+                        showToast(`تم تحديث رصيدك إلى 💎 ${updatedMe.xp || 0} XP`);
+                    }
                 }
             }
         } else {
@@ -870,25 +962,41 @@ function initFirebaseSync() {
         renderUserProfile();
         updateNotificationBadge();
         refreshLeaderboardIfOpen();
-        if (!el('tab-admin').classList.contains('hidden')) renderAdminUsers();
+        if (!el('tab-admin').classList.contains('hidden')) {
+            renderAdminUsers();
+        }
     });
 
     onValue(ref(db, 'history'), (snapshot) => {
-        state.history = snapshot.exists() ? Object.values(snapshot.val()) : [];
+        const val = snapshot.val();
+        state.history = val ? Object.values(val) : [];
         renderHistory();
-        if (!el('tab-admin').classList.contains('hidden')) renderAdminAuditLog();
+        if (!el('tab-admin').classList.contains('hidden')) {
+            renderAdminAuditLog();
+        }
     });
 }
 
+// ===================== الإشعارات المنبثقة =====================
 window.showToast = function (message, type = 'success') {
     const container = el('toast-container');
     const toast = document.createElement('div');
     const bgColor = type === 'success' ? 'bg-emerald-600 border-emerald-400' : 'bg-red-600 border-red-400';
+
     toast.className = `pointer-events-auto ${bgColor} text-white px-4 py-2.5 rounded-xl border-2 shadow-xl flex items-center justify-between gap-3 text-xs font-bold`;
     toast.style.animation = 'scaleIn 0.2s ease-out';
-    toast.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid ${type === 'success' ? 'fa-circle-check text-supercellGold' : 'fa-triangle-exclamation'} text-sm"></i><span>${esc(message)}</span></div>`;
+    toast.innerHTML = `
+        <div class="flex items-center gap-2">
+            <i class="fa-solid ${type === 'success' ? 'fa-circle-check text-supercellGold' : 'fa-triangle-exclamation'} text-sm"></i>
+            <span>${esc(message)}</span>
+        </div>
+    `;
     container.appendChild(toast);
-    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3500);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
 };
 
 window.launchConfetti = function () {
@@ -917,175 +1025,212 @@ document.addEventListener('pointerdown', (e) => {
     setTimeout(() => d.remove(), 650);
 });
 
+// ===================== عرض الإعدادات العامة =====================
 window.renderAnnouncement = function () {
     const badgeEl = el('announcement-badge');
     const badgeContainer = el('announcement-badge-container');
     const badgeText = state.settings.badge ? state.settings.badge.trim() : '';
-    if (badgeText !== '') { badgeContainer.style.display = 'inline-block'; badgeEl.innerText = badgeText; }
-    else { badgeContainer.style.display = 'none'; }
-    el('announcement-text').innerText = state.settings.announcement;
-
-    const marqueeP = el('announcement-text');
-    if (marqueeP) {
-        marqueeP.classList.toggle('paused', state.settings.marqueeMotion === 'paused');
+    if (badgeText !== '') {
+        badgeContainer.style.display = 'inline-block';
+        badgeEl.innerText = badgeText;
+    } else {
+        badgeContainer.style.display = 'none';
     }
+    el('announcement-text').innerText = state.settings.announcement;
 };
 
 window.renderWeeklyEvent = function () {
     const container = el('weekly-event-container');
     const textEl = el('weekly-event-text');
     const btnEl = el('weekly-event-btn');
+
     const text = state.settings.weeklyText ? state.settings.weeklyText.trim() : '';
+    const btnText = state.settings.weeklyBtnText ? state.settings.weeklyBtnText.trim() : 'فتح الرابط';
+    const btnUrl = state.settings.weeklyBtnUrl ? state.settings.weeklyBtnUrl.trim() : '#';
+
     if (text !== '') {
         textEl.innerText = text;
-        btnEl.innerText = state.settings.weeklyBtnText || 'فتح الرابط';
-        btnEl.href = safeUrl(state.settings.weeklyBtnUrl);
+        btnEl.innerText = btnText;
+        btnEl.href = safeUrl(btnUrl);
         container.classList.remove('hidden');
-    } else { container.classList.add('hidden'); }
+    } else {
+        container.classList.add('hidden');
+    }
 };
 
 window.renderEventBar = function () {
     const container = el('event-bar-container');
     const textEl = el('event-bar-text');
     const eventText = state.settings.eventBarText ? state.settings.eventBarText.trim() : '';
-    if (eventText !== '') { textEl.innerText = eventText; container.classList.remove('hidden'); }
-    else { container.classList.add('hidden'); }
+
+    if (eventText !== '') {
+        textEl.innerText = eventText;
+        container.classList.remove('hidden');
+    } else {
+        container.classList.add('hidden');
+    }
 };
 
 window.renderHeaderLogo = function () {
     const url = state.settings.logoUrl ? state.settings.logoUrl.trim() : '';
-    const container = el('header-brand-container');
-    if (!container) return;
-    if (!state.currentUser) {
-        if (url !== '') container.innerHTML = `<img src="${esc(url)}" alt="Logo" class="h-7 w-auto object-contain" onerror="this.onerror=null; this.parentNode.innerHTML='SAVO XP';">`;
-        else container.innerHTML = `<span id="logo-display" class="font-black text-xl italic tracking-tighter text-supercellGold game-badge">SAVO XP</span>`;
-    }
-    renderUserProfile();
+    const targets = [['logo-display', 'h-7', 'SAVO XP'], ['ws-logo', 'h-20 md:h-24', 'SAVO XP']];
+    targets.forEach(([id, cls, fallback]) => {
+        const container = el(id);
+        if (!container) return;
+        if (url !== '') {
+            container.innerHTML = `<img src="${esc(url)}" alt="Logo" class="${cls} w-auto object-contain" onerror="this.onerror=null; this.parentNode.innerHTML='${fallback}';">`;
+        } else {
+            container.innerHTML = fallback;
+        }
+    });
 };
 
 window.renderFooterSocials = function () {
     const socials = state.settings.socials || {};
     const waUrl = socials.whatsapp || 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L';
+
     const map = { yt: socials.youtube, tik: socials.tiktok, ig: socials.instagram, twi: socials.twitch, wa: waUrl };
     Object.entries(map).forEach(([key, raw]) => {
         const url = safeUrl(raw);
         const foot = el('social-link-' + key);
         if (foot) foot.href = url;
         const ws = el('ws-social-' + key);
-        if (ws) { ws.href = url; ws.classList.toggle('hidden', url === '#'); }
+        if (ws) {
+            ws.href = url;
+            ws.classList.toggle('hidden', url === '#');
+        }
     });
     el('footer-whatsapp-link').href = safeUrl(waUrl);
-    el('footer-whatsapp-text').innerText = state.settings.whatsappNoticeText || 'تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية';
+
+    const waNoticeText = state.settings.whatsappNoticeText || 'تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية';
+    el('footer-whatsapp-text').innerText = waNoticeText;
 };
 
 window.renderEarnInstructions = function () {
     const box = el('earn-instructions-content');
     if (box) {
-        const ins = state.settings.earnInstructions || '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.';
-        box.innerHTML = ins.split('\n').map(l => l.trim() ? `<div><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> ${esc(l.replace(/^[•\-\*]\s*/, ''))}</div>` : '').join('');
+        const instructions = state.settings.earnInstructions || '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• الهدايا والمسابقات أثناء البث المباشر.';
+        box.innerHTML = instructions.split('\n').map(line => line.trim() ? `<div><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> ${esc(line.replace(/^[•\-\*]\s*/, ''))}</div>` : '').join('');
     }
 };
 
+// ===================== الملف الشخصي =====================
 window.renderUserProfile = function () {
-    const brandContainer = el('header-brand-container');
+    const card = el('user-profile-card');
     const xpDisplay = el('header-xp-balance');
+    const avatarContainer = el('profile-avatar-container');
     const dailyBtn = el('header-daily-btn');
+    const actionsRow = el('user-actions-row');
 
     if (state.currentUser) {
+        card.classList.remove('hidden');
         dailyBtn.classList.remove('hidden');
+        actionsRow.classList.remove('hidden');
+        el('profile-name').innerText = `${state.currentUser.name}`;
+        el('profile-tag').innerText = state.currentUser.tag;
         xpDisplay.innerText = state.currentUser.xp || 0;
+
         updateDailyBtnState();
 
-        const avatarHtml = state.currentUser.avatar ? `<img src="${esc(state.currentUser.avatar)}" alt="" class="w-full h-full object-cover">` : `<i class="fa-solid fa-crown"></i>`;
-        brandContainer.innerHTML = `
-            <button onclick="openUserOptionsModal()" class="flex items-center gap-2 bg-black/40 border-2 border-supercellCardBorder hover:border-supercellGold py-1 px-2.5 rounded-full transition-all group" title="الملف الشخصي">
-                <div class="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-tr from-purple-600 to-indigo-500 border border-supercellGold flex items-center justify-center text-supercellGold text-xs shrink-0 shadow">${avatarHtml}</div>
-                <div class="text-right hidden min-[380px]:block">
-                    <div class="font-black text-xs text-white truncate max-w-[100px]">${esc(state.currentUser.name)}</div>
-                    <div class="text-[9px] text-supercellBlue">${esc(state.currentUser.tag)}</div>
-                </div>
-                <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 group-hover:text-supercellGold mr-0.5"></i>
-            </button>
-        `;
+        if (state.currentUser.avatar) {
+            avatarContainer.innerHTML = `<img src="${esc(state.currentUser.avatar)}" alt="Avatar" class="w-full h-full object-cover">`;
+        } else {
+            avatarContainer.innerHTML = `<i class="fa-solid fa-crown"></i>`;
+        }
     } else {
+        card.classList.add('hidden');
         dailyBtn.classList.add('hidden');
+        actionsRow.classList.add('hidden');
         xpDisplay.innerText = '0';
-        const logoUrl = state.settings.logoUrl ? state.settings.logoUrl.trim() : '';
-        if (logoUrl !== '') brandContainer.innerHTML = `<img src="${esc(logoUrl)}" alt="Logo" class="h-7 w-auto object-contain">`;
-        else brandContainer.innerHTML = `<span id="logo-display" class="font-black text-xl italic tracking-tighter text-supercellGold game-badge">SAVO XP</span>`;
     }
     applyAdminTabVisibility();
     syncWelcomeScreen();
 };
 
-window.openUserOptionsModal = async function () {
-    if (!state.currentUser) return;
-    const avatarContainer = el('modal-user-avatar');
-    avatarContainer.innerHTML = state.currentUser.avatar ? `<img src="${esc(state.currentUser.avatar)}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-crown"></i>`;
-    el('modal-user-name').innerText = state.currentUser.name || '';
-    el('modal-user-tag').innerText = state.currentUser.tag || '';
-
-    if (!state.currentUser.refCode) {
-        state.currentUser.refCode = Math.random().toString(36).slice(2, 10);
-        await update(ref(db, 'users/' + dbKeyOf(state.currentUser.email)), { refCode: state.currentUser.refCode });
-    }
-    el('profile-referral-link').value = location.origin + location.pathname + '?ref=' + state.currentUser.refCode;
-    el('profile-referral-count').innerText = `${state.currentUser.referralCount || 0} / ${MAX_REFERRALS}`;
-
-    const taskBox = el('modal-daily-task-box');
-    const taskTitle = (state.settings.taskTitle || '').trim();
-    const taskUrl = (state.settings.taskUrl || '').trim();
-    if (taskTitle !== '' && taskUrl !== '') {
-        el('modal-task-title-text').innerText = taskTitle;
-        el('modal-task-reward-val').innerText = state.settings.taskReward || 1;
-        el('modal-task-link-btn').href = safeUrl(taskUrl);
-        taskBox.classList.remove('hidden');
-    } else {
-        taskBox.classList.add('hidden');
-    }
-
-    el('profile-promo-input').value = '';
-    el('user-options-modal').classList.remove('hidden');
-};
-
-window.closeUserOptionsModal = () => el('user-options-modal').classList.add('hidden');
-
-window.completeDailyTask = async function () {
-    if (!state.currentUser) return;
-    const dbKey = dbKeyOf(state.currentUser.email);
-    const reward = Number(state.settings.taskReward) || 1;
-    await runTransaction(ref(db, 'users/' + dbKey + '/xp'), (cur) => (cur || 0) + reward);
-    showToast(`مبروك! حصلت على ${reward} جوهرة من المهمة اليومية 💎`);
-    closeUserOptionsModal();
-};
-
 window.updateNotificationBadge = function () {
     const dot = el('notif-badge-dot');
-    if (!state.currentUser) { dot.classList.add('hidden'); return; }
-    const unreadCount = state.notifications.filter(n => n.timestamp > (state.currentUser.lastReadNotification || 0)).length;
-    if (unreadCount > 0) { dot.innerText = unreadCount > 9 ? '9+' : unreadCount; dot.classList.remove('hidden'); }
-    else { dot.classList.add('hidden'); }
+    if (!state.currentUser) {
+        dot.classList.add('hidden');
+        return;
+    }
+
+    const lastRead = state.currentUser.lastReadNotification || 0;
+    const unreadCount = state.notifications.filter(n => n.timestamp > lastRead).length;
+
+    if (unreadCount > 0) {
+        dot.innerText = unreadCount > 9 ? '9+' : unreadCount;
+        dot.classList.remove('hidden');
+    } else {
+        dot.classList.add('hidden');
+    }
 };
 
 window.openNotificationsModal = function () {
-    if (!state.currentUser) { openLoginModal(); return; }
+    if (!state.currentUser) {
+        showToast('يرجى تسجيل الدخول أولاً لعرض الإشعارات.', 'error');
+        openLoginModal();
+        return;
+    }
+
     const listContainer = el('notifications-list');
     listContainer.innerHTML = '';
-    if (state.notifications.length === 0) listContainer.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لا توجد إشعارات حالياً.</div>`;
-    else {
-        state.notifications.forEach(n => {
-            const dateStr = new Date(n.timestamp).toLocaleString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-            listContainer.innerHTML += `<div class="bg-black/50 border border-supercellCardBorder p-3 rounded-xl flex flex-col gap-1"><div class="flex justify-between"><h5 class="font-black text-xs text-supercellGold">${esc(n.title)}</h5><span class="text-[9px] text-gray-400">${esc(dateStr)}</span></div><p class="text-xs text-gray-200">${esc(n.message)}</p></div>`;
+
+    if (state.notifications.length === 0) {
+        listContainer.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لا توجد إشعارات أو رسائل جديدة حالياً.</div>`;
+    } else {
+        state.notifications.forEach(notif => {
+            const dateStr = new Date(notif.timestamp).toLocaleString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const item = document.createElement('div');
+            item.className = 'bg-black/50 border border-supercellCardBorder p-3 rounded-xl flex flex-col gap-1.5';
+            item.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <h5 class="font-black text-xs text-supercellGold flex items-center gap-1.5">
+                        <i class="fa-solid fa-bullhorn text-supercellBlue"></i> ${esc(notif.title)}
+                    </h5>
+                    <span class="text-[9px] text-gray-400">${esc(dateStr)}</span>
+                </div>
+                <p class="text-xs text-gray-200 leading-relaxed">${esc(notif.message)}</p>
+            `;
+            listContainer.appendChild(item);
         });
     }
+
     const nowTime = serverNow();
     state.currentUser.lastReadNotification = nowTime;
-    update(ref(db, 'users/' + dbKeyOf(state.currentUser.email)), { lastReadNotification: nowTime });
+    const dbKey = dbKeyOf(state.currentUser.email);
+    update(ref(db, 'users/' + dbKey), { lastReadNotification: nowTime });
     updateNotificationBadge();
+
     el('notifications-modal').classList.remove('hidden');
 };
+
 window.closeNotificationsModal = () => el('notifications-modal').classList.add('hidden');
 
+window.sendGlobalNotification = function () {
+    const title = el('admin-notif-title').value.trim();
+    const message = el('admin-notif-text').value.trim();
+
+    if (!title || !message) {
+        showToast('يرجى إدخال عنوان ونص الإشعار أولاً.', 'error');
+        return;
+    }
+
+    const notifId = 'notif_' + Date.now();
+    const notifObj = {
+        id: notifId,
+        title,
+        message,
+        timestamp: serverNow()
+    };
+
+    set(ref(db, 'notifications/' + notifId), notifObj).then(() => {
+        el('admin-notif-title').value = '';
+        el('admin-notif-text').value = '';
+        showToast('تم إرسال الإشعار بنجاح لجميع المتابعين!');
+    });
+};
+
+// ===================== الجوهرة اليومية =====================
 function dailyRemaining() {
     const last = (state.currentUser && state.currentUser.lastDailyClaim) || 0;
     const now = serverNow();
@@ -1093,85 +1238,108 @@ function dailyRemaining() {
     return Math.min(Math.max(DAILY_COOLDOWN - (now - last), 0), DAILY_COOLDOWN);
 }
 
+function formatRemaining(ms) {
+    const total = Math.ceil(ms / 1000);
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
 function updateDailyBtnState() {
     if (!state.currentUser) return;
     const dailyBtn = el('header-daily-btn');
     if (!dailyBtn) return;
-    dailyBtn.className = dailyRemaining() > 0 ? 'btn-gold px-2.5 py-1.5 rounded-lg text-black font-black text-[11px] whitespace-nowrap flex items-center gap-1 opacity-60' : 'btn-gold px-2.5 py-1.5 rounded-lg text-black font-black text-[11px] whitespace-nowrap flex items-center gap-1';
+    const base = 'btn-gold px-2.5 py-1.5 rounded-lg text-black font-black text-[11px] whitespace-nowrap flex items-center gap-1';
+    dailyBtn.className = dailyRemaining() > 0 ? base + ' opacity-60' : base;
 }
 
-window.openDailyJewelModal = function () {
-    if (!state.currentUser) { openLoginModal(); return; }
+function refreshDailyModal() {
     const rem = dailyRemaining();
     const timerText = el('daily-timer-text');
     const claimBtn = el('daily-claim-btn');
     if (rem > 0) {
-        timerText.innerText = `متبقي على جوهرتك: ${Math.ceil(rem / 3600000)} ساعة`;
+        timerText.innerText = `المتبقي على جوهرتك القادمة: ${formatRemaining(rem)}`;
         claimBtn.disabled = true;
+        claimBtn.className = 'btn-red py-2.5 rounded text-white font-black text-xs opacity-50 cursor-not-allowed';
     } else {
-        timerText.innerText = 'جوهرتك المجانية جاهزة الآن!';
+        timerText.innerText = 'صلِّ على النبي ﷺ، جوهرتك المجانية جاهزة الآن.';
         claimBtn.disabled = false;
+        claimBtn.className = 'btn-gold py-2.5 rounded text-black font-black text-xs';
     }
+}
+
+window.openDailyJewelModal = function () {
+    if (!state.currentUser) {
+        showToast('يرجى تسجيل الدخول أولاً للمطالبة بالجائزة اليومية.', 'error');
+        openLoginModal();
+        return;
+    }
+    refreshDailyModal();
     el('daily-jewel-modal').classList.remove('hidden');
 };
+
 window.closeDailyJewelModal = () => el('daily-jewel-modal').classList.add('hidden');
 
+let claimingDaily = false;
 window.claimDailyJewel = async function () {
-    if (!state.currentUser || dailyRemaining() > 0) return;
+    if (!state.currentUser || claimingDaily) return;
+
+    if (dailyRemaining() > 0) {
+        showToast('لقد استلمت جوهرتك اليومية مسبقاً، انتظر حتى انقضاء 24 ساعة.', 'error');
+        refreshDailyModal();
+        return;
+    }
+
+    claimingDaily = true;
     const dbKey = dbKeyOf(state.currentUser.email);
-    const res = await runTransaction(ref(db, 'users/' + dbKey), (cur) => {
-        if (!cur) return cur;
-        const now = serverNow();
-        if ((now - (cur.lastDailyClaim || 0)) < DAILY_COOLDOWN) return;
-        cur.xp = (cur.xp || 0) + 1;
-        cur.lastDailyClaim = now;
-        return cur;
-    });
-    if (res.committed) {
-        closeDailyJewelModal();
-        launchConfetti();
-        showToast('تمت إضافة جوهرة واحدة إلى رصيدك 💎');
+    let outcome = 'nodata';
+    try {
+        const res = await runTransaction(ref(db, 'users/' + dbKey), (cur) => {
+            if (cur === null) { outcome = 'nodata'; return cur; }
+            const last = cur.lastDailyClaim || 0;
+            const now = serverNow();
+            if (last <= now + 60000 && (now - last) < DAILY_COOLDOWN) { outcome = 'cooldown'; return; }
+            cur.xp = (cur.xp || 0) + 1;
+            cur.lastDailyClaim = now;
+            outcome = 'ok';
+            return cur;
+        });
+
+        if (res.committed && outcome === 'ok') {
+            closeDailyJewelModal();
+            launchConfetti();
+            showToast('تمت إضافة جوهرة واحدة إلى رصيدك 💎 صلِّ على النبي ﷺ');
+        } else if (outcome === 'cooldown') {
+            showToast('لقد استلمت جوهرتك اليومية مسبقاً، انتظر حتى انقضاء 24 ساعة.', 'error');
+            refreshDailyModal();
+        } else {
+            showToast('تعذر إتمام العملية، حاول مرة أخرى.', 'error');
+        }
+    } catch (e) {
+        showToast('تعذر إتمام العملية، تحقق من الاتصال وحاول مرة أخرى.', 'error');
+    } finally {
+        claimingDaily = false;
     }
 };
 
-window.redeemPromoFromProfile = async function () {
-    if (!state.currentUser) return;
-    const code = el('profile-promo-input').value.trim().toUpperCase();
-    if (!code) return;
-    const dbKey = dbKeyOf(state.currentUser.email);
-    let reward = 0;
-    let ok = false;
-    const res = await runTransaction(ref(db, 'promoCodes/' + code), (cur) => {
-        if (!cur || !cur.active) return;
-        if (cur.redeemedBy && cur.redeemedBy[dbKey]) return;
-        if ((cur.uses || 0) >= (cur.maxUses || 0)) return;
-        cur.uses = (cur.uses || 0) + 1;
-        cur.redeemedBy = cur.redeemedBy || {};
-        cur.redeemedBy[dbKey] = serverNow();
-        reward = Number(cur.reward) || 0;
-        ok = true;
-        return cur;
-    });
-    if (res.committed && ok) {
-        await runTransaction(ref(db, 'users/' + dbKey + '/xp'), (c) => (c || 0) + reward);
-        closeUserOptionsModal();
-        launchConfetti();
-        showToast(`تمت إضافة ${reward} جوهرة بنجاح!`);
-    } else {
-        showToast('الكود غير صالح أو تم استخدامه مسبقاً.', 'error');
-    }
-};
-
-window.copyReferralLink = function () {
-    const input = el('profile-referral-link');
-    navigator.clipboard.writeText(input.value).then(() => showToast('تم نسخ رابط الإحالة!'));
-};
-
-// المتجر والألعاب
+// ===================== المتجر وخانات الألعاب =====================
 function gameIconHtml(g, size) {
     const url = (state.settings.gameIcons || {})[g.id];
-    if (url && String(url).trim() !== '') return `<img src="${esc(url)}" class="${size} object-contain rounded">`;
+    if (url && String(url).trim() !== '') {
+        return `<img src="${esc(url)}" alt="" class="${size} object-contain rounded" onerror="this.outerHTML='<span>${g.emoji}</span>'">`;
+    }
     return `<span>${g.emoji}</span>`;
+}
+
+function productStock(p) {
+    return p && p.links ? p.links.length : 0;
+}
+
+function isNewProduct(p) {
+    const m = /^prod_(\d+)$/.exec(String(p.id || ''));
+    if (!m) return false;
+    return (serverNow() - Number(m[1])) < 7 * 24 * 60 * 60 * 1000;
 }
 
 window.renderGameFilters = function () {
@@ -1182,11 +1350,19 @@ window.renderGameFilters = function () {
     const chips = [{ id: 'all', name: 'الكل', short: 'الكل', emoji: '🎮' }, ...GAMES];
     box.innerHTML = chips.map(c => {
         const active = state.activeGame === c.id;
-        return `<button onclick="setGameFilter('${c.id}')" class="relative flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-xl border-2 font-black transition-all ${active ? 'bg-supercellGold text-black border-yellow-200 shadow-lg' : 'bg-black/40 text-gray-200 border-supercellCardBorder'}"><span class="text-xl">${gameIconHtml(c, 'w-7 h-7')}</span><span class="text-[10px]">${c.short}</span></button>`;
+        const icon = gameIconHtml(c, 'w-7 h-7');
+        return `<button onclick="setGameFilter('${c.id}')" title="${esc(c.name)}" class="relative flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-xl border-2 font-black transition-all min-w-0 ${active ? 'bg-supercellGold text-black border-yellow-200 shadow-lg' : 'bg-black/40 text-gray-200 border-supercellCardBorder hover:border-supercellGold'}">
+            <span class="h-7 flex items-center justify-center text-xl leading-none">${icon}</span>
+            <span class="text-[10px] md:text-xs leading-tight whitespace-nowrap">${c.short}</span>
+            <span class="keep-size absolute -top-2 -left-1.5 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] flex items-center justify-center ${active ? 'bg-black text-supercellGold' : 'bg-supercellPurple text-gray-200 border border-supercellCardBorder'}">${counts[c.id]}</span>
+        </button>`;
     }).join('');
 };
 
-window.setGameFilter = function (id) { state.activeGame = id; renderStore(); };
+window.setGameFilter = function (id) {
+    state.activeGame = id;
+    renderStore();
+};
 
 window.renderStore = function () {
     const grid = el('products-grid');
@@ -1194,24 +1370,44 @@ window.renderStore = function () {
     if (!grid) return;
     renderGameFilters();
     grid.innerHTML = '';
+
     const list = (state.activeGame === 'all' ? state.products : state.products.filter(p => p.game === state.activeGame)).slice();
+    list.sort((a, b) => (productStock(a) === 0 ? 1 : 0) - (productStock(b) === 0 ? 1 : 0));
     countEl.innerText = `${list.length} منتج`;
-    if (list.length === 0) { grid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400 text-xs">لا توجد منتجات حالياً.</div>`; return; }
+
+    if (list.length === 0) {
+        const msg = state.activeGame === 'all' ? 'لا توجد منتجات متاحة حالياً في المتجر.' : 'لا توجد منتجات بهذا القسم حالياً.';
+        grid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400 text-xs">${msg}</div>`;
+        return;
+    }
 
     list.forEach(prod => {
-        const stockCount = prod.links ? prod.links.length : 0;
+        const stockCount = productStock(prod);
+        const isSoldOut = stockCount === 0;
+        const game = GAMES.find(g => g.id === prod.game);
+        const gameBadge = game ? `<span class="flex items-center gap-1 bg-black/70 border border-supercellCardBorder px-1.5 py-0.5 rounded text-[9px] text-supercellBlue font-bold">${gameIconHtml(game, 'w-3.5 h-3.5')}</span>` : '';
+        const newBadge = isNewProduct(prod) ? `<span class="bg-supercellGold text-black px-1.5 py-0.5 rounded text-[9px] font-black">جديد</span>` : '';
+
         const card = document.createElement('div');
-        card.className = 'panel-card p-3 flex flex-col justify-between gap-2.5 relative';
+        card.className = 'panel-card p-3 flex flex-col justify-between gap-2.5 relative overflow-hidden';
         card.innerHTML = `
-            <div class="absolute top-2 left-2 bg-black/70 border border-supercellCardBorder px-2 py-0.5 rounded text-[9px] text-supercellGold font-bold">${stockCount > 0 ? `متبقي: ${stockCount}` : 'نفذت'}</div>
-            <div class="flex flex-col items-center gap-2 pt-5">
-                <img src="${esc(prod.image)}" class="w-16 h-16 object-contain rounded-lg border border-supercellCardBorder bg-black/40" onerror="this.src='https://placehold.co/150x150/2B1055/FFD700?text=Item'">
-                <h4 class="font-black text-xs md:text-sm text-white truncate w-full text-center">${esc(prod.name)}</h4>
-                <p class="text-[10px] text-gray-300 text-center line-clamp-2">${esc(prod.desc)}</p>
+            <div class="absolute top-2 left-2 bg-black/70 border border-supercellCardBorder px-2 py-0.5 rounded text-[9px] text-supercellGold font-bold">
+                ${stockCount > 0 ? `متبقي: ${stockCount}` : 'نفذت'}
+            </div>
+            <div class="absolute top-2 right-2 flex items-center gap-1">${gameBadge}${newBadge}</div>
+            <div class="flex flex-col items-center gap-2 pt-6">
+                <img src="${esc(prod.image)}" alt="${esc(prod.name)}" loading="lazy" class="w-16 h-16 md:w-20 md:h-20 object-contain rounded-lg border border-supercellCardBorder bg-black/40" onerror="this.src='https://placehold.co/150x150/2B1055/FFD700?text=Item'">
+                <h4 class="font-black text-xs md:text-sm text-white text-center truncate w-full">${esc(prod.name)}</h4>
+                <p class="text-[10px] md:text-xs text-gray-300 text-center line-clamp-2 h-9">${esc(prod.desc)}</p>
             </div>
             <div class="flex flex-col gap-2 mt-1">
-                <div class="flex items-center justify-center gap-1 bg-black/40 py-1 rounded border border-supercellCardBorder text-supercellBlue text-xs font-black">💎 ${esc(prod.price)} XP</div>
-                <button onclick="confirmRedeem('${esc(prod.id)}')" class="w-full py-2 rounded text-black font-black text-xs ${stockCount === 0 ? 'bg-gray-600 text-gray-300 cursor-not-allowed' : 'btn-gold'}">${stockCount === 0 ? 'نفذت الكمية' : 'استبدال الكود'}</button>
+                <div class="flex items-center justify-center gap-1.5 bg-black/40 py-1.5 rounded border border-supercellCardBorder">
+                    <span class="text-supercellBlue text-xs">💎</span>
+                    <span class="font-black text-supercellBlue text-xs md:text-sm">${esc(prod.price)} XP</span>
+                </div>
+                <button onclick="confirmRedeem('${esc(prod.id)}')" class="w-full py-2 rounded text-black font-black text-xs ${isSoldOut ? 'bg-gray-600 text-gray-300 border-2 border-gray-500 cursor-not-allowed' : 'btn-gold'}">
+                    ${isSoldOut ? 'نفذت الكمية ❌' : 'استبدال الكود'}
+                </button>
             </div>
         `;
         grid.appendChild(card);
@@ -1221,23 +1417,120 @@ window.renderStore = function () {
 window.renderHistory = function () {
     const list = el('history-list');
     list.innerHTML = '';
-    if (!state.currentUser) { list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">يرجى تسجيل الدخول لعرض المشتريات.</div>`; return; }
-    const userHistory = state.history.filter(h => h.userEmail === state.currentUser.email);
-    if (userHistory.length === 0) { list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لم تقم بشراء أي منتج بعد.</div>`; return; }
+
+    if (!state.currentUser) {
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">يرجى تسجيل الدخول عبر جوجل لعرض سجل المشتريات.</div>`;
+        return;
+    }
+
+    const me = state.currentUser;
+    const userHistory = state.history.filter(h => h.userEmail ? h.userEmail === me.email : h.userTag === me.tag);
+    if (userHistory.length === 0) {
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لم تقم بشراء أي منتج بعد.</div>`;
+        return;
+    }
+
     userHistory.slice().reverse().forEach(item => {
-        list.innerHTML += `<div class="panel-card p-3.5 flex items-center justify-between gap-2"><div class="flex flex-col gap-1 overflow-hidden"><h4 class="font-black text-xs text-white">${esc(item.productName)}</h4><span class="text-[9px] text-gray-400">${esc(item.timestamp)}</span><a href="${esc(safeUrl(item.assignedLink))}" target="_blank" rel="noopener" class="text-[10px] text-supercellBlue truncate underline">الرابط: ${esc(item.assignedLink)}</a></div><span class="text-xs text-red-400 font-bold">-${esc(item.xpSpent)} XP</span></div>`;
+        const row = document.createElement('div');
+        row.className = 'panel-card p-3.5 flex items-center justify-between gap-2';
+        row.innerHTML = `
+            <div class="flex flex-col gap-1 overflow-hidden">
+                <h4 class="font-black text-xs md:text-sm text-white">${esc(item.productName)}</h4>
+                <span class="text-[9px] text-gray-400">${esc(item.timestamp)}</span>
+                <a href="${esc(safeUrl(item.assignedLink))}" target="_blank" rel="noopener" class="text-[10px] text-supercellBlue truncate underline select-all">فتح الرابط: ${esc(item.assignedLink)}</a>
+            </div>
+            <div class="flex items-center gap-1 bg-red-950/40 border border-red-500/30 px-2.5 py-1.5 rounded shrink-0">
+                <span class="text-xs">💎</span>
+                <span class="font-black text-red-400 text-xs">-${esc(item.xpSpent)} XP</span>
+            </div>
+        `;
+        list.appendChild(row);
     });
 };
 
+// ===================== لوحة المتصدرين =====================
 window.renderLeaderboard = function () {
     const list = el('leaderboard-list');
     if (!list) return;
-    const users = Object.values(state.usersMap || {}).filter(u => u && u.email !== ADMIN_EMAIL).sort((a, b) => (b.xp || 0) - (a.xp || 0)).slice(0, 3);
-    if (users.length === 0) { list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لا يوجد متصدرون حالياً.</div>`; return; }
-    list.innerHTML = `<div class="panel-card p-4 text-center text-xs text-supercellGold font-bold">أعلى المتصدرين في منصة SAVO XP</div>`;
+
+    const users = Object.values(state.usersMap || {}).filter(u => u && u.email !== ADMIN_EMAIL);
+    const ranked = users.filter(u => (u.xp || 0) > 0).sort((a, b) => (b.xp || 0) - (a.xp || 0));
+
+    if (ranked.length === 0) {
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لا يوجد متصدرون حالياً. كن أول من يجمع الجواهر!</div>`;
+        return;
+    }
+
+    const top = ranked.slice(0, 3);
+    const meEmail = state.currentUser ? state.currentUser.email : null;
+    const slots = [
+        { i: 1, medal: '🥈', h: 'h-24', ring: '#C0C7D1', grad: 'from-slate-300 to-slate-500', delay: '0.1s', av: 'w-14 h-14' },
+        { i: 0, medal: '🥇', h: 'h-32', ring: '#FFD700', grad: 'from-yellow-300 to-amber-500', delay: '0s', av: 'w-[72px] h-[72px]' },
+        { i: 2, medal: '🥉', h: 'h-20', ring: '#CD7F32', grad: 'from-orange-400 to-orange-700', delay: '0.2s', av: 'w-14 h-14' }
+    ];
+
+    const cols = slots.map(s => {
+        const u = top[s.i];
+        if (!u) return `<div class="flex-1"></div>`;
+        const isMe = meEmail && u.email === meEmail;
+        const avatar = u.avatar
+            ? `<img src="${esc(u.avatar)}" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'">`
+            : `<i class="fa-solid fa-crown"></i>`;
+        return `
+            <div class="podium-col flex-1 flex flex-col items-center min-w-0" style="animation-delay:${s.delay}">
+                <span class="text-3xl leading-none mb-1">${s.medal}</span>
+                <div class="${s.av} rounded-full border-[3px] overflow-hidden bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-supercellGold text-xl" style="border-color:${s.ring}">${avatar}</div>
+                <span class="font-black text-xs md:text-sm text-white truncate w-full text-center mt-2 px-1" dir="auto">${esc(u.name)}</span>
+                ${isMe ? '<span class="text-[10px] text-supercellGold font-bold">(أنت)</span>' : ''}
+                <span class="font-black text-supercellBlue text-xs md:text-sm mt-0.5">💎 ${esc(u.xp || 0)}</span>
+                <div class="w-full ${s.h} mt-2 rounded-t-xl bg-gradient-to-b ${s.grad} border-2 border-white/25 flex items-start justify-center pt-2 font-black text-3xl text-black/60">${s.i + 1}</div>
+            </div>`;
+    }).join('');
+
+    let html = `<div dir="ltr" class="panel-card px-3 pt-5 pb-0 flex items-end gap-2 overflow-hidden">${cols}</div>`;
+
+    if (meEmail && meEmail !== ADMIN_EMAIL && !top.some(u => u.email === meEmail)) {
+        const me = users.find(u => u.email === meEmail);
+        if (me) {
+            const myXp = me.xp || 0;
+            const rank = users.filter(u => (u.xp || 0) > myXp).length + 1;
+            html += `
+                <div class="panel-card border-supercellGold p-3 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="font-black text-xl text-supercellGold">#${rank}</span>
+                        <span class="font-black text-xs md:text-sm text-white">ترتيبك الحالي</span>
+                    </div>
+                    <div class="flex items-center gap-1 bg-black/50 border border-supercellBlue/40 px-2.5 py-1 rounded">
+                        <span class="text-xs">💎</span>
+                        <span class="font-black text-supercellBlue text-xs">${esc(myXp)}</span>
+                    </div>
+                </div>`;
+        }
+    }
+    list.innerHTML = html;
 };
 
-// ===================== تسجيل الدخول باستخدام جوجل (مربوط تماماً) =====================
+// ===================== تسجيل الدخول والحساب =====================
+function genRefCode() {
+    const taken = new Set(Object.values(state.usersMap || {}).map(u => u && u.refCode));
+    let c = '';
+    do { c = Math.random().toString(36).slice(2, 10); } while (c.length < 6 || taken.has(c));
+    return c;
+}
+
+async function creditReferrer(refKey) {
+    try {
+        await runTransaction(ref(db, 'users/' + refKey), (cur) => {
+            if (cur === null) return cur;
+            const count = cur.referralCount || 0;
+            if (count >= MAX_REFERRALS) return;
+            cur.referralCount = count + 1;
+            cur.xp = (cur.xp || 0) + 1;
+            return cur;
+        });
+    } catch (e) {}
+}
+
 window.handleGoogleSignIn = function (response) {
     try {
         const base64Url = response.credential.split('.')[1];
@@ -1278,7 +1571,9 @@ window.handleGoogleSignIn = function (response) {
     }
 };
 
+let savingProfile = false;
 window.saveGoogleProfile = async function () {
+    if (savingProfile) return;
     const email = el('g-temp-email').value;
     const name = el('g-temp-name').value;
     const avatar = el('g-temp-avatar').value;
@@ -1292,34 +1587,67 @@ window.saveGoogleProfile = async function () {
     }
     if (!tag.startsWith('#')) tag = '#' + tag;
 
-    const dbKey = dbKeyOf(email);
-    const now = new Date();
-    const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    savingProfile = true;
+    try {
+        const dbKey = dbKeyOf(email);
 
-    const newUser = {
-        name,
-        email,
-        avatar,
-        ytChannel,
-        tag,
-        country,
-        xp: 0,
-        lastReadNotification: 0,
-        joinedAt: timeStr,
-        authType: 'Google',
-        refCode: Math.random().toString(36).slice(2, 10),
-        referralCount: 0
-    };
+        const snap = await get(ref(db, 'users/' + dbKey));
+        if (snap.exists()) {
+            state.currentUser = snap.val();
+            localStorage.setItem('savo_logged_email', email);
+            el('google-profile-modal').classList.add('hidden');
+            renderUserProfile();
+            renderHistory();
+            updateNotificationBadge();
+            showToast(`مرحباً بك مجدداً ${state.currentUser.name}!`);
+            return;
+        }
 
-    await set(ref(db, 'users/' + dbKey), newUser);
-    state.currentUser = newUser;
-    localStorage.setItem('savo_logged_email', email);
+        const now = new Date();
+        const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-    el('google-profile-modal').classList.add('hidden');
-    renderUserProfile();
-    renderHistory();
-    updateNotificationBadge();
-    showToast(`أهلاً بك يا ${name}! تم إنشاء حسابك بنجاح.`);
+        const newUser = {
+            name,
+            email,
+            avatar,
+            ytChannel,
+            tag,
+            country,
+            xp: 0,
+            lastReadNotification: 0,
+            joinedAt: timeStr,
+            authType: 'Google',
+            refCode: genRefCode()
+        };
+
+        let refKey = null;
+        let savedRef = null;
+        try { savedRef = localStorage.getItem('savo_ref'); } catch (e) {}
+        if (savedRef) {
+            const found = Object.entries(state.usersMap || {}).find(([k, u]) => u && u.refCode === savedRef);
+            if (found && found[1].email !== email) {
+                refKey = found[0];
+                newUser.referredBy = refKey;
+            }
+        }
+
+        await set(ref(db, 'users/' + dbKey), newUser);
+        state.currentUser = newUser;
+        localStorage.setItem('savo_logged_email', email);
+
+        if (refKey) await creditReferrer(refKey);
+        try { localStorage.removeItem('savo_ref'); } catch (e) {}
+
+        el('google-profile-modal').classList.add('hidden');
+        renderUserProfile();
+        renderHistory();
+        updateNotificationBadge();
+        showToast(`أهلاً بك يا ${name}! تم إنشاء حسابك بنجاح.`);
+    } catch (e) {
+        showToast('حدث خطأ أثناء حفظ الحساب، حاول مرة أخرى.', 'error');
+    } finally {
+        savingProfile = false;
+    }
 };
 
 function initGoogleButton() {
@@ -1338,6 +1666,8 @@ function initGoogleButton() {
         } catch (err) {
             console.log('Google Auth init error:', err);
         }
+    } else if (container) {
+        container.innerHTML = '<p class="text-xs text-red-300">تعذر تحميل زر جوجل. تحقق من الاتصال ثم أعد المحاولة.</p>';
     }
 }
 
@@ -1349,7 +1679,8 @@ window.openLoginModal = function () {
 window.closeLoginModal = () => el('login-modal').classList.add('hidden');
 window.openEarnPointsModal = () => el('earn-points-modal').classList.remove('hidden');
 window.closeEarnPointsModal = () => el('earn-points-modal').classList.add('hidden');
-window.openEditProfileModal = () => {
+
+window.openEditProfileModal = function () {
     if (!state.currentUser) return;
     el('edit-name').value = state.currentUser.name || '';
     el('edit-yt').value = state.currentUser.ytChannel || '';
@@ -1357,115 +1688,322 @@ window.openEditProfileModal = () => {
     el('edit-country').value = state.currentUser.country || '';
     el('edit-profile-modal').classList.remove('hidden');
 };
+
 window.closeEditProfileModal = () => el('edit-profile-modal').classList.add('hidden');
-window.saveEditedProfile = async function () {
+
+window.saveEditedProfile = function () {
     if (!state.currentUser) return;
+    const name = el('edit-name').value.trim();
+    const ytChannel = el('edit-yt').value.trim();
     let tag = el('edit-tag').value.trim();
+    const country = el('edit-country').value.trim();
+
+    if (!name || !tag) {
+        showToast('الاسم والتاغ حقول إجبارية.', 'error');
+        return;
+    }
     if (!tag.startsWith('#')) tag = '#' + tag;
-    state.currentUser.name = el('edit-name').value.trim();
-    state.currentUser.ytChannel = el('edit-yt').value.trim();
+
+    state.currentUser.name = name;
+    state.currentUser.ytChannel = ytChannel;
     state.currentUser.tag = tag;
-    state.currentUser.country = el('edit-country').value.trim();
-    await update(ref(db, 'users/' + dbKeyOf(state.currentUser.email)), state.currentUser);
+    state.currentUser.country = country;
+
+    const dbKey = dbKeyOf(state.currentUser.email);
+    update(ref(db, 'users/' + dbKey), { name, ytChannel, tag, country });
+
     closeEditProfileModal();
     renderUserProfile();
-    showToast('تم التحديث!');
+    showToast('تم تحديث الملف الشخصي بنجاح!');
 };
-window.logoutUser = () => { localStorage.removeItem('savo_logged_email'); state.currentUser = null; switchTab('store'); renderUserProfile(); showToast('تم تسجيل الخروج.'); };
 
-// الشراء
-window.confirmRedeem = function (productId) {
-    if (!state.currentUser) { openLoginModal(); return; }
-    const product = state.products.find(p => p.id === productId);
-    if (!product || !product.links || product.links.length === 0) { showToast('نفذت الكمية.', 'error'); return; }
-    if ((state.currentUser.xp || 0) < product.price) { showToast('رصيدك لا يكفي!', 'error'); return; }
-    el('pending-product-id').value = productId;
-    el('confirm-purchase-text').innerText = `هل تريد شراء "${product.name}" مقابل ${product.price} جوهرة؟`;
-    el('confirm-purchase-modal').classList.remove('hidden');
+window.logoutUser = function () {
+    try { localStorage.removeItem('savo_logged_email'); } catch (e) {}
+    state.currentUser = null;
+    switchTab('store');
+    renderUserProfile();
+    renderHistory();
+    updateNotificationBadge();
 };
-window.closeConfirmModal = () => el('confirm-purchase-modal').classList.add('hidden');
 
-window.executeRedeem = async function () {
-    closeConfirmModal();
-    const productId = el('pending-product-id').value;
-    const product = state.products.find(p => p.id === productId);
-    if (!product || !state.currentUser) return;
-    const dbKey = dbKeyOf(state.currentUser.email);
-    let assignedLink = null;
+// ===================== كود الهدية (ترويجي) =====================
+window.openPromoModal = function () {
+    if (!state.currentUser) {
+        showToast('يرجى تسجيل الدخول أولاً.', 'error');
+        openLoginModal();
+        return;
+    }
+    el('promo-code-input').value = '';
+    el('promo-modal').classList.remove('hidden');
+};
+window.closePromoModal = () => el('promo-modal').classList.add('hidden');
 
-    const res = await runTransaction(ref(db, 'users/' + dbKey + '/xp'), (cur) => {
-        if ((cur || 0) < product.price) return;
-        return cur - product.price;
-    });
-    if (!res.committed) { showToast('رصيدك لا يكفي!', 'error'); return; }
-
-    await runTransaction(ref(db, 'products/' + product.id + '/links'), (cur) => {
-        if (!cur || !cur.length) return;
-        assignedLink = cur[0];
-        return cur.slice(1);
-    });
-
-    if (!assignedLink) {
-        await runTransaction(ref(db, 'users/' + dbKey + '/xp'), (cur) => (cur || 0) + product.price);
-        showToast('نفذ المنتج.', 'error');
+let promoBusy = false;
+window.redeemPromo = async function () {
+    if (!state.currentUser || promoBusy) return;
+    const code = el('promo-code-input').value.trim().toUpperCase();
+    if (!/^[A-Z0-9_-]{2,30}$/.test(code)) {
+        showToast('الكود غير صحيح.', 'error');
         return;
     }
 
-    const historyItem = { id: 'hist_' + Date.now(), userName: state.currentUser.name, userTag: state.currentUser.tag, userEmail: state.currentUser.email, productName: product.name, xpSpent: product.price, assignedLink, timestamp: new Date().toLocaleString() };
-    await set(ref(db, 'history/' + historyItem.id), historyItem);
+    promoBusy = true;
+    const dbKey = dbKeyOf(state.currentUser.email);
+    let outcome = 'invalid';
+    let reward = 0;
+    try {
+        const res = await runTransaction(ref(db, 'promoCodes/' + code), (cur) => {
+            if (cur === null) { outcome = 'invalid'; return cur; }
+            if (!cur.active) { outcome = 'inactive'; return; }
+            if (cur.redeemedBy && cur.redeemedBy[dbKey]) { outcome = 'used'; return; }
+            const uses = cur.uses || 0;
+            if (uses >= (cur.maxUses || 0)) { outcome = 'full'; return; }
+            cur.uses = uses + 1;
+            cur.redeemedBy = cur.redeemedBy || {};
+            cur.redeemedBy[dbKey] = serverNow();
+            reward = Number(cur.reward) || 0;
+            outcome = 'ok';
+            return cur;
+        });
 
-    el('redeem-success-desc').innerText = `تم شراء "${product.name}" بنجاح.`;
-    el('redeem-link-output').value = assignedLink;
-    el('redeem-open-link-btn').href = safeUrl(assignedLink);
-    el('redeem-success-modal').classList.remove('hidden');
-    launchConfetti();
+        if (res.committed && outcome === 'ok') {
+            await runTransaction(ref(db, 'users/' + dbKey + '/xp'), (cur) => (cur || 0) + reward);
+            closePromoModal();
+            launchConfetti();
+            showToast(`تمت إضافة ${reward} جوهرة إلى رصيدك 💎`);
+        } else {
+            const messages = {
+                invalid: 'الكود غير صحيح.',
+                inactive: 'هذا الكود غير فعّال حالياً.',
+                used: 'لقد استخدمت هذا الكود من قبل.',
+                full: 'انتهت الكمية المتاحة لهذا الكود.'
+            };
+            showToast(messages[outcome] || 'تعذر تفعيل الكود، حاول مرة أخرى.', 'error');
+        }
+    } catch (e) {
+        showToast('تعذر تفعيل الكود، تحقق من الاتصال وحاول مرة أخرى.', 'error');
+    } finally {
+        promoBusy = false;
+    }
 };
-window.closeRedeemModal = () => el('redeem-success-modal').classList.add('hidden');
 
-// التنقل بين التبويبات
+// ===================== الإحالة =====================
+window.openReferralModal = async function () {
+    if (!state.currentUser) {
+        showToast('يرجى تسجيل الدخول أولاً.', 'error');
+        openLoginModal();
+        return;
+    }
+    if (!state.currentUser.refCode) {
+        const code = genRefCode();
+        try {
+            await update(ref(db, 'users/' + dbKeyOf(state.currentUser.email)), { refCode: code });
+            state.currentUser.refCode = code;
+        } catch (e) {
+            showToast('تعذر إنشاء رابط الإحالة، حاول مرة أخرى.', 'error');
+            return;
+        }
+    }
+    el('referral-link-output').value = location.origin + location.pathname + '?ref=' + state.currentUser.refCode;
+    el('referral-count').innerText = `${state.currentUser.referralCount || 0} / ${MAX_REFERRALS}`;
+    el('referral-modal').classList.remove('hidden');
+};
+window.closeReferralModal = () => el('referral-modal').classList.add('hidden');
+window.copyReferralLink = function () {
+    const input = el('referral-link-output');
+    navigator.clipboard.writeText(input.value).then(() => {
+        showToast('تم نسخ رابط الإحالة!');
+    }).catch(() => {
+        input.select();
+        document.execCommand('copy');
+        showToast('تم النسخ!');
+    });
+};
+
+// ===================== الشراء =====================
+window.confirmRedeem = function (productId) {
+    if (!state.currentUser) {
+        showToast('يجب تسجيل الدخول عبر جوجل أولاً.', 'error');
+        openLoginModal();
+        return;
+    }
+
+    const product = state.products.find(p => p.id === productId);
+    if (!product || !product.links || product.links.length === 0) {
+        showToast('عذراً، هذا المنتج نفذ من المخزون.', 'error');
+        return;
+    }
+
+    if ((state.currentUser.xp || 0) < product.price) {
+        showToast('رصيدك من الجواهر لا يكفي!', 'error');
+        return;
+    }
+
+    el('pending-product-id').value = productId;
+    el('confirm-purchase-text').innerText = `هل أنت متأكد من رغبتك في شراء "${product.name}" مقابل خصم ${product.price} جوهرة من رصيدك؟`;
+    el('confirm-purchase-modal').classList.remove('hidden');
+};
+
+window.closeConfirmModal = () => el('confirm-purchase-modal').classList.add('hidden');
+
+let redeeming = false;
+window.executeRedeem = async function () {
+    closeConfirmModal();
+    if (redeeming || !state.currentUser) return;
+
+    const productId = el('pending-product-id').value;
+    const product = state.products.find(p => p.id === productId);
+    if (!product || !product.links || product.links.length === 0) {
+        showToast('عذراً، هذا المنتج نفذ من المخزون.', 'error');
+        return;
+    }
+
+    const price = Number(product.price) || 0;
+    const me = state.currentUser;
+    const dbKey = dbKeyOf(me.email);
+    const xpRef = ref(db, 'users/' + dbKey + '/xp');
+
+    redeeming = true;
+    let deducted = false;
+    let gotLink = false;
+    try {
+        let xpOutcome = 'nodata';
+        const xpRes = await runTransaction(xpRef, (cur) => {
+            if (cur === null) { xpOutcome = 'nodata'; return cur; }
+            if (cur < price) { xpOutcome = 'low'; return; }
+            xpOutcome = 'ok';
+            return cur - price;
+        });
+        if (!(xpRes.committed && xpOutcome === 'ok')) {
+            showToast(xpOutcome === 'low' ? 'رصيدك من الجواهر لا يكفي!' : 'تعذر إتمام العملية، حاول مرة أخرى.', 'error');
+            return;
+        }
+        deducted = true;
+
+        let assignedLink = null;
+        let linkOutcome = 'soldout';
+        const linkRes = await runTransaction(ref(db, 'products/' + product.id + '/links'), (cur) => {
+            assignedLink = null;
+            if (!cur || !cur.length) { linkOutcome = 'soldout'; return cur; }
+            assignedLink = cur[0];
+            linkOutcome = 'ok';
+            return cur.slice(1);
+        });
+
+        if (!(linkRes.committed && linkOutcome === 'ok' && assignedLink)) {
+            await runTransaction(xpRef, (cur) => (cur || 0) + price);
+            deducted = false;
+            showToast('عذراً، نفذ هذا المنتج للتو. تم إرجاع جواهرك.', 'error');
+            return;
+        }
+        gotLink = true;
+
+        try {
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const historyItem = {
+                id: 'hist_' + Date.now(),
+                userName: me.name,
+                userTag: me.tag,
+                userEmail: me.email,
+                productName: product.name,
+                xpSpent: price,
+                assignedLink: assignedLink,
+                timestamp: timeStr
+            };
+            await set(ref(db, 'history/' + historyItem.id), historyItem);
+        } catch (e) {}
+
+        el('redeem-success-desc').innerText = `تم شراء "${product.name}" بنجاح مقابل ${price} جوهرة.`;
+        el('redeem-link-output').value = assignedLink;
+        el('redeem-open-link-btn').href = safeUrl(assignedLink);
+        el('redeem-success-modal').classList.remove('hidden');
+        launchConfetti();
+    } catch (e) {
+        if (deducted && !gotLink) {
+            try { await runTransaction(xpRef, (cur) => (cur || 0) + price); } catch (e2) {}
+        }
+        showToast('حدث خطأ أثناء العملية، لم يتم خصم أي جواهر.', 'error');
+    } finally {
+        redeeming = false;
+    }
+};
+
+window.closeRedeemModal = () => el('redeem-success-modal').classList.add('hidden');
+window.copyRedeemLink = function () {
+    const input = el('redeem-link-output');
+    navigator.clipboard.writeText(input.value).then(() => {
+        showToast('تم نسخ الرابط بنجاح إلى الحافظة!');
+    }).catch(() => {
+        input.select();
+        document.execCommand('copy');
+        showToast('تم النسخ!');
+    });
+};
+
+// ===================== التبويبات =====================
+const TAB_BASE = 'flex-1 py-2.5 rounded-lg font-black text-[11px] md:text-sm text-center transition-all';
+const TAB_ON = ' bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow';
+const TAB_ON_ADMIN = ' bg-red-950 text-red-400 border border-red-500 shadow';
+const TAB_OFF = ' text-gray-300 hover:text-white';
+
 window.switchTab = function (tabName) {
     ['store', 'history', 'leaderboard', 'admin'].forEach(t => {
-        el('tab-' + t).classList.toggle('hidden', t !== tabName);
-        el('tab-btn-' + t).className = `py-2.5 px-1 rounded-lg font-black text-[11px] md:text-sm text-center transition-all flex flex-col items-center justify-center gap-1 ${t === tabName ? (t === 'admin' ? 'bg-red-950 text-red-400 border border-red-500 shadow' : 'bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow') : 'text-gray-300 hover:text-white'}`;
+        const section = el('tab-' + t);
+        const btn = el('tab-btn-' + t);
+        if (!section || !btn) return;
+        const on = t === tabName;
+        section.classList.toggle('hidden', !on);
+        btn.className = TAB_BASE + (on ? (t === 'admin' ? TAB_ON_ADMIN : TAB_ON) : TAB_OFF);
     });
     applyAdminTabVisibility();
+
     if (tabName === 'store') renderStore();
     else if (tabName === 'history') renderHistory();
     else if (tabName === 'leaderboard') renderLeaderboard();
 };
 
+// ===================== لوحة الأدمن =====================
 window.checkAdminAccess = function () {
-    if (!state.currentUser || state.currentUser.email !== ADMIN_EMAIL) { showToast('صلاحية لأدمن الموقع فقط.', 'error'); openLoginModal(); return; }
-    switchTab('admin');
-    openAdminDashboard();
-};
+    if (!state.currentUser) {
+        showToast('يرجى تسجيل الدخول أولاً بحساب الأدمن (Google).', 'error');
+        openLoginModal();
+        return;
+    }
 
-window.switchAdminSubTab = function (sub) {
-    ['announcements', 'products', 'users', 'audit'].forEach(s => {
-        el('adm-sec-' + s).classList.toggle('hidden', s !== sub);
-        el('adm-tab-' + s).className = `py-2 px-1 rounded font-black text-[10px] md:text-xs ${s === sub ? 'bg-supercellPurple text-supercellGold border border-supercellCardBorder' : 'text-gray-300 hover:text-white'}`;
-    });
+    if (state.currentUser.email === ADMIN_EMAIL) {
+        openAdminDashboard();
+    } else {
+        showToast('عذراً، هذه اللوحة مخصصة فقط لصانع المحتوى (مهند)!', 'error');
+    }
 };
 
 window.openAdminDashboard = function () {
+    switchTab('admin');
+
     el('admin-announcement-badge').value = state.settings.badge || '';
     el('admin-announcement-input').value = state.settings.announcement || '';
-    el('admin-marquee-motion').value = state.settings.marqueeMotion || 'running';
     el('admin-weekly-text').value = state.settings.weeklyText || '';
     el('admin-weekly-btn-text').value = state.settings.weeklyBtnText || '';
     el('admin-weekly-btn-url').value = state.settings.weeklyBtnUrl || '';
-    el('admin-task-title').value = state.settings.taskTitle || '';
-    el('admin-task-url').value = state.settings.taskUrl || '';
-    el('admin-task-reward').value = state.settings.taskReward || 1;
+    el('admin-event-bar-input').value = state.settings.eventBarText || '';
     el('admin-logo-input').value = state.settings.logoUrl || '';
     el('admin-about-text').value = state.settings.aboutText || '';
-    
+    el('admin-whatsapp-notice').value = state.settings.whatsappNoticeText || '';
+    el('admin-earn-instructions').value = state.settings.earnInstructions || '';
+
+    const icons = state.settings.gameIcons || {};
+    el('game-icon-cr').value = icons.cr || '';
+    el('game-icon-coc').value = icons.coc || '';
+    el('game-icon-hd').value = icons.hd || '';
+    el('game-icon-bs').value = icons.bs || '';
+
     const socials = state.settings.socials || {};
     el('social-yt').value = socials.youtube || '';
     el('social-tik').value = socials.tiktok || '';
     el('social-ig').value = socials.instagram || '';
     el('social-twi').value = socials.twitch || '';
-    el('social-wa').value = socials.whatsapp || '';
+    el('social-wa').value = socials.whatsapp || 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L';
 
     renderAdminProducts();
     renderAdminUsers();
@@ -1473,161 +2011,326 @@ window.openAdminDashboard = function () {
     startPromoListener();
 };
 
-window.lockAdminPanel = () => switchTab('store');
+window.lockAdminPanel = () => { switchTab('store'); showToast('تم إقفال اللوحة.'); };
 
 window.saveAdminSettings = function () {
     const newSettings = {
         badge: el('admin-announcement-badge').value.trim(),
         announcement: el('admin-announcement-input').value.trim(),
-        marqueeMotion: el('admin-marquee-motion').value,
         weeklyText: el('admin-weekly-text').value.trim(),
         weeklyBtnText: el('admin-weekly-btn-text').value.trim(),
         weeklyBtnUrl: el('admin-weekly-btn-url').value.trim(),
-        taskTitle: el('admin-task-title').value.trim(),
-        taskUrl: el('admin-task-url').value.trim(),
-        taskReward: Number(el('admin-task-reward').value) || 1,
+        eventBarText: el('admin-event-bar-input').value.trim(),
         logoUrl: el('admin-logo-input').value.trim(),
         aboutText: el('admin-about-text').value.trim(),
+        whatsappNoticeText: el('admin-whatsapp-notice').value.trim(),
+        earnInstructions: el('admin-earn-instructions').value.trim(),
+        gameIcons: {
+            cr: el('game-icon-cr').value.trim(),
+            coc: el('game-icon-coc').value.trim(),
+            hd: el('game-icon-hd').value.trim(),
+            bs: el('game-icon-bs').value.trim()
+        },
         socials: {
             youtube: el('social-yt').value.trim(),
             tiktok: el('social-tik').value.trim(),
             instagram: el('social-ig').value.trim(),
             twitch: el('social-twi').value.trim(),
-            whatsapp: el('social-wa').value.trim()
+            whatsapp: el('social-wa').value.trim() || 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L'
         }
     };
     set(ref(db, 'settings'), newSettings);
-    showToast('تم حفظ الإعدادات بنجاح!');
+    showToast('تم حفظ الإعدادات وتحديثها سحابياً لجميع الزوار!');
 };
 
-// تفاصيل المتابع في لوحة الأدمن
+window.renderAdminProducts = function () {
+    const list = el('admin-products-list');
+    list.innerHTML = '';
+    if (state.products.length === 0) {
+        list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا توجد منتجات حالياً. يمكنك إضافة منتجات جديدة.</p>`;
+        return;
+    }
+    state.products.forEach(prod => {
+        const stockCount = productStock(prod);
+        const game = GAMES.find(g => g.id === prod.game);
+        const row = document.createElement('div');
+        row.className = 'bg-black/50 border border-supercellCardBorder p-2.5 rounded flex items-center justify-between gap-2';
+        row.innerHTML = `
+            <div class="flex items-center gap-2 overflow-hidden">
+                <img src="${esc(prod.image)}" class="w-9 h-9 rounded object-cover border border-supercellCardBorder shrink-0" onerror="this.src='https://placehold.co/100x100/2B1055/FFD700?text=Item'">
+                <div class="truncate">
+                    <h5 class="font-black text-xs text-white truncate">${esc(prod.name)}</h5>
+                    <p class="text-[10px] text-supercellGold">${esc(prod.price)} XP | مخزون الأكواد: ${stockCount}${game ? ' | ' + game.name : ''}</p>
+                </div>
+            </div>
+            <div class="flex gap-1.5 shrink-0">
+                <button onclick="window.editProduct('${esc(prod.id)}')" class="btn-blue px-2.5 py-1 rounded text-black font-black text-[10px]"><i class="fa-solid fa-pen"></i></button>
+                <button onclick="window.deleteProduct('${esc(prod.id)}')" class="btn-red px-2.5 py-1 rounded text-white font-black text-[10px]"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        `;
+        list.appendChild(row);
+    });
+};
+
+window.openProductModal = function (prodId = null) {
+    el('edit-product-id').value = '';
+    el('prod-name').value = '';
+    el('prod-desc').value = '';
+    el('prod-price').value = '';
+    el('prod-img').value = '';
+    el('prod-links').value = '';
+    el('prod-game').value = '';
+    el('product-modal-title').innerText = 'إضافة منتج جديد';
+
+    if (prodId) {
+        const p = state.products.find(x => x.id === prodId);
+        if (p) {
+            el('edit-product-id').value = p.id;
+            el('prod-name').value = p.name || '';
+            el('prod-desc').value = p.desc || '';
+            el('prod-price').value = p.price || '';
+            el('prod-img').value = p.image || '';
+            el('prod-links').value = (p.links || []).join('\n');
+            el('prod-game').value = p.game || '';
+            el('product-modal-title').innerText = 'تعديل المنتج';
+        }
+    }
+    el('product-modal').classList.remove('hidden');
+};
+
+window.closeProductModal = () => el('product-modal').classList.add('hidden');
+
+window.saveProduct = function () {
+    const editId = el('edit-product-id').value;
+    const name = el('prod-name').value.trim();
+    const desc = el('prod-desc').value.trim();
+    const price = Number(el('prod-price').value);
+    const image = el('prod-img').value.trim();
+    const linksRaw = el('prod-links').value.trim();
+    const game = el('prod-game').value;
+
+    if (!name || !price) {
+        showToast('يرجى ملء الاسم والسعر.', 'error');
+        return;
+    }
+
+    const links = linksRaw ? linksRaw.split('\n').map(l => l.trim()).filter(l => l.length > 0) : [];
+    const prodId = editId || ('prod_' + Date.now());
+
+    const prodObj = {
+        id: prodId,
+        name,
+        desc,
+        price,
+        image: image || 'https://placehold.co/150x150/2B1055/FFD700?text=Item',
+        links,
+        game
+    };
+
+    set(ref(db, 'products/' + prodId), prodObj).then(() => {
+        closeProductModal();
+        showToast('تم حفظ المنتج سحابياً بنجاح!');
+    });
+};
+
+window.editProduct = (id) => openProductModal(id);
+
+window.deleteProduct = function (id) {
+    if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+        remove(ref(db, 'products/' + id)).then(() => {
+            showToast('تم حذف المنتج بنجاح.');
+        });
+    }
+};
+
+// ===================== الأكواد الترويجية الأسبوعية =====================
+function startPromoListener() {
+    onValue(ref(db, 'promoCodes'), (snap) => {
+        state.promoCodes = snap.val() || {};
+        renderAdminPromoList();
+    });
+}
+
+function renderAdminPromoList() {
+    const list = el('admin-promo-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    const entries = Object.entries(state.promoCodes || {});
+    if (entries.length === 0) {
+        list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا توجد أكواد ترويجية حالياً.</p>`;
+        return;
+    }
+
+    entries.forEach(([code, p]) => {
+        const row = document.createElement('div');
+        row.className = 'bg-black/50 border border-supercellCardBorder p-2.5 rounded flex items-center justify-between gap-2';
+        row.innerHTML = `
+            <div class="truncate">
+                <h5 class="font-black text-xs text-supercellGold truncate">${esc(code)}</h5>
+                <p class="text-[10px] text-gray-300">مكافأة: ${esc(p.reward)} 💎 | استخدامات: ${p.uses || 0}/${p.maxUses} ${p.active ? '✅' : '❌'}</p>
+            </div>
+            <div class="flex gap-1.5 shrink-0">
+                <button onclick="togglePromoActive('${esc(code)}')" class="btn-blue px-2 py-1 rounded text-black font-black text-[10px]">${p.active ? 'إيقاف' : 'تفعيل'}</button>
+                <button onclick="deletePromoCode('${esc(code)}')" class="btn-red px-2 py-1 rounded text-white font-black text-[10px]"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        `;
+        list.appendChild(row);
+    });
+}
+
+window.createPromoCode = function () {
+    const code = el('promo-new-code').value.trim().toUpperCase();
+    const reward = Number(el('promo-new-reward').value);
+    const maxUses = Number(el('promo-new-max').value);
+
+    if (!code || !reward || !maxUses) {
+        showToast('يرجى ملء جميع حقول الكود.', 'error');
+        return;
+    }
+
+    set(ref(db, 'promoCodes/' + code), {
+        reward,
+        maxUses,
+        uses: 0,
+        active: true,
+        createdAt: serverNow()
+    }).then(() => {
+        el('promo-new-code').value = '';
+        el('promo-new-reward').value = '';
+        el('promo-new-max').value = '';
+        showToast('تم إنشاء الكود الترويجي بنجاح!');
+    });
+};
+
+window.togglePromoActive = function (code) {
+    const cur = state.promoCodes[code];
+    if (cur) {
+        update(ref(db, 'promoCodes/' + code), { active: !cur.active });
+    }
+};
+
+window.deletePromoCode = function (code) {
+    if (confirm(`هل أنت متأكد من حذف الكود ${code}؟`)) {
+        remove(ref(db, 'promoCodes/' + code));
+    }
+};
+
+// ===================== سجل العمليات والأدمن =====================
+window.renderAdminAuditLog = function () {
+    const list = el('admin-audit-log-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    if (state.history.length === 0) {
+        list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">سجل العمليات فارغ حالياً.</p>`;
+        return;
+    }
+
+    state.history.slice().reverse().forEach(h => {
+        const row = document.createElement('div');
+        row.className = 'bg-black/50 border border-supercellCardBorder p-2.5 rounded flex flex-col gap-1 text-xs';
+        row.innerHTML = `
+            <div class="flex items-center justify-between text-supercellGold font-bold">
+                <span>${esc(h.userName)} (${esc(h.userTag)})</span>
+                <span class="text-[10px] text-gray-400">${esc(h.timestamp)}</span>
+            </div>
+            <div class="text-white">قام بشراء: <b>${esc(h.productName)}</b> (-${esc(h.xpSpent)} XP)</div>
+            <div class="text-supercellBlue text-[10px] truncate select-all">الرابط المسلّم: ${esc(h.assignedLink)}</div>
+        `;
+        list.appendChild(row);
+    });
+};
+
+window.clearAdminHistory = function () {
+    if (confirm('هل أنت متأكد من مسح سجل مشتريات جميع المتابعين؟')) {
+        remove(ref(db, 'history')).then(() => showToast('تم مسح السجل.'));
+    }
+};
+
+// ===================== إدارة المستخدمين =====================
 window.renderAdminUsers = function () {
     const list = el('admin-users-list');
     const countEl = el('admin-users-count');
     if (!list) return;
     list.innerHTML = '';
+
     const query = (el('admin-user-search')?.value || '').trim().toLowerCase();
     const all = Object.entries(state.usersMap || {});
     countEl.innerText = `${all.length} متابع`;
 
-    const filtered = all.filter(([k, u]) => u && (!query || u.name.toLowerCase().includes(query) || u.tag.toLowerCase().includes(query) || u.email.toLowerCase().includes(query))).sort((a, b) => (b[1].xp || 0) - (a[1].xp || 0));
+    const filtered = all.filter(([k, u]) => {
+        if (!u) return false;
+        if (!query) return true;
+        return (u.name || '').toLowerCase().includes(query) ||
+               (u.tag || '').toLowerCase().includes(query) ||
+               (u.email || '').toLowerCase().includes(query) ||
+               (u.ytChannel || '').toLowerCase().includes(query);
+    });
+
+    if (filtered.length === 0) {
+        list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">لا يوجد متابعون يطابقون البحث.</p>`;
+        return;
+    }
 
     filtered.forEach(([key, u]) => {
-        list.innerHTML += `
-            <div onclick="openAdminUserDetails('${key}')" class="bg-black/50 border border-supercellCardBorder p-3 rounded-xl flex items-center justify-between gap-2 cursor-pointer hover:border-supercellGold transition-all">
-                <div class="flex items-center gap-2.5 truncate">
-                    <div class="w-10 h-10 rounded-full bg-purple-900 border border-supercellGold flex items-center justify-center text-supercellGold font-black text-sm shrink-0 overflow-hidden">${u.avatar ? `<img src="${esc(u.avatar)}" class="w-full h-full object-cover">` : '<i class="fa-solid fa-user"></i>'}</div>
-                    <div class="truncate">
-                        <h5 class="font-black text-xs text-white truncate">${esc(u.name)} <span class="text-supercellBlue">(${esc(u.tag)})</span></h5>
-                        <p class="text-[10px] text-gray-300 truncate">${esc(u.email)}</p>
-                    </div>
+        const row = document.createElement('div');
+        row.className = 'bg-black/50 border border-supercellCardBorder p-3 rounded-xl flex items-center justify-between gap-2';
+        row.innerHTML = `
+            <div class="flex items-center gap-2.5 overflow-hidden">
+                <div class="w-10 h-10 rounded-full bg-purple-900 border border-supercellGold flex items-center justify-center text-supercellGold font-black text-sm shrink-0 overflow-hidden">
+                    ${u.avatar ? `<img src="${esc(u.avatar)}" class="w-full h-full object-cover">` : '<i class="fa-solid fa-user"></i>'}
                 </div>
-                <div class="text-left shrink-0">
-                    <span class="font-black text-supercellGold text-xs">💎 ${u.xp || 0} XP</span>
+                <div class="truncate">
+                    <h5 class="font-black text-xs text-white truncate">${esc(u.name)} <span class="text-supercellBlue font-bold">(${esc(u.tag)})</span></h5>
+                    <p class="text-[10px] text-gray-300 truncate">البريد: ${esc(u.email)} | الدولة: ${esc(u.country || 'غير محدد')}</p>
+                    <p class="text-[10px] text-supercellGold font-bold">الرصيد الحالي: 💎 ${u.xp || 0} XP</p>
                 </div>
-            </div>`;
+            </div>
+            <div class="flex flex-col gap-1 shrink-0">
+                <button onclick="openCustomPointsModal('${esc(key)}')" class="btn-gold px-2.5 py-1 rounded text-black font-black text-[10px]">تعديل النقاط</button>
+                <button onclick="deleteUserAccount('${esc(key)}')" class="btn-red px-2.5 py-1 rounded text-white font-black text-[10px]">حذف</button>
+            </div>
+        `;
+        list.appendChild(row);
     });
 };
 
-window.openAdminUserDetails = function (key) {
-    const u = state.usersMap[key];
+window.openCustomPointsModal = function (userKey) {
+    const u = state.usersMap[userKey];
     if (!u) return;
-    el('adm-detail-user-key').value = key;
-    el('adm-detail-avatar').innerHTML = u.avatar ? `<img src="${esc(u.avatar)}" class="w-full h-full object-cover">` : '<i class="fa-solid fa-user"></i>';
-    el('adm-detail-name').innerText = u.name || '';
-    el('adm-detail-tag').innerText = u.tag || '';
-    el('adm-detail-email').innerText = u.email || '';
-    el('adm-detail-country').innerText = u.country || 'غير محدد';
-    el('adm-detail-joined').innerText = u.joinedAt || 'غير متوفر';
-    el('adm-detail-xp').innerText = u.xp || 0;
-    el('adm-detail-adjust-val').value = '';
-    el('admin-user-details-modal').classList.remove('hidden');
+    el('target-user-key').value = userKey;
+    el('custom-points-user-label').innerText = `المتابع: ${u.name} (${u.tag}) - الرصيد الحالي: ${u.xp || 0} XP`;
+    el('custom-points-val').value = '';
+    el('custom-points-modal').classList.remove('hidden');
 };
 
-window.closeAdminUserDetailsModal = () => el('admin-user-details-modal').classList.add('hidden');
+window.closeCustomPointsModal = () => el('custom-points-modal').classList.add('hidden');
 
-window.applyAdminUserXpAdjustment = async function () {
-    const key = el('adm-detail-user-key').value;
-    const val = Number(el('adm-detail-adjust-val').value);
-    if (!key || isNaN(val) || val === 0) return;
-    await runTransaction(ref(db, 'users/' + key + '/xp'), (cur) => Math.max((cur || 0) + val, 0));
-    closeAdminUserDetailsModal();
-    showToast('تم تعديل رصيد المتابع بنجاح!');
+window.applyCustomPoints = function () {
+    const key = el('target-user-key').value;
+    const val = Number(el('custom-points-val').value);
+
+    if (!key || isNaN(val) || val === 0) {
+        showToast('يرجى إدخال قيمة صالحة.', 'error');
+        return;
+    }
+
+    runTransaction(ref(db, 'users/' + key + '/xp'), (cur) => {
+        return Math.max((cur || 0) + val, 0);
+    }).then(() => {
+        closeCustomPointsModal();
+        showToast('تم تعديل رصيد المتابع بنجاح!');
+    });
 };
 
-window.deleteUserAccountFromDetails = async function () {
-    const key = el('adm-detail-user-key').value;
+window.deleteUserAccount = function (key) {
     if (confirm('هل أنت متأكد من حذف هذا الحساب نهائياً؟')) {
-        await remove(ref(db, 'users/' + key));
-        closeAdminUserDetailsModal();
-        showToast('تم حذف الحساب.');
+        remove(ref(db, 'users/' + key)).then(() => showToast('تم حذف الحساب.'));
     }
 };
 
-window.renderAdminProducts = function () {
-    const list = el('admin-products-list');
-    if (!list) return;
-    list.innerHTML = '';
-    state.products.forEach(prod => {
-        list.innerHTML += `<div class="bg-black/50 border border-supercellCardBorder p-2.5 rounded flex items-center justify-between gap-2"><div class="truncate"><h5 class="font-black text-xs text-white">${esc(prod.name)}</h5><p class="text-[10px] text-supercellGold">${prod.price} XP | متبقي: ${prod.links ? prod.links.length : 0}</p></div><button onclick="window.deleteProduct('${prod.id}')" class="btn-red px-2 py-1 rounded text-white font-black text-[10px]">حذف</button></div>`;
-    });
-};
-
-window.openProductModal = () => el('product-modal').classList.remove('hidden');
-window.closeProductModal = () => el('product-modal').classList.add('hidden');
-window.saveProduct = async function () {
-    const name = el('prod-name').value.trim();
-    const price = Number(el('prod-price').value);
-    const links = el('prod-links').value.trim().split('\n').filter(l => l.length > 0);
-    if (!name || !price) return;
-    const id = 'prod_' + Date.now();
-    await set(ref(db, 'products/' + id), { id, name, desc: el('prod-desc').value.trim(), price, image: el('prod-img').value.trim() || 'https://placehold.co/150x150/2B1055/FFD700?text=Item', links, game: el('prod-game').value });
-    closeProductModal();
-    showToast('تم إضافة المنتج بنجاح!');
-};
-window.deleteProduct = (id) => remove(ref(db, 'products/' + id));
-
-function startPromoListener() {
-    onValue(ref(db, 'promoCodes'), (snap) => {
-        state.promoCodes = snap.val() || {};
-        const list = el('admin-promo-list');
-        if (!list) return;
-        list.innerHTML = '';
-        Object.entries(state.promoCodes).forEach(([code, p]) => {
-            list.innerHTML += `<div class="bg-black/50 p-2 rounded flex justify-between text-xs"><span>${esc(code)} (${p.reward} 💎)</span><button onclick="remove(ref(db,'promoCodes/${code}'))" class="text-red-400">حذف</button></div>`;
-        });
-    });
-}
-
-window.createPromoCode = async function () {
-    const code = el('promo-new-code').value.trim().toUpperCase();
-    const reward = Number(el('promo-new-reward').value);
-    const maxUses = Number(el('promo-new-max').value);
-    if (!code || !reward || !maxUses) return;
-    await set(ref(db, 'promoCodes/' + code), { reward, maxUses, uses: 0, active: true });
-    showToast('تم إنشاء الكود!');
-};
-
-window.renderAdminAuditLog = function () {
-    const list = el('admin-audit-log-list');
-    if (!list) return;
-    list.innerHTML = state.history.length === 0 ? '<p class="text-xs text-gray-400 text-center">السجل فارغ.</p>' : '';
-    state.history.slice().reverse().forEach(h => {
-        list.innerHTML += `<div class="bg-black/50 p-2 rounded text-xs"><b>${esc(h.userName)}</b> اشترى <b>${esc(h.productName)}</b> مقابل ${h.xpSpent} XP<br><span class="text-supercellBlue text-[10px]">${esc(h.assignedLink)}</span></div>`;
-    });
-};
-window.clearAdminHistory = () => remove(ref(db, 'history'));
-
-window.sendGlobalNotification = async function () {
-    const title = el('admin-notif-title').value.trim();
-    const message = el('admin-notif-text').value.trim();
-    if (!title || !message) return;
-    const id = 'notif_' + Date.now();
-    await set(ref(db, 'notifications/' + id), { id, title, message, timestamp: serverNow() });
-    showToast('تم إرسال الإشعار!');
-};
-
-// تثبيت التطبيق PWA
+// ===================== PWA (تثبيت التطبيق) =====================
 let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
@@ -1638,14 +2341,39 @@ window.addEventListener('beforeinstallprompt', (e) => {
 window.installApp = function () {
     if (deferredPrompt) {
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+        deferredPrompt.userChoice.then(() => {
+            deferredPrompt = null;
+            document.querySelectorAll('.install-btn').forEach(b => b.classList.add('hidden'));
+        });
     }
 };
 
+const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+if (isIos && !isStandalone) {
+    const tip = el('ios-install-tip');
+    if (tip) tip.classList.remove('hidden');
+}
+
+// ===================== التهيئة عند البدء =====================
 document.addEventListener('DOMContentLoaded', () => {
     initFirebaseSync();
+
+    // الترحيب للمرة الأولى
+    try {
+        if (!localStorage.getItem('savo_welcomed') && !state.currentUser) {
+            // يمكن فتح مودال الترحيب إذا لزم الأمر
+        }
+    } catch (e) {}
+
+    // حماية زر الأدمن
     applyAdminTabVisibility();
-    setTimeout(() => { usersLoaded = true; syncWelcomeScreen(); }, 1200);
+
+    // شريط الأمان لتفادي قفل الشاشة الترحيبية
+    setTimeout(() => {
+        usersLoaded = true;
+        syncWelcomeScreen();
+    }, 1200);
 });
 </script>
 </body>
