@@ -210,7 +210,7 @@
         </div>
     </div>
 
-    <!-- ANNOUNCEMENT BANNER (ثابت) -->
+    <!-- ANNOUNCEMENT BANNER -->
     <div id="announcement-banner" class="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-black py-1.5 px-3 flex items-center gap-2 border-b-2 border-amber-400 shadow-sm">
         <span id="announcement-badge-container" class="shrink-0">
             <span id="announcement-badge" class="bg-black text-amber-400 text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">إعلان</span>
@@ -240,7 +240,7 @@
     <!-- MAIN -->
     <main class="flex-1 p-3 md:p-6 flex flex-col gap-4">
 
-        <!-- TABS (الأيقونة فوق والكلمة تحتها) -->
+        <!-- TABS -->
         <div class="flex gap-1.5 bg-black/40 p-1 rounded-xl border border-supercellCardBorder">
             <button onclick="switchTab('store')" id="tab-btn-store" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-lg font-black text-[11px] md:text-sm text-center transition-all">
                 <i class="fa-solid fa-store text-base"></i><span>المتجر</span>
@@ -833,7 +833,6 @@ window.renderAbout = function () {
     el('ws-about-text').innerText = t !== '' ? t : DEFAULT_ABOUT;
 };
 
-// تشارات خفيفة
 (function buildSparks() {
     const bg = el('ws-bg');
     if (!bg) return;
@@ -989,7 +988,6 @@ window.renderEventBar = function () {
     }
 };
 
-// شاشة الترحيب: الشعار فقط (بدون كلمة SAVO XP)
 window.renderHeaderLogo = function () {
     const url = (state.settings.logoUrl || '').trim() || DEFAULT_LOGO;
     const box = el('ws-logo');
@@ -1344,7 +1342,6 @@ window.renderLeaderboard = function () {
     const ranked = users.filter(u => (u.xp || 0) > 0).sort((a, b) => (b.xp || 0) - (a.xp || 0));
     const meEmail = state.currentUser ? state.currentUser.email : null;
 
-    // بار ترتيب المستخدم الحالي (الاسم + الترتيب + الجواهر)
     const buildMyBar = () => {
         if (!meEmail || meEmail === ADMIN_EMAIL) return '';
         const me = users.find(u => u.email === meEmail);
@@ -1709,4 +1706,472 @@ window.confirmRedeem = function (productId) {
         return;
     }
     const product = state.products.find(p => p.id === productId);
-    if (!
+    if (!product || !product.links || product.links.length === 0) {
+        showToast('عذراً، نفذ مخزون هذا المنتج مؤقتاً.', 'error');
+        return;
+    }
+    if ((state.currentUser.xp || 0) < Number(product.price)) {
+        showToast('رصيدك من الجواهر لا يكفي لشراء هذا المنتج.', 'error');
+        return;
+    }
+    el('pending-product-id').value = productId;
+    el('confirm-purchase-text').innerText = `هل أنت متأكد من رغبتك في شراء "${product.name}" مقابل ${product.price} جوهرة؟`;
+    el('confirm-purchase-modal').classList.remove('hidden');
+};
+
+window.closeConfirmModal = () => el('confirm-purchase-modal').classList.add('hidden');
+
+let redeeming = false;
+window.executeRedeem = async function () {
+    if (!state.currentUser || redeeming) return;
+    const productId = el('pending-product-id').value;
+    const product = state.products.find(p => p.id === productId);
+    if (!product) {
+        closeConfirmModal();
+        return;
+    }
+
+    redeeming = true;
+    const dbKey = dbKeyOf(state.currentUser.email);
+    let assignedLink = '';
+    let success = false;
+
+    try {
+        const prodRef = ref(db, 'products/' + productId);
+        await runTransaction(prodRef, (p) => {
+            if (!p || !p.links || p.links.length === 0) return;
+            assignedLink = p.links.shift();
+            return p;
+        });
+
+        if (!assignedLink) {
+            closeConfirmModal();
+            showToast('عذراً، نفذ مخزون هذا المنتج للتو.', 'error');
+            redeeming = false;
+            return;
+        }
+
+        const userRef = ref(db, 'users/' + dbKey);
+        await runTransaction(userRef, (u) => {
+            if (!u) return u;
+            if ((u.xp || 0) < Number(product.price)) return;
+            u.xp = (u.xp || 0) - Number(product.price);
+            return u;
+        });
+
+        const now = new Date();
+        const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+        const histKey = 'hist_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        await set(ref(db, 'history/' + histKey), {
+            id: histKey,
+            userEmail: state.currentUser.email,
+            userTag: state.currentUser.tag,
+            userName: state.currentUser.name,
+            productId: product.id,
+            productName: product.name,
+            xpSpent: Number(product.price),
+            assignedLink,
+            timestamp: timeStr
+        });
+
+        success = true;
+    } catch (e) {
+        showToast('حدث خطأ أثناء إتمام عملية الشراء.', 'error');
+    } finally {
+        redeeming = false;
+        closeConfirmModal();
+    }
+
+    if (success) {
+        launchConfetti();
+        el('redeem-link-output').value = assignedLink;
+        el('redeem-open-link-btn').href = safeUrl(assignedLink);
+        el('redeem-success-modal').classList.remove('hidden');
+    }
+};
+
+window.closeRedeemModal = () => el('redeem-success-modal').classList.add('hidden');
+window.copyRedeemLink = function () {
+    const input = el('redeem-link-output');
+    navigator.clipboard.writeText(input.value).then(() => {
+        showToast('تم نسخ الرابط بنجاح!');
+    }).catch(() => {
+        input.select();
+        document.execCommand('copy');
+        showToast('تم النسخ!');
+    });
+};
+
+window.switchTab = function (tabId) {
+    ['store', 'history', 'leaderboard', 'admin'].forEach(id => {
+        const sec = el('tab-' + id);
+        const btn = el('tab-btn-' + id);
+        if (sec) sec.classList.toggle('hidden', id !== tabId);
+        if (btn) {
+            if (id === tabId) {
+                btn.className = 'flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-lg font-black text-[11px] md:text-sm text-center transition-all bg-supercellGold text-black shadow-md';
+            } else {
+                btn.className = 'flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-lg font-black text-[11px] md:text-sm text-center transition-all text-gray-300 hover:text-white bg-black/40';
+            }
+        }
+    });
+    if (tabId === 'leaderboard') renderLeaderboard();
+    if (tabId === 'history') renderHistory();
+};
+
+window.switchAdminTab = function (tabId) {
+    ['settings', 'products', 'users', 'log'].forEach(id => {
+        const sec = el('atab-' + id);
+        const btn = el('atab-btn-' + id);
+        if (sec) sec.classList.toggle('hidden', id !== tabId);
+        if (btn) {
+            btn.className = id === tabId ? 'flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm admin-sub-on shadow' : 'flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm admin-sub-off bg-black/40';
+        }
+    });
+    if (tabId === 'products') renderAdminProducts();
+    else if (tabId === 'users') renderAdminUsers();
+    else if (tabId === 'log') renderAdminAuditLog();
+    else if (tabId === 'settings') populateAdminSettingsForm();
+};
+
+window.checkAdminAccess = function () {
+    if (!isAdminUser()) {
+        showToast('هذه اللوحة خاصة بالمشرف (مهند أبو خضر) فقط.', 'error');
+        return;
+    }
+    switchTab('admin');
+    switchAdminTab('settings');
+};
+
+window.lockAdminPanel = () => switchTab('store');
+
+function populateAdminSettingsForm() {
+    if (!isAdminUser()) return;
+    el('admin-announcement-badge').value = state.settings.badge || '';
+    el('admin-announcement-input').value = state.settings.announcement || '';
+    el('admin-weekly-text').value = state.settings.weeklyText || '';
+    el('admin-weekly-btn-text').value = state.settings.weeklyBtnText || '';
+    el('admin-weekly-btn-url').value = state.settings.weeklyBtnUrl || '';
+    el('admin-event-bar-input').value = state.settings.eventBarText || '';
+    el('admin-logo-input').value = state.settings.logoUrl || '';
+    el('admin-about-text').value = state.settings.aboutText || '';
+    el('admin-whatsapp-notice').value = state.settings.whatsappNoticeText || '';
+    el('admin-earn-instructions').value = state.settings.earnInstructions || '';
+
+    const socials = state.settings.socials || {};
+    el('social-yt').value = socials.youtube || '';
+    el('social-tik').value = socials.tiktok || '';
+    el('social-ig').value = socials.instagram || '';
+    el('social-twi').value = socials.twitch || '';
+    el('social-wa').value = socials.whatsapp || '';
+
+    const icons = state.settings.gameIcons || {};
+    el('game-icon-all').value = icons.all || '';
+    el('game-icon-cr').value = icons.cr || '';
+    el('game-icon-coc').value = icons.coc || '';
+    el('game-icon-hd').value = icons.hd || '';
+    el('game-icon-bs').value = icons.bs || '';
+
+    renderAdminPromoList();
+}
+
+window.saveAdminSettings = function () {
+    if (!isAdminUser()) return;
+    const newSettings = {
+        badge: el('admin-announcement-badge').value.trim(),
+        announcement: el('admin-announcement-input').value.trim(),
+        weeklyText: el('admin-weekly-text').value.trim(),
+        weeklyBtnText: el('admin-weekly-btn-text').value.trim(),
+        weeklyBtnUrl: el('admin-weekly-btn-url').value.trim(),
+        eventBarText: el('admin-event-bar-input').value.trim(),
+        logoUrl: el('admin-logo-input').value.trim(),
+        aboutText: el('admin-about-text').value.trim(),
+        whatsappNoticeText: el('admin-whatsapp-notice').value.trim(),
+        earnInstructions: el('admin-earn-instructions').value.trim(),
+        socials: {
+            youtube: el('social-yt').value.trim(),
+            tiktok: el('social-tik').value.trim(),
+            instagram: el('social-ig').value.trim(),
+            twitch: el('social-twi').value.trim(),
+            whatsapp: el('social-wa').value.trim()
+        },
+        gameIcons: {
+            all: el('game-icon-all').value.trim(),
+            cr: el('game-icon-cr').value.trim(),
+            coc: el('game-icon-coc').value.trim(),
+            hd: el('game-icon-hd').value.trim(),
+            bs: el('game-icon-bs').value.trim()
+        }
+    };
+    set(ref(db, 'settings'), newSettings).then(() => {
+        showToast('تم حفظ الإعدادات بنجاح!');
+    });
+};
+
+window.createPromoCode = function () {
+    if (!isAdminUser()) return;
+    const code = el('promo-new-code').value.trim().toUpperCase();
+    const reward = Number(el('promo-new-reward').value) || 0;
+    const maxUses = Number(el('promo-new-max').value) || 0;
+
+    if (!code || reward <= 0 || maxUses <= 0) {
+        showToast('يرجى ملء كافة حقول الكود بشكل صحيح.', 'error');
+        return;
+    }
+
+    set(ref(db, 'promoCodes/' + code), {
+        code, reward, maxUses, uses: 0, active: true, createdAt: serverNow()
+    }).then(() => {
+        el('promo-new-code').value = '';
+        el('promo-new-reward').value = '';
+        el('promo-new-max').value = '';
+        showToast(`تم إنشاء الكود ${code} بنجاح!`);
+    });
+};
+
+function renderAdminPromoList() {
+    const list = el('admin-promo-list');
+    if (!list) return;
+    get(ref(db, 'promoCodes')).then((snap) => {
+        if (!snap.exists()) {
+            list.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs">لا توجد أكواد نشطة.</div>`;
+            return;
+        }
+        const codes = snap.val();
+        list.innerHTML = Object.values(codes).map(c => `
+            <div class="bg-black/50 border border-supercellCardBorder p-2.5 rounded flex items-center justify-between gap-2 text-xs">
+                <div>
+                    <span class="font-black text-supercellGold">${esc(c.code)}</span>
+                    <span class="text-gray-300 mr-2">(💎 ${c.reward} | استخدام: ${c.uses || 0}/${c.maxUses})</span>
+                </div>
+                <button onclick="deletePromoCode('${esc(c.code)}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
+            </div>`).join('');
+    });
+}
+
+window.deletePromoCode = function (code) {
+    if (!isAdminUser()) return;
+    remove(ref(db, 'promoCodes/' + code)).then(() => {
+        showToast('تم حذف الكود بنجاح.');
+        renderAdminPromoList();
+    });
+};
+
+window.openProductModal = function (prodId = null) {
+    if (!isAdminUser()) return;
+    el('edit-product-id').value = prodId || '';
+    if (prodId) {
+        const p = state.products.find(x => x.id === prodId);
+        if (p) {
+            el('product-modal-title').innerText = 'تعديل المنتج';
+            el('prod-game').value = p.game || '';
+            el('prod-name').value = p.name || '';
+            el('prod-desc').value = p.desc || '';
+            el('prod-price').value = p.price || '';
+            el('prod-img').value = p.image || '';
+            el('prod-links').value = (p.links || []).join('\n');
+        }
+    } else {
+        el('product-modal-title').innerText = 'إضافة منتج جديد';
+        el('prod-game').value = '';
+        el('prod-name').value = '';
+        el('prod-desc').value = '';
+        el('prod-price').value = '';
+        el('prod-img').value = '';
+        el('prod-links').value = '';
+    }
+    el('product-modal').classList.remove('hidden');
+};
+
+window.closeProductModal = () => el('product-modal').classList.add('hidden');
+
+window.saveProduct = function () {
+    if (!isAdminUser()) return;
+    const id = el('edit-product-id').value || ('prod_' + Date.now());
+    const game = el('prod-game').value;
+    const name = el('prod-name').value.trim();
+    const desc = el('prod-desc').value.trim();
+    const price = Number(el('prod-price').value) || 0;
+    const image = el('prod-img').value.trim();
+    const linksText = el('prod-links').value.trim();
+    const links = linksText ? linksText.split('\n').map(l => l.trim()).filter(Boolean) : [];
+
+    if (!name || price <= 0) {
+        showToast('اسم المنتج والسعر حقول إجبارية.', 'error');
+        return;
+    }
+
+    set(ref(db, 'products/' + id), { id, game, name, desc, price, image, links }).then(() => {
+        closeProductModal();
+        showToast('تم حفظ المنتج بنجاح!');
+    });
+};
+
+window.deleteProduct = function (id) {
+    if (!isAdminUser()) return;
+    if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+        remove(ref(db, 'products/' + id)).then(() => showToast('تم الحذف بنجاح.'));
+    }
+};
+
+window.renderAdminProducts = function () {
+    const list = el('admin-products-list');
+    if (!list) return;
+    if (state.products.length === 0) {
+        list.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">لا توجد منتجات مسجلة.</div>`;
+        return;
+    }
+    list.innerHTML = state.products.map(p => `
+        <div class="bg-black/50 border border-supercellCardBorder p-3 rounded-xl flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 overflow-hidden">
+                <img src="${esc(p.image)}" alt="" class="w-10 h-10 object-contain rounded bg-black/40 border border-supercellCardBorder shrink-0">
+                <div class="min-w-0">
+                    <h5 class="font-black text-xs text-white truncate">${esc(p.name)}</h5>
+                    <p class="text-[10px] text-supercellBlue font-bold">${esc(p.price)} XP | مخزون: ${productStock(p)}</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+                <button onclick="openProductModal('${esc(p.id)}')" class="btn-blue px-2 py-1 rounded text-black font-black text-[10px]"><i class="fa-solid fa-pen"></i></button>
+                <button onclick="deleteProduct('${esc(p.id)}')" class="btn-red px-2 py-1 rounded text-white font-black text-[10px]"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>`).join('');
+};
+
+window.renderAdminUsers = function () {
+    const list = el('admin-users-list');
+    const countEl = el('admin-users-count');
+    const searchVal = (el('admin-user-search').value || '').toLowerCase().trim();
+    if (!list) return;
+
+    const users = Object.entries(state.usersMap || {}).map(([k, u]) => ({ key: k, ...u }));
+    users.sort((a, b) => (b.xp || 0) - (a.xp || 0));
+
+    const filtered = users.filter(u => {
+        if (!searchVal) return true;
+        return (u.name && u.name.toLowerCase().includes(searchVal)) ||
+               (u.email && u.email.toLowerCase().includes(searchVal)) ||
+               (u.tag && u.tag.toLowerCase().includes(searchVal));
+    });
+
+    if (countEl) countEl.innerText = `${filtered.length} متابع`;
+
+    if (filtered.length === 0) {
+        list.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">لا يوجد متابعون مطابقون للبحث.</div>`;
+        return;
+    }
+
+    list.innerHTML = filtered.map(u => `
+        <div onclick="openCustomPointsModal('${esc(u.key)}')" class="bg-black/50 border border-supercellCardBorder p-3 rounded-xl flex items-center justify-between gap-2 cursor-pointer hover:border-supercellGold transition-colors">
+            <div class="flex items-center gap-2.5 overflow-hidden">
+                <div class="w-10 h-10 shrink-0 rounded-full border border-supercellGold overflow-hidden bg-purple-900 flex items-center justify-center text-supercellGold">
+                    ${u.avatar ? `<img src="${esc(u.avatar)}" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'">` : '<i class="fa-solid fa-crown"></i>'}
+                </div>
+                <div class="min-w-0">
+                    <h5 class="font-black text-xs text-white truncate">${esc(u.name)}</h5>
+                    <p class="text-[10px] text-supercellBlue font-bold">${esc(u.tag)} | ${esc(u.email)}</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1.5 bg-black/60 px-2.5 py-1 rounded border border-supercellCardBorder shrink-0">
+                <span class="text-xs">💎</span>
+                <span class="font-black text-supercellBlue text-xs">${esc(u.xp || 0)}</span>
+            </div>
+        </div>`).join('');
+};
+
+window.openCustomPointsModal = function (userKey) {
+    if (!isAdminUser()) return;
+    const u = state.usersMap[userKey];
+    if (!u) return;
+    el('target-user-key').value = userKey;
+    el('ud-name').innerText = u.name || '';
+    el('ud-balance').innerText = `الرصيد الحالي: ${u.xp || 0} جوهرة`;
+    el('custom-points-val').value = '';
+    const avatarBox = el('ud-avatar');
+    if (u.avatar) avatarBox.innerHTML = `<img src="${esc(u.avatar)}" alt="" class="w-full h-full object-cover">`;
+    else avatarBox.innerHTML = `<i class="fa-solid fa-crown"></i>`;
+
+    el('ud-info').innerHTML = `
+        <div>الإيميل: ${esc(u.email)}</div>
+        <div>التاغ: ${esc(u.tag)}</div>
+        <div>اليوتيوب: ${esc(u.ytChannel)}</div>
+        <div>الدولة: ${esc(u.country)}</div>
+        <div>تاريخ التسجيل: ${esc(u.joinedAt || 'غير متوفر')}</div>`;
+
+    el('custom-points-modal').classList.remove('hidden');
+};
+
+window.closeCustomPointsModal = () => el('custom-points-modal').classList.add('hidden');
+
+window.applyCustomPoints = function (multiplier) {
+    if (!isAdminUser()) return;
+    const userKey = el('target-user-key').value;
+    const val = Number(el('custom-points-val').value) || 0;
+    if (val <= 0) {
+        showToast('يرجى إدخال عدد صحيح للجواهر.', 'error');
+        return;
+    }
+    const delta = val * multiplier;
+    runTransaction(ref(db, 'users/' + userKey + '/xp'), (cur) => Math.max((cur || 0) + delta, 0)).then(() => {
+        closeCustomPointsModal();
+        showToast('تم تعديل رصيد المتابع بنجاح!');
+    });
+};
+
+window.renderAdminAuditLog = function () {
+    const list = el('admin-audit-log-list');
+    if (!list) return;
+    if (state.history.length === 0) {
+        list.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">لا يوجد سجل مشتريات حالياً.</div>`;
+        return;
+    }
+    list.innerHTML = state.history.slice().reverse().map(item => `
+        <div class="bg-black/50 border border-supercellCardBorder p-3 rounded-xl flex flex-col gap-1 text-xs">
+            <div class="flex items-center justify-between">
+                <span class="font-black text-white">${esc(item.userName)} (${esc(item.userTag)})</span>
+                <span class="text-[9px] text-gray-400">${esc(item.timestamp)}</span>
+            </div>
+            <div class="text-supercellGold font-bold">اشتري: ${esc(item.productName)} (-${esc(item.xpSpent)} XP)</div>
+            <div class="text-[10px] text-supercellBlue truncate select-all">الرابط: ${esc(item.assignedLink)}</div>
+        </div>`).join('');
+};
+
+window.clearAdminHistory = function () {
+    if (!isAdminUser()) return;
+    if (confirm('هل أنت متأكد من مسح سجل المشتريات بالكامل؟')) {
+        remove(ref(db, 'history')).then(() => showToast('تم مسح السجل بنجاح.'));
+    }
+};
+
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.querySelectorAll('.install-btn').forEach(btn => btn.classList.remove('hidden'));
+});
+
+window.installApp = async function () {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            document.querySelectorAll('.install-btn').forEach(btn => btn.classList.add('hidden'));
+        }
+        deferredPrompt = null;
+    } else {
+        const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        if (isIos) {
+            const tip = el('ios-install-tip');
+            if (tip) tip.classList.toggle('hidden');
+        } else {
+            showToast('التطبيق مثبت مسبقاً أو أن المتصفح لا يدعم التثبيت المباشر.', 'error');
+        }
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    initFirebaseSync();
+});
+</script>
+</body>
+</html>
