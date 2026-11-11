@@ -484,7 +484,7 @@
     </div>
 </div>
 
-<!-- USER PROFILE / ACCOUNT OPTIONS MODAL (Includes Promo, Referral & Daily Task) -->
+<!-- USER PROFILE / ACCOUNT OPTIONS MODAL -->
 <div id="user-options-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-sm p-4 flex flex-col gap-3 max-h-[90vh] overflow-y-auto animate-scaleIn">
         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
@@ -497,7 +497,7 @@
             <p id="modal-user-tag" class="text-xs text-supercellBlue font-bold"></p>
         </div>
 
-        <!-- Daily Task Section (Dynamic) -->
+        <!-- Daily Task Section -->
         <div id="modal-daily-task-box" class="hidden bg-black/50 border-2 border-supercellGold p-3 rounded-xl flex flex-col gap-2">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-black text-supercellGold">🌟 مهمة يومية متاحة!</span>
@@ -510,7 +510,7 @@
             </div>
         </div>
 
-        <!-- Promo Code section in profile -->
+        <!-- Promo Code section -->
         <div class="bg-black/40 border border-supercellCardBorder p-2.5 rounded flex flex-col gap-2">
             <span class="text-[11px] font-black text-supercellGold">🎟️ تفعيل كود هدية</span>
             <div class="flex gap-2">
@@ -519,7 +519,7 @@
             </div>
         </div>
 
-        <!-- Referral Link section in profile -->
+        <!-- Referral Link section -->
         <div class="bg-black/40 border border-supercellCardBorder p-2.5 rounded flex flex-col gap-2">
             <span class="text-[11px] font-black text-supercellBlue">🤝 ادعُ أصدقاءك (احصل على جوهرتك)</span>
             <input type="text" id="profile-referral-link" readonly dir="ltr" class="w-full bg-black/80 text-center text-[10px] text-white p-1.5 rounded border border-gray-700 select-all" onclick="this.select()">
@@ -561,7 +561,7 @@
     </div>
 </div>
 
-<!-- ADMIN USER DETAILS MODAL (New Detailed View for Admins) -->
+<!-- ADMIN USER DETAILS MODAL -->
 <div id="admin-user-details-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-sm p-4 flex flex-col gap-3 max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
@@ -800,7 +800,7 @@ window.renderAbout = function () {
     el('ws-about-text').innerText = t !== '' ? t : DEFAULT_ABOUT;
 };
 
-// إنشاء الجسيمات الضوئية المتحركة في خلفية الترحيب
+// بناء الجسيمات الضوئية
 (function buildFloatingParticles() {
     const bg = el('ws-bg');
     if (!bg) return;
@@ -1011,7 +1011,7 @@ window.renderUserProfile = function () {
         dailyBtn.classList.add('hidden');
         xpDisplay.innerText = '0';
         const logoUrl = state.settings.logoUrl ? state.settings.logoUrl.trim() : '';
-        if (logoUrl !== '') container.innerHTML = `<img src="${esc(logoUrl)}" alt="Logo" class="h-7 w-auto object-contain">`;
+        if (logoUrl !== '') brandContainer.innerHTML = `<img src="${esc(logoUrl)}" alt="Logo" class="h-7 w-auto object-contain">`;
         else brandContainer.innerHTML = `<span id="logo-display" class="font-black text-xl italic tracking-tighter text-supercellGold game-badge">SAVO XP</span>`;
     }
     applyAdminTabVisibility();
@@ -1025,7 +1025,6 @@ window.openUserOptionsModal = async function () {
     el('modal-user-name').innerText = state.currentUser.name || '';
     el('modal-user-tag').innerText = state.currentUser.tag || '';
 
-    // إعداد رابط الإحالة بملف المستخدم
     if (!state.currentUser.refCode) {
         state.currentUser.refCode = Math.random().toString(36).slice(2, 10);
         await update(ref(db, 'users/' + dbKeyOf(state.currentUser.email)), { refCode: state.currentUser.refCode });
@@ -1033,7 +1032,6 @@ window.openUserOptionsModal = async function () {
     el('profile-referral-link').value = location.origin + location.pathname + '?ref=' + state.currentUser.refCode;
     el('profile-referral-count').innerText = `${state.currentUser.referralCount || 0} / ${MAX_REFERRALS}`;
 
-    // مهمة يومية
     const taskBox = el('modal-daily-task-box');
     const taskTitle = (state.settings.taskTitle || '').trim();
     const taskUrl = (state.settings.taskUrl || '').trim();
@@ -1088,7 +1086,6 @@ window.openNotificationsModal = function () {
 };
 window.closeNotificationsModal = () => el('notifications-modal').classList.add('hidden');
 
-// الجوهرة اليومية
 function dailyRemaining() {
     const last = (state.currentUser && state.currentUser.lastDailyClaim) || 0;
     const now = serverNow();
@@ -1137,7 +1134,6 @@ window.claimDailyJewel = async function () {
     }
 };
 
-// تفعيل كود من الملف الشخصي
 window.redeemPromoFromProfile = async function () {
     if (!state.currentUser) return;
     const code = el('profile-promo-input').value.trim().toUpperCase();
@@ -1241,53 +1237,115 @@ window.renderLeaderboard = function () {
     list.innerHTML = `<div class="panel-card p-4 text-center text-xs text-supercellGold font-bold">أعلى المتصدرين في منصة SAVO XP</div>`;
 };
 
-// تسجيل الدخول
+// ===================== تسجيل الدخول باستخدام جوجل (مربوط تماماً) =====================
 window.handleGoogleSignIn = function (response) {
     try {
-        const payload = JSON.parse(atob(response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-        localStorage.setItem('savo_logged_email', payload.email);
-        const existing = Object.values(state.usersMap).find(u => u && u.email === payload.email);
-        if (existing) {
-            state.currentUser = existing;
+        const base64Url = response.credential.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        const payload = JSON.parse(jsonPayload);
+
+        const name = payload.name;
+        const email = payload.email;
+        const avatar = payload.picture;
+
+        localStorage.setItem('savo_logged_email', email);
+
+        const allUsers = Object.values(state.usersMap);
+        let existingUser = allUsers.find(u => u && u.email === email);
+
+        if (existingUser) {
+            state.currentUser = existingUser;
             closeLoginModal();
             renderUserProfile();
             renderHistory();
+            updateNotificationBadge();
+            showToast(`مرحباً بك مجدداً ${existingUser.name}!`);
         } else {
             closeLoginModal();
-            el('g-temp-email').value = payload.email;
-            el('g-temp-name').value = payload.name;
-            el('g-temp-avatar').value = payload.picture;
+            el('g-temp-email').value = email;
+            el('g-temp-name').value = name;
+            el('g-temp-avatar').value = avatar;
+            el('g-profile-yt').value = '';
+            el('g-profile-tag').value = '';
+            el('g-profile-country').value = '';
             el('google-profile-modal').classList.remove('hidden');
         }
-    } catch (e) { showToast('خطأ في تسجيل الدخول.', 'error'); }
+    } catch (e) {
+        showToast('حدث خطأ أثناء تسجيل الدخول عبر جوجل.', 'error');
+    }
 };
 
 window.saveGoogleProfile = async function () {
     const email = el('g-temp-email').value;
     const name = el('g-temp-name').value;
     const avatar = el('g-temp-avatar').value;
+    const ytChannel = el('g-profile-yt').value.trim() || 'قناة يوتيوب';
     let tag = el('g-profile-tag').value.trim();
-    if (!tag) { showToast('يرجى إدخال التاغ.', 'error'); return; }
+    const country = el('g-profile-country').value.trim() || 'غير محدد';
+
+    if (!tag) {
+        showToast('يرجى إدخال تاغ كلاش رويال الخاص بك.', 'error');
+        return;
+    }
     if (!tag.startsWith('#')) tag = '#' + tag;
 
     const dbKey = dbKeyOf(email);
-    const newUser = { name, email, avatar, ytChannel: el('g-profile-yt').value.trim() || 'قناة', tag, country: el('g-profile-country').value.trim() || 'غير محدد', xp: 0, joinedAt: new Date().toLocaleDateString(), refCode: Math.random().toString(36).slice(2, 10) };
+    const now = new Date();
+    const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+    const newUser = {
+        name,
+        email,
+        avatar,
+        ytChannel,
+        tag,
+        country,
+        xp: 0,
+        lastReadNotification: 0,
+        joinedAt: timeStr,
+        authType: 'Google',
+        refCode: Math.random().toString(36).slice(2, 10),
+        referralCount: 0
+    };
+
     await set(ref(db, 'users/' + dbKey), newUser);
     state.currentUser = newUser;
     localStorage.setItem('savo_logged_email', email);
+
     el('google-profile-modal').classList.add('hidden');
     renderUserProfile();
-    showToast('تم إنشاء الحساب بنجاح!');
+    renderHistory();
+    updateNotificationBadge();
+    showToast(`أهلاً بك يا ${name}! تم إنشاء حسابك بنجاح.`);
 };
 
 function initGoogleButton() {
     const container = el('google-signin-btn-container');
-    if (container && window.google) {
-        google.accounts.id.initialize({ client_id: "702112953676-htntgj2u2uqnci23frjsqvtvsvmsvvtl.apps.googleusercontent.com", callback: handleGoogleSignIn });
-        google.accounts.id.renderButton(container, { theme: "outline", size: "large" });
+    if (container && window.google && window.google.accounts) {
+        container.innerHTML = '';
+        try {
+            google.accounts.id.initialize({
+                client_id: "702112953676-htntgj2u2uqnci23frjsqvtvsvmsvvtl.apps.googleusercontent.com",
+                callback: handleGoogleSignIn
+            });
+            google.accounts.id.renderButton(
+                container,
+                { type: "standard", size: "large", theme: "outline", text: "sign_in_with", shape: "rectangular", logo_alignment: "left" }
+            );
+        } catch (err) {
+            console.log('Google Auth init error:', err);
+        }
     }
 }
-window.openLoginModal = () => { el('login-modal').classList.remove('hidden'); setTimeout(initGoogleButton, 100); };
+
+window.openLoginModal = function () {
+    el('login-modal').classList.remove('hidden');
+    setTimeout(initGoogleButton, 150);
+};
+
 window.closeLoginModal = () => el('login-modal').classList.add('hidden');
 window.openEarnPointsModal = () => el('earn-points-modal').classList.remove('hidden');
 window.closeEarnPointsModal = () => el('earn-points-modal').classList.add('hidden');
@@ -1523,7 +1581,7 @@ window.saveProduct = async function () {
     const links = el('prod-links').value.trim().split('\n').filter(l => l.length > 0);
     if (!name || !price) return;
     const id = 'prod_' + Date.now();
-    await set(ref(db, 'products/' + id), { id, name, desc: el('prod-desc').value.trim(), price, image: el('prod-img'].value.trim() || 'https://placehold.co/150x150/2B1055/FFD700?text=Item', links, game: el('prod-game').value });
+    await set(ref(db, 'products/' + id), { id, name, desc: el('prod-desc').value.trim(), price, image: el('prod-img').value.trim() || 'https://placehold.co/150x150/2B1055/FFD700?text=Item', links, game: el('prod-game').value });
     closeProductModal();
     showToast('تم إضافة المنتج بنجاح!');
 };
