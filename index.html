@@ -80,6 +80,7 @@
     .podium-col { animation: riseIn 0.55s cubic-bezier(.2,.8,.2,1) both; }
     .confetti-piece { position: fixed; top: -14px; width: 8px; height: 12px; z-index: 110; pointer-events: none; animation: confettiFall 2s linear forwards; }
 
+    /* ---------- شاشة الترحيب: خلفية هادئة + شرارات خفيفة ---------- */
     @keyframes bgShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     @keyframes sparkRise { 0% { transform: translateY(0) scale(1); opacity: 0; } 15% { opacity: 0.55; } 85% { opacity: 0.35; } 100% { transform: translateY(-70vh) scale(0.4); opacity: 0; } }
     @keyframes logoGlow { 0%,100% { filter: drop-shadow(0 0 8px rgba(255,60,60,0.35)); } 50% { filter: drop-shadow(0 0 20px rgba(255,60,60,0.7)); } }
@@ -104,12 +105,14 @@
     header { padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
     #toast-container { top: calc(1rem + env(safe-area-inset-top, 0px)); }
 
+    /* قائمة المستخدم */
     #user-menu { animation: scaleIn 0.18s ease-out; transform-origin: top right; }
     .menu-item { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-weight: 900; font-size: 13px; text-align: right; color: #fff; background: rgba(0,0,0,0.35); border: 1px solid #53239e; }
     .menu-item:hover { border-color: #FFD700; }
     .menu-item i { width: 18px; text-align: center; color: #FFD700; }
     .menu-item.danger i { color: #FF5252; }
 
+    /* تبويبات الأدمن */
     .admin-sub-on { background: #2B1055; color: #FFD700; border: 1px solid #53239e; }
     .admin-sub-off { color: #d1d5db; border: 1px solid transparent; }
 
@@ -207,7 +210,7 @@
         </div>
     </div>
 
-    <!-- ANNOUNCEMENT BANNER -->
+    <!-- ANNOUNCEMENT BANNER (ثابت) -->
     <div id="announcement-banner" class="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-black py-1.5 px-3 flex items-center gap-2 border-b-2 border-amber-400 shadow-sm">
         <span id="announcement-badge-container" class="shrink-0">
             <span id="announcement-badge" class="bg-black text-amber-400 text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">إعلان</span>
@@ -237,7 +240,7 @@
     <!-- MAIN -->
     <main class="flex-1 p-3 md:p-6 flex flex-col gap-4">
 
-        <!-- TABS -->
+        <!-- TABS (الأيقونة فوق والكلمة تحتها) -->
         <div class="flex gap-1.5 bg-black/40 p-1 rounded-xl border border-supercellCardBorder">
             <button onclick="switchTab('store')" id="tab-btn-store" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-lg font-black text-[11px] md:text-sm text-center transition-all">
                 <i class="fa-solid fa-store text-base"></i><span>المتجر</span>
@@ -636,6 +639,7 @@
     </div>
 </div>
 
+<!-- USER DETAILS MODAL (للأدمن) -->
 <div id="custom-points-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
@@ -683,7 +687,6 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithCredential, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getDatabase, ref, set, get, onValue, update, remove, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -698,7 +701,6 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getDatabase(app);
 
 const ADMIN_EMAIL = "mohanadabukhader176@gmail.com";
@@ -707,7 +709,6 @@ const DEFAULT_ABOUT = 'SAVO XP هو متجر مكافآت لمتابعي الق�
 
 let state = {
     currentUser: null,
-    firebaseAuthUser: null,
     products: [],
     history: [],
     usersMap: {},
@@ -769,6 +770,7 @@ try {
 } catch (e) {}
 
 let usersLoaded = false;
+const hasSavedSession = (() => { try { return !!localStorage.getItem('savo_logged_email'); } catch (e) { return false; } })();
 
 function isAdminUser() { return !!state.currentUser && state.currentUser.email === ADMIN_EMAIL; }
 
@@ -778,6 +780,20 @@ function applyAdminTabVisibility() {
     const show = isAdminUser();
     b.classList.toggle('hidden', !show);
     b.classList.toggle('flex', show);
+}
+
+function restoreSession() {
+    if (state.currentUser) return;
+    let savedEmail = null;
+    try { savedEmail = localStorage.getItem('savo_logged_email'); } catch (e) {}
+    if (!savedEmail) return;
+    const found = Object.values(state.usersMap || {}).find(u => u && u.email === savedEmail);
+    if (found) {
+        state.currentUser = found;
+        renderUserProfile();
+        renderHistory();
+        updateNotificationBadge();
+    }
 }
 
 function refreshLeaderboardIfOpen() {
@@ -790,7 +806,7 @@ function syncWelcomeScreen() {
     const ws = el('welcome-screen');
     if (!ws) return;
     const show = !state.currentUser;
-    const pending = state.firebaseAuthUser && !usersLoaded;
+    const pending = hasSavedSession && !usersLoaded;
     el('ws-actions').classList.toggle('hidden', pending);
     el('ws-loading').classList.toggle('hidden', !pending);
     clearTimeout(welcomeHideTimer);
@@ -817,6 +833,7 @@ window.renderAbout = function () {
     el('ws-about-text').innerText = t !== '' ? t : DEFAULT_ABOUT;
 };
 
+// تشارات خفيفة
 (function buildSparks() {
     const bg = el('ws-bg');
     if (!bg) return;
@@ -831,24 +848,7 @@ window.renderAbout = function () {
     }
 })();
 
-// مراقبة حالة المصادقة من Firebase Auth
-onAuthStateChanged(auth, (user) => {
-    state.firebaseAuthUser = user;
-    if (user) {
-        // المستخدم مسجل الدخول في Firebase Auth بنجاح
-        initFirebaseDataListeners();
-    } else {
-        // غير مسجل دخول
-        state.currentUser = null;
-        usersLoaded = true;
-        renderUserProfile();
-        renderHistory();
-        updateNotificationBadge();
-        syncWelcomeScreen();
-    }
-});
-
-function initFirebaseDataListeners() {
+function initFirebaseSync() {
     onValue(ref(db, '.info/serverTimeOffset'), (snap) => {
         serverOffset = Number(snap.val()) || 0;
         updateDailyBtnState();
@@ -882,33 +882,23 @@ function initFirebaseDataListeners() {
     onValue(ref(db, 'users'), (snapshot) => {
         if (snapshot.exists()) {
             state.usersMap = snapshot.val();
-            if (state.firebaseAuthUser) {
-                const email = state.firebaseAuthUser.email;
-                const found = Object.values(state.usersMap).find(u => u && u.email === email);
-                if (found) {
-                    const oldXp = state.currentUser ? state.currentUser.xp : null;
-                    state.currentUser = found;
-                    if (oldXp !== null && oldXp !== found.xp) showToast(`تم تحديث رصيدك إلى 💎 ${found.xp || 0} XP`);
-                } else if (!state.currentUser) {
-                    // إذا كان مسجلاً في Auth ولكن غير موجود في قاعدة بيانات users
-                    const email = state.firebaseAuthUser.email;
-                    const name = state.firebaseAuthUser.displayName || email.split('@')[0];
-                    const avatar = state.firebaseAuthUser.photoURL || '';
-                    el('g-temp-email').value = email;
-                    el('g-temp-name').value = name;
-                    el('g-temp-avatar').value = avatar;
-                    el('google-profile-modal').classList.remove('hidden');
+            if (state.currentUser) {
+                const updatedMe = Object.values(state.usersMap).find(u => u && u.email === state.currentUser.email);
+                if (updatedMe) {
+                    const oldXp = state.currentUser.xp;
+                    state.currentUser = updatedMe;
+                    if (oldXp !== updatedMe.xp) showToast(`تم تحديث رصيدك إلى 💎 ${updatedMe.xp || 0} XP`);
                 }
             }
         } else {
             state.usersMap = {};
         }
         usersLoaded = true;
+        restoreSession();
         renderUserProfile();
         updateNotificationBadge();
         refreshLeaderboardIfOpen();
         if (!el('tab-admin').classList.contains('hidden')) renderAdminUsers();
-        syncWelcomeScreen();
     });
 
     onValue(ref(db, 'history'), (snapshot) => {
@@ -999,6 +989,7 @@ window.renderEventBar = function () {
     }
 };
 
+// شاشة الترحيب: الشعار فقط (بدون كلمة SAVO XP)
 window.renderHeaderLogo = function () {
     const url = (state.settings.logoUrl || '').trim() || DEFAULT_LOGO;
     const box = el('ws-logo');
@@ -1353,6 +1344,7 @@ window.renderLeaderboard = function () {
     const ranked = users.filter(u => (u.xp || 0) > 0).sort((a, b) => (b.xp || 0) - (a.xp || 0));
     const meEmail = state.currentUser ? state.currentUser.email : null;
 
+    // بار ترتيب المستخدم الحالي (الاسم + الترتيب + الجواهر)
     const buildMyBar = () => {
         if (!meEmail || meEmail === ADMIN_EMAIL) return '';
         const me = users.find(u => u.email === meEmail);
@@ -1431,21 +1423,22 @@ async function creditReferrer(refKey) {
     } catch (e) {}
 }
 
-// المصادقة الآمنة باستخدام Google Credential مع Firebase Auth
-window.handleGoogleSignIn = async function (response) {
+window.handleGoogleSignIn = function (response) {
     try {
-        const idToken = response.credential;
-        const credential = GoogleAuthProvider.credential(idToken);
-        
-        // تسجيل الدخول في نظام Firebase Authentication الآمن
-        const result = await signInWithCredential(auth, credential);
-        const user = result.user;
+        const base64Url = response.credential.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        const payload = JSON.parse(jsonPayload);
 
-        const name = user.displayName;
-        const email = user.email;
-        const avatar = user.photoURL;
+        const name = payload.name;
+        const email = payload.email;
+        const avatar = payload.picture;
 
-        const existingUser = Object.values(state.usersMap || {}).find(u => u && u.email === email);
+        localStorage.setItem('savo_logged_email', email);
+
+        const existingUser = Object.values(state.usersMap).find(u => u && u.email === email);
 
         if (existingUser) {
             state.currentUser = existingUser;
@@ -1465,7 +1458,7 @@ window.handleGoogleSignIn = async function (response) {
             el('google-profile-modal').classList.remove('hidden');
         }
     } catch (e) {
-        showToast('حدث خطأ أثناء المصادقة الأمنية عبر جوجل.', 'error');
+        showToast('حدث خطأ أثناء تسجيل الدخول عبر جوجل.', 'error');
     }
 };
 
@@ -1491,6 +1484,7 @@ window.saveGoogleProfile = async function () {
         const snap = await get(ref(db, 'users/' + dbKey));
         if (snap.exists()) {
             state.currentUser = snap.val();
+            localStorage.setItem('savo_logged_email', email);
             el('google-profile-modal').classList.add('hidden');
             renderUserProfile();
             renderHistory();
@@ -1524,6 +1518,7 @@ window.saveGoogleProfile = async function () {
 
         await set(ref(db, 'users/' + dbKey), newUser);
         state.currentUser = newUser;
+        localStorage.setItem('savo_logged_email', email);
 
         if (refKey) await creditReferrer(refKey);
         try { localStorage.removeItem('savo_ref'); } catch (e) {}
@@ -1534,7 +1529,7 @@ window.saveGoogleProfile = async function () {
         updateNotificationBadge();
         showToast(`أهلاً بك يا ${name}! تم إنشاء حسابك بنجاح.`);
     } catch (e) {
-        showToast('تعذر حفظ البيانات بسبب صلاحيات الأمان، تأكد من تسجيل الدخول.', 'error');
+        showToast('حدث خطأ أثناء حفظ الحساب، حاول مرة أخرى.', 'error');
     } finally {
         savingProfile = false;
     }
@@ -1606,17 +1601,13 @@ window.saveEditedProfile = function () {
     showToast('تم تحديث الملف الشخصي بنجاح!');
 };
 
-window.logoutUser = async function () {
-    try {
-        await signOut(auth);
-    } catch (e) {}
+window.logoutUser = function () {
+    try { localStorage.removeItem('savo_logged_email'); } catch (e) {}
     state.currentUser = null;
-    state.firebaseAuthUser = null;
     switchTab('store');
     renderUserProfile();
     renderHistory();
     updateNotificationBadge();
-    showToast('تم تسجيل الخروج بنجاح.');
 };
 
 window.openPromoModal = function () {
@@ -1718,508 +1709,4 @@ window.confirmRedeem = function (productId) {
         return;
     }
     const product = state.products.find(p => p.id === productId);
-    if (!product) return;
-    if (productStock(product) === 0) {
-        showToast('عذراً، نفذت كمية هذا المنتج.', 'error');
-        return;
-    }
-    if ((state.currentUser.xp || 0) < product.price) {
-        showToast('رصيدك من الجواهر لا يكفي لشراء هذا المنتج.', 'error');
-        return;
-    }
-    el('pending-product-id').value = productId;
-    el('confirm-purchase-text').innerText = `هل أنت متأكد من رغبتك في شراء "${product.name}" مقابل ${product.price} جوهرة؟`;
-    el('confirm-purchase-modal').classList.remove('hidden');
-};
-
-window.closeConfirmModal = () => el('confirm-purchase-modal').classList.add('hidden');
-
-let redeeming = false;
-window.executeRedeem = async function () {
-    if (!state.currentUser || redeeming) return;
-    const productId = el('pending-product-id').value;
-    const product = state.products.find(p => p.id === productId);
-    if (!product) { closeConfirmModal(); return; }
-
-    redeeming = true;
-    closeConfirmModal();
-
-    const dbKey = dbKeyOf(state.currentUser.email);
-    let assignedLink = null;
-    let failedReason = null;
-
-    try {
-        const prodRef = ref(db, 'products/' + productId);
-        const txRes = await runTransaction(prodRef, (p) => {
-            if (!p || !p.links || p.links.length === 0) { failedReason = 'soldout'; return; }
-            assignedLink = p.links.shift();
-            return p;
-        });
-
-        if (!txRes.committed || failedReason === 'soldout') {
-            showToast('عذراً، نفذت كمية هذا المنتج تماماً قبل إتمام الطلب.', 'error');
-            redeeming = false;
-            return;
-        }
-
-        const userRef = ref(db, 'users/' + dbKey);
-        const userTx = await runTransaction(userRef, (u) => {
-            if (!u || (u.xp || 0) < product.price) { failedReason = 'nocredit'; return; }
-            u.xp -= product.price;
-            return u;
-        });
-
-        if (!userTx.committed || failedReason === 'nocredit') {
-            showToast('رصيدك لا يكفي لإتمام الشراء.', 'error');
-            redeeming = false;
-            return;
-        }
-
-        const now = new Date();
-        const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-        const historyId = 'hist_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
-
-        await set(ref(db, 'history/' + historyId), {
-            id: historyId,
-            userEmail: state.currentUser.email,
-            userTag: state.currentUser.tag,
-            userName: state.currentUser.name,
-            productId: product.id,
-            productName: product.name,
-            xpSpent: product.price,
-            assignedLink,
-            timestamp: timeStr
-        });
-
-        launchConfetti();
-        el('redeem-link-output').value = assignedLink;
-        el('redeem-open-link-btn').href = safeUrl(assignedLink);
-        el('redeem-success-modal').classList.remove('hidden');
-    } catch (e) {
-        showToast('حدث خطأ أثناء إتمام عملية الشراء.', 'error');
-    } finally {
-        redeeming = false;
-    }
-};
-
-window.closeRedeemModal = () => el('redeem-success-modal').classList.add('hidden');
-window.copyRedeemLink = function () {
-    const input = el('redeem-link-output');
-    navigator.clipboard.writeText(input.value).then(() => {
-        showToast('تم نسخ الرابط بنجاح!');
-    }).catch(() => {
-        input.select();
-        document.execCommand('copy');
-        showToast('تم النسخ!');
-    });
-};
-
-// التنقل بين الأقسام الرئيسية
-window.switchTab = function (tab) {
-    ['store', 'history', 'leaderboard', 'admin'].forEach(t => {
-        const sec = el('tab-' + t);
-        const btn = el('tab-btn-' + t);
-        if (sec) sec.classList.toggle('hidden', t !== tab);
-        if (btn) {
-            if (t === tab) {
-                btn.className = 'flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-lg font-black text-[11px] md:text-sm text-center bg-supercellGold text-black shadow-md';
-            } else {
-                btn.className = 'flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-lg font-black text-[11px] md:text-sm text-center bg-black/40 text-gray-300 hover:text-white border border-supercellCardBorder';
-            }
-        }
-    });
-    if (tab === 'leaderboard') renderLeaderboard();
-    if (tab === 'admin') {
-        if (!isAdminUser()) {
-            showToast('هذه اللوحة مخصصة للمشرف فقط.', 'error');
-            switchTab('store');
-            return;
-        }
-        switchAdminTab('settings');
-    }
-};
-
-window.checkAdminAccess = function () {
-    if (!isAdminUser()) {
-        showToast('غير مسموح لك بالدخول إلى لوحة الأدمن.', 'error');
-        return;
-    }
-    switchTab('admin');
-};
-
-window.lockAdminPanel = () => switchTab('store');
-
-window.switchAdminTab = function (sub) {
-    ['settings', 'products', 'users', 'log'].forEach(s => {
-        const sec = el('atab-' + s);
-        const btn = el('atab-btn-' + s);
-        if (sec) sec.classList.toggle('hidden', s !== sub);
-        if (btn) {
-            btn.className = s === sub ? 'flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm admin-sub-on shadow' : 'flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm admin-sub-off bg-black/40 hover:bg-purple-950/40';
-        }
-    });
-    if (sub === 'settings') { populateAdminSettingsForm(); renderAdminPromoList(); }
-    else if (sub === 'products') renderAdminProducts();
-    else if (sub === 'users') renderAdminUsers();
-    else if (sub === 'log') renderAdminAuditLog();
-};
-
-function populateAdminSettingsForm() {
-    el('admin-announcement-badge').value = state.settings.badge || '';
-    el('admin-announcement-input').value = state.settings.announcement || '';
-    el('admin-weekly-text').value = state.settings.weeklyText || '';
-    el('admin-weekly-btn-text').value = state.settings.weeklyBtnText || '';
-    el('admin-weekly-btn-url').value = state.settings.weeklyBtnUrl || '';
-    el('admin-event-bar-input').value = state.settings.eventBarText || '';
-    el('admin-logo-input').value = state.settings.logoUrl || '';
-    el('admin-about-text').value = state.settings.aboutText || '';
-    el('admin-whatsapp-notice').value = state.settings.whatsappNoticeText || '';
-    el('admin-earn-instructions').value = state.settings.earnInstructions || '';
-
-    const socials = state.settings.socials || {};
-    el('social-yt').value = socials.youtube || '';
-    el('social-tik').value = socials.tiktok || '';
-    el('social-ig').value = socials.instagram || '';
-    el('social-twi').value = socials.twitch || '';
-    el('social-wa').value = socials.whatsapp || '';
-
-    const icons = state.settings.gameIcons || {};
-    el('game-icon-all').value = icons.all || '';
-    el('game-icon-cr').value = icons.cr || '';
-    el('game-icon-coc').value = icons.coc || '';
-    el('game-icon-hd').value = icons.hd || '';
-    el('game-icon-bs').value = icons.bs || '';
-}
-
-window.saveAdminSettings = function () {
-    if (!isAdminUser()) return;
-    const newSettings = {
-        badge: el('admin-announcement-badge').value.trim(),
-        announcement: el('admin-announcement-input').value.trim(),
-        weeklyText: el('admin-weekly-text').value.trim(),
-        weeklyBtnText: el('admin-weekly-btn-text').value.trim(),
-        weeklyBtnUrl: el('admin-weekly-btn-url').value.trim(),
-        eventBarText: el('admin-event-bar-input').value.trim(),
-        logoUrl: el('admin-logo-input').value.trim(),
-        aboutText: el('admin-about-text').value.trim(),
-        whatsappNoticeText: el('admin-whatsapp-notice').value.trim(),
-        earnInstructions: el('admin-earn-instructions').value.trim(),
-        socials: {
-            youtube: el('social-yt').value.trim(),
-            tiktok: el('social-tik').value.trim(),
-            instagram: el('social-ig').value.trim(),
-            twitch: el('social-twi').value.trim(),
-            whatsapp: el('social-wa').value.trim()
-        },
-        gameIcons: {
-            all: el('game-icon-all').value.trim(),
-            cr: el('game-icon-cr').value.trim(),
-            coc: el('game-icon-coc').value.trim(),
-            hd: el('game-icon-hd').value.trim(),
-            bs: el('game-icon-bs').value.trim()
-        }
-    };
-
-    set(ref(db, 'settings'), newSettings).then(() => {
-        showToast('تم حفظ وتحديث الإعدادات بنجاح!');
-    }).catch(() => {
-        showToast('تعذر حفظ الإعدادات، تحقق من صلاحيات الأدمن.', 'error');
-    });
-};
-
-window.createPromoCode = function () {
-    if (!isAdminUser()) return;
-    const code = el('promo-new-code').value.trim().toUpperCase();
-    const reward = Number(el('promo-new-reward').value) || 0;
-    const maxUses = Number(el('promo-new-max').value) || 0;
-
-    if (!code || reward <= 0 || maxUses <= 0) {
-        showToast('يرجى تعبئة جميع حقول الكود الترويجي بقيم صحيحة.', 'error');
-        return;
-    }
-
-    set(ref(db, 'promoCodes/' + code), {
-        code, reward, maxUses, uses: 0, active: true, createdAt: serverNow()
-    }).then(() => {
-        el('promo-new-code').value = '';
-        el('promo-new-reward').value = '';
-        el('promo-new-max').value = '';
-        renderAdminPromoList();
-        showToast(`تم إنشاء الكود ${code} بنجاح!`);
-    }).catch(() => {
-        showToast('تعذر إنشاء الكود.', 'error');
-    });
-};
-
-function renderAdminPromoList() {
-    const box = el('admin-promo-list');
-    if (!box) return;
-    get(ref(db, 'promoCodes')).then((snapshot) => {
-        const codes = snapshot.exists() ? snapshot.val() : {};
-        const keys = Object.keys(codes);
-        if (keys.length === 0) {
-            box.innerHTML = `<div class="text-center text-gray-400 text-xs py-4">لا توجد أكواد ترويجية نشطة حالياً.</div>`;
-            return;
-        }
-        box.innerHTML = keys.map(k => {
-            const c = codes[k];
-            return `
-                <div class="bg-black/50 border border-supercellCardBorder p-2.5 rounded-lg flex items-center justify-between gap-2">
-                    <div>
-                        <div class="font-black text-xs text-supercellGold">${esc(c.code)}</div>
-                        <div class="text-[10px] text-gray-300">الجواهر: ${c.reward} | الاستخدامات: ${c.uses || 0} / ${c.maxUses}</div>
-                    </div>
-                    <button onclick="deletePromoCode('${esc(c.code)}')" class="btn-red px-2 py-1 rounded text-white text-[10px] font-bold">حذف</button>
-                </div>`;
-        }).join('');
-    });
-}
-
-window.deletePromoCode = function (code) {
-    if (!isAdminUser()) return;
-    remove(ref(db, 'promoCodes/' + code)).then(() => {
-        renderAdminPromoList();
-        showToast('تم حذف الكود الترويجي.');
-    });
-};
-
-window.openProductModal = function (prodId = null) {
-    el('edit-product-id').value = '';
-    el('prod-game').value = '';
-    el('prod-name').value = '';
-    el('prod-desc').value = '';
-    el('prod-price').value = '';
-    el('prod-img').value = '';
-    el('prod-links').value = '';
-    el('product-modal-title').innerText = 'إضافة منتج جديد';
-
-    if (prodId) {
-        const prod = state.products.find(p => p.id === prodId);
-        if (prod) {
-            el('edit-product-id').value = prod.id;
-            el('prod-game').value = prod.game || '';
-            el('prod-name').value = prod.name || '';
-            el('prod-desc').value = prod.desc || '';
-            el('prod-price').value = prod.price || 0;
-            el('prod-img').value = prod.image || '';
-            el('prod-links').value = (prod.links || []).join('\n');
-            el('product-modal-title').innerText = 'تعديل المنتج';
-        }
-    }
-    el('product-modal').classList.remove('hidden');
-};
-
-window.closeProductModal = () => el('product-modal').classList.add('hidden');
-
-window.saveProduct = function () {
-    if (!isAdminUser()) return;
-    const editId = el('edit-product-id').value.trim();
-    const game = el('prod-game').value;
-    const name = el('prod-name').value.trim();
-    const desc = el('prod-desc').value.trim();
-    const price = Number(el('prod-price').value) || 0;
-    const image = el('prod-img').value.trim() || 'https://placehold.co/150x150/2B1055/FFD700?text=Item';
-    const rawLinks = el('prod-links').value;
-    const links = rawLinks.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-
-    if (!name || price <= 0 || links.length === 0) {
-        showToast('اسم المنتج، السعر، ورابط كود واحد على الأقل حقول إجبارية.', 'error');
-        return;
-    }
-
-    const productId = editId || ('prod_' + Date.now());
-    const prodObj = { id: productId, game, name, desc, price, image, links };
-
-    set(ref(db, 'products/' + productId), prodObj).then(() => {
-        closeProductModal();
-        showToast('تم حفظ المنتج وتحديث المخزون بنجاح!');
-    }).catch(() => {
-        showToast('تعذر حفظ المنتج.', 'error');
-    });
-};
-
-window.deleteProduct = function (productId) {
-    if (!isAdminUser()) return;
-    remove(ref(db, 'products/' + productId)).then(() => {
-        showToast('تم حذف المنتج بنجاح.');
-    });
-};
-
-function renderAdminProducts() {
-    const list = el('admin-products-list');
-    if (!list) return;
-    list.innerHTML = '';
-
-    if (state.products.length === 0) {
-        list.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">لا توجد منتجات مسجلة حالياً.</div>`;
-        return;
-    }
-
-    state.products.forEach(prod => {
-        const count = productStock(prod);
-        const game = GAMES.find(g => g.id === prod.game);
-        const item = document.createElement('div');
-        item.className = 'bg-black/50 border border-supercellCardBorder p-3 rounded-xl flex items-center justify-between gap-2';
-        item.innerHTML = `
-            <div class="flex items-center gap-3 overflow-hidden">
-                <img src="${esc(prod.image)}" alt="" class="w-12 h-12 object-contain rounded border border-supercellCardBorder shrink-0 bg-black/40" onerror="this.style.display='none'">
-                <div class="min-w-0">
-                    <h5 class="font-black text-xs text-white truncate">${esc(prod.name)}</h5>
-                    <p class="text-[10px] text-supercellBlue">${esc(prod.price)} XP | المخزون: <span class="${count === 0 ? 'text-red-400 font-bold' : 'text-emerald-400'}">${count}</span> ${game ? `| (${game.name})` : ''}</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-1.5 shrink-0">
-                <button onclick="openProductModal('${esc(prod.id)}')" class="btn-blue px-2.5 py-1 rounded text-black text-[10px] font-black">تعديل</button>
-                <button onclick="deleteProduct('${esc(prod.id)}')" class="btn-red px-2.5 py-1 rounded text-white text-[10px] font-black">حذف</button>
-            </div>`;
-        list.appendChild(item);
-    });
-}
-
-function renderAdminUsers() {
-    const list = el('admin-users-list');
-    const countEl = el('admin-users-count');
-    const searchVal = (el('admin-user-search').value || '').toLowerCase().trim();
-    if (!list) return;
-    list.innerHTML = '';
-
-    let users = Object.entries(state.usersMap || {}).map(([key, u]) => ({ key, ...u })).filter(u => u && u.email !== ADMIN_EMAIL);
-    users.sort((a, b) => (b.xp || 0) - (a.xp || 0));
-
-    if (searchVal) {
-        users = users.filter(u => String(u.name || '').toLowerCase().includes(searchVal) || String(u.email || '').toLowerCase().includes(searchVal) || String(u.tag || '').toLowerCase().includes(searchVal));
-    }
-
-    countEl.innerText = `${users.length} متابع`;
-
-    if (users.length === 0) {
-        list.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">لا يوجد متابعون مطابقون للبحث.</div>`;
-        return;
-    }
-
-    users.forEach(u => {
-        const item = document.createElement('div');
-        item.className = 'bg-black/50 border border-supercellCardBorder p-3 rounded-xl flex items-center justify-between gap-2 cursor-pointer hover:border-supercellGold transition-colors';
-        item.onclick = () => openCustomPointsModal(u.key);
-        const avatar = u.avatar
-            ? `<img src="${esc(u.avatar)}" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'">`
-            : `<i class="fa-solid fa-user"></i>`;
-        item.innerHTML = `
-            <div class="flex items-center gap-3 overflow-hidden">
-                <div class="w-10 h-10 shrink-0 rounded-full border border-supercellGold overflow-hidden bg-purple-900 flex items-center justify-center text-supercellGold text-sm">${avatar}</div>
-                <div class="min-w-0">
-                    <h5 class="font-black text-xs text-white truncate">${esc(u.name)}</h5>
-                    <p class="text-[10px] text-supercellBlue">${esc(u.tag || 'بدون تاغ')} | الانضمام: ${esc(u.joinedAt || 'غير معروف')}</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-2 shrink-0">
-                <span class="bg-supercellBlue/20 border border-supercellBlue text-supercellBlue font-black text-xs px-2 py-1 rounded">💎 ${esc(u.xp || 0)}</span>
-                <i class="fa-solid fa-chevron-left text-xs text-gray-400"></i>
-            </div>`;
-        list.appendChild(item);
-    });
-}
-
-window.openCustomPointsModal = function (userKey) {
-    const u = state.usersMap[userKey];
-    if (!u) return;
-    el('target-user-key').value = userKey;
-    el('ud-name').innerText = u.name;
-    el('ud-balance').innerText = `💎 رصيد الجواهر الحالي: ${u.xp || 0} XP`;
-    const avatarBox = el('ud-avatar');
-    if (u.avatar) {
-        avatarBox.innerHTML = `<img src="${esc(u.avatar)}" alt="" class="w-full h-full object-cover" onerror="this.outerHTML='<i class=&quot;fa-solid fa-user&quot;></i>'">`;
-    } else {
-        avatarBox.innerHTML = `<i class="fa-solid fa-user"></i>`;
-    }
-    el('ud-info').innerHTML = `
-        <div>الإيميل: <span class="text-supercellBlue" dir="ltr">${esc(u.email)}</span></div>
-        <div>تاغ رويال: <span class="text-supercellGold" dir="ltr">${esc(u.tag)}</span></div>
-        <div>اليوتيوب: <span>${esc(u.ytChannel)}</span></div>
-        <div>الدولة: <span>${esc(u.country)}</span></div>
-        <div>الإحالات: <span>${esc(u.referralCount || 0)}</span></div>`;
-    el('custom-points-val').value = '';
-    el('custom-points-modal').classList.remove('hidden');
-};
-
-window.closeCustomPointsModal = () => el('custom-points-modal').classList.add('hidden');
-
-window.applyCustomPoints = async function (multiplier) {
-    if (!isAdminUser()) return;
-    const userKey = el('target-user-key').value;
-    const val = Number(el('custom-points-val').value) || 0;
-    if (val <= 0) {
-        showToast('يرجى إدخال قيمة جواهر صحيحة.', 'error');
-        return;
-    }
-    const delta = val * multiplier;
-    try {
-        await runTransaction(ref(db, 'users/' + userKey + '/xp'), (cur) => {
-            const next = (cur || 0) + delta;
-            return next < 0 ? 0 : next;
-        });
-        closeCustomPointsModal();
-        renderAdminUsers();
-        showToast('تم تعديل رصيد جواهر المتابع بنجاح!');
-    } catch (e) {
-        showToast('تعذر تعديل الرصيد.', 'error');
-    }
-};
-
-function renderAdminAuditLog() {
-    const list = el('admin-audit-log-list');
-    if (!list) return;
-    list.innerHTML = '';
-    if (state.history.length === 0) {
-        list.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">لا يوجد سجل مشتريات حالياً.</div>`;
-        return;
-    }
-    state.history.slice().reverse().forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'bg-black/50 border border-supercellCardBorder p-3 rounded-xl flex items-center justify-between gap-2';
-        row.innerHTML = `
-            <div class="flex flex-col gap-1 overflow-hidden">
-                <div class="font-black text-xs text-white">${esc(item.userName || item.userTag)} - <span class="text-supercellGold">${esc(item.productName)}</span></div>
-                <div class="text-[9px] text-gray-400" dir="ltr">الإيميل: ${esc(item.userEmail || 'غير متوفر')} | التاغ: ${esc(item.userTag)} | الوقت: ${esc(item.timestamp)}</div>
-                <a href="${esc(safeUrl(item.assignedLink))}" target="_blank" rel="noopener" class="text-[10px] text-supercellBlue truncate underline select-all">الرابط المصروف: ${esc(item.assignedLink)}</a>
-            </div>
-            <div class="flex items-center gap-1 bg-red-950/40 border border-red-500/30 px-2.5 py-1.5 rounded shrink-0">
-                <span class="text-xs">💎</span>
-                <span class="font-black text-red-400 text-xs">-${esc(item.xpSpent)} XP</span>
-            </div>`;
-        list.appendChild(row);
-    });
-}
-
-window.clearAdminHistory = function () {
-    if (!isAdminUser()) return;
-    if (confirm('هل أنت متأكد من رغبتك في مسح سجل المشتريات بالكامل؟')) {
-        remove(ref(db, 'history')).then(() => {
-            renderAdminAuditLog();
-            showToast('تم مسح سجل المشتريات.');
-        });
-    }
-};
-
-window.installApp = function () {
-    if (window.deferredPrompt) {
-        window.deferredPrompt.prompt();
-        window.deferredPrompt.userChoice.then(() => { window.deferredPrompt = null; });
-    } else {
-        showToast('التطبيق مثبت بالفعل أو أن متصفحك لا يدعم التثبيت المباشر.');
-    }
-};
-
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    window.deferredPrompt = e;
-    document.querySelectorAll('.install-btn').forEach(b => b.classList.remove('hidden'));
-});
-
-if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone) {
-    const tip = el('ios-install-tip');
-    if (tip) tip.classList.remove('hidden');
-}
-</script>
-</body>
-</html>
+    if (!
