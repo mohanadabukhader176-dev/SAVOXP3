@@ -83,7 +83,6 @@
     .animate-marquee:hover { animation-play-state: paused; }
     .confetti-piece { position: fixed; top: -14px; width: 8px; height: 12px; z-index: 110; pointer-events: none; animation: confettiFall 2s linear forwards; }
 
-    /* ---------- شاشة الترحيب: خلفية هادئة + شرارات خفيفة ---------- */
     @keyframes bgShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     @keyframes sparkRise { 0% { transform: translateY(0) scale(1); opacity: 0; } 15% { opacity: 0.55; } 85% { opacity: 0.35; } 100% { transform: translateY(-70vh) scale(0.4); opacity: 0; } }
     @keyframes logoGlow { 0%,100% { filter: drop-shadow(0 0 8px rgba(255,60,60,0.35)); } 50% { filter: drop-shadow(0 0 20px rgba(255,60,60,0.7)); } }
@@ -108,14 +107,12 @@
     header { padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
     #toast-container { top: calc(1rem + env(safe-area-inset-top, 0px)); }
 
-    /* قائمة المستخدم */
     #user-menu { animation: scaleIn 0.18s ease-out; transform-origin: top right; }
     .menu-item { width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-weight: 900; font-size: 13px; text-align: right; color: #fff; background: rgba(0,0,0,0.35); border: 1px solid #53239e; }
     .menu-item:hover { border-color: #FFD700; }
     .menu-item i { width: 18px; text-align: center; color: #FFD700; }
     .menu-item.danger i { color: #FF5252; }
 
-    /* تبويبات الأدمن */
     .admin-sub-on { background: #2B1055; color: #FFD700; border: 1px solid #53239e; }
     .admin-sub-off { color: #d1d5db; border: 1px solid transparent; }
 
@@ -127,6 +124,20 @@
 <body class="w-full min-h-screen flex flex-col justify-between m-0 p-0 splash-open">
 
 <div id="toast-container" class="fixed top-4 left-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none max-w-sm mx-auto"></div>
+
+<!-- MAINTENANCE MODAL / OVERLAY -->
+<div id="maintenance-modal" class="fixed inset-0 z-[60] bg-[#150824]/95 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="panel-card w-full max-w-sm p-6 flex flex-col items-center text-center gap-4 border-2 border-red-500 shadow-2xl">
+        <div class="w-16 h-16 rounded-full bg-red-500/20 border-2 border-red-500 flex items-center justify-center text-red-400 text-3xl animate-pulse">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+        </div>
+        <h3 class="font-black text-lg text-supercellGold">الموقع في وضع الصيانة حالياً</h3>
+        <p class="text-xs text-gray-200 leading-relaxed">نقوم حالياً بإجراء تحديثات وتحسينات هامة لخدمتكم بشكل أفضل. يرجى تفقد الموقع لاحقاً وشكراً لتفهمكم!</p>
+        <button onclick="checkAdminAccessFromMaintenance()" class="btn-blue w-full py-2.5 rounded-xl text-black font-black text-xs mt-2">
+            <i class="fa-solid fa-user-shield ml-1"></i> دخول المشرف (أدمن)
+        </button>
+    </div>
+</div>
 
 <!-- WELCOME SCREEN -->
 <div id="welcome-screen" class="fixed inset-0 z-[48] overflow-y-auto transition-opacity duration-300">
@@ -218,8 +229,8 @@
         <span id="announcement-badge-container" class="shrink-0">
             <span id="announcement-badge" class="bg-black text-amber-400 text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">إعلان</span>
         </span>
-        <div class="overflow-hidden whitespace-nowrap w-full">
-            <p id="announcement-text" class="text-xs font-bold animate-marquee text-black">أهلاً بك في منصة مكافآت صانع المحتوى SAVO XP - تابع البث المباشر واجمع النقاط!</p>
+        <div id="announcement-track-box" class="overflow-hidden whitespace-nowrap w-full">
+            <p id="announcement-text" class="text-xs font-bold text-black">أهلاً بك في منصة مكافآت صانع المحتوى SAVO XP - تابع البث المباشر واجمع النقاط!</p>
         </div>
     </div>
 
@@ -297,14 +308,14 @@
             <div class="bg-supercellCard border-2 border-red-500/50 p-3 rounded-xl flex items-center justify-between">
                 <div>
                     <h3 class="font-black text-sm md:text-base text-red-400">لوحة تحكم المشرف (Admin - مهند أبو خضر)</h3>
-                    <p class="text-[10px] md:text-xs text-gray-300">تحكم كامل بالنقاط، المنتجات، الإشعارات والأحداث</p>
+                    <p class="text-[10px] md:text-xs text-gray-300">تحكم كامل بالنقاط، المنتجات، الصيانة والإشعارات</p>
                 </div>
                 <button onclick="lockAdminPanel()" class="btn-red px-3 py-1.5 rounded text-white font-bold text-xs">قفل</button>
             </div>
 
             <!-- Admin sub tabs -->
             <div class="flex gap-1 bg-black/40 p-1 rounded-xl border border-supercellCardBorder sticky top-[64px] z-30 backdrop-blur">
-                <button onclick="switchAdminTab('settings')" id="atab-btn-settings" class="flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm"><i class="fa-solid fa-sliders ml-1"></i> الإعدادات</button>
+                <button onclick="switchAdminTab('settings')" id="atab-btn-settings" class="flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm"><i class="fa-solid fa-sliders ml-1"></i> الإعدادات والصيانة</button>
                 <button onclick="switchAdminTab('products')" id="atab-btn-products" class="flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm"><i class="fa-solid fa-box ml-1"></i> المنتجات</button>
                 <button onclick="switchAdminTab('users')" id="atab-btn-users" class="flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm"><i class="fa-solid fa-users ml-1"></i> المتابعون</button>
                 <button onclick="switchAdminTab('log')" id="atab-btn-log" class="flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm"><i class="fa-solid fa-clipboard-list ml-1"></i> السجل</button>
@@ -312,6 +323,23 @@
 
             <!-- A1: SETTINGS -->
             <div id="atab-settings" class="flex flex-col gap-4">
+                <!-- MAINTENANCE MODE PANEL -->
+                <div class="panel-card p-3.5 flex flex-col gap-3 border-2 border-red-500/50 bg-red-950/20">
+                    <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
+                        <h4 class="font-black text-xs md:text-sm text-red-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-screwdriver-wrench"></i> إعدادات وضع الصيانة (Maintenance Mode)
+                        </h4>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-200">تفعيل وضع الصيانة للموقع:</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="admin-maintenance-toggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-black/60 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600 border border-supercellCardBorder"></div>
+                        </label>
+                    </div>
+                    <p class="text-[10px] text-gray-300">عند التفعيل، سيظهر نافذة الصيانة لجميع الزوار والمتابعين باستثناء حساب الأدمن الخاص بك.</p>
+                </div>
+
                 <div class="panel-card p-3.5 flex flex-col gap-3 border-2 border-supercellBlue/60">
                     <h4 class="font-black text-xs md:text-sm text-supercellBlue border-b border-supercellCardBorder pb-1 flex items-center gap-1.5">
                         <i class="fa-solid fa-paper-plane"></i> إرسال إشعار / رسالة جماعية
@@ -329,9 +357,17 @@
                             <input type="text" id="admin-announcement-badge" placeholder="مثال: تنويه" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                         </div>
                         <div class="flex flex-col gap-1 flex-1">
-                            <label class="text-[10px] text-gray-300">نص شريط الإعلان المتحرك:</label>
+                            <label class="text-[10px] text-gray-300">نص شريط الإعلان:</label>
                             <input type="text" id="admin-announcement-input" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                         </div>
+                    </div>
+                    <!-- خيار حركة شريط الإعلان -->
+                    <div class="flex items-center justify-between bg-black/40 border border-supercellCardBorder p-2.5 rounded">
+                        <span class="text-xs text-gray-300">جعل شريط الإعلان متحركاً (Marquee):</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="admin-marquee-toggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-black/60 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-supercellGold border border-supercellCardBorder"></div>
+                        </label>
                     </div>
 
                     <div class="bg-black/40 border border-supercellCardBorder p-2.5 rounded flex flex-col gap-2">
@@ -349,8 +385,8 @@
                     </div>
 
                     <div class="flex flex-col gap-1">
-                        <label class="text-[10px] text-gray-300">رابط الشعار المخصص (فارغ = الشعار الافتراضي logo.png):</label>
-                        <input type="text" id="admin-logo-input" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                        <label class="text-[10px] text-gray-300">رابط الشعار المخصص (صورة الشعار في شاشة الترحيب):</label>
+                        <input type="text" id="admin-logo-input" dir="ltr" placeholder="https://..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
                     </div>
 
                     <div class="flex flex-col gap-1">
@@ -642,7 +678,6 @@
     </div>
 </div>
 
-<!-- USER DETAILS MODAL (للأدمن) -->
 <div id="custom-points-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
@@ -707,7 +742,6 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const ADMIN_EMAIL = "mohanadabukhader176@gmail.com";
-const DEFAULT_LOGO = 'logo.png';
 const DEFAULT_ABOUT = 'SAVO XP هو متجر مكافآت لمتابعي القناة.\n\n١. سجّل الدخول بحساب جوجل.\n٢. اجمع الجواهر: جوهرة مجانية كل 24 ساعة، ومن البث المباشر والمسابقات.\n٣. استبدل جواهرك بالمكافآت من المتجر.';
 
 let state = {
@@ -721,6 +755,8 @@ let state = {
     settings: {
         badge: 'تنويه',
         announcement: 'أهلاً بك في منصة مكافآت صانع المحتوى SAVO XP - تابع البث المباشر واجمع النقاط!',
+        marqueeEnabled: true,
+        maintenanceMode: false,
         weeklyText: 'وصلوا الفيديو 1000 لايك لنوزع 50 نقطة للجميع!',
         weeklyBtnText: 'فتح الفيديو',
         weeklyBtnUrl: 'https://youtube.com',
@@ -834,7 +870,6 @@ window.renderAbout = function () {
     el('ws-about-text').innerText = t !== '' ? t : DEFAULT_ABOUT;
 };
 
-// تشارات خفيفة
 (function buildSparks() {
     const bg = el('ws-bg');
     if (!bg) return;
@@ -866,6 +901,7 @@ function initFirebaseSync() {
         renderEarnInstructions();
         renderAbout();
         renderStore();
+        checkMaintenanceStatus();
         if (isAdminUser()) populateAdminSettingsForm();
     });
 
@@ -899,6 +935,7 @@ function initFirebaseSync() {
         renderUserProfile();
         updateNotificationBadge();
         refreshLeaderboardIfOpen();
+        checkMaintenanceStatus();
         if (!el('tab-admin').classList.contains('hidden')) renderAdminUsers();
     });
 
@@ -909,6 +946,22 @@ function initFirebaseSync() {
         if (!el('tab-admin').classList.contains('hidden')) renderAdminAuditLog();
     });
 }
+
+function checkMaintenanceStatus() {
+    const maintenanceModal = el('maintenance-modal');
+    if (!maintenanceModal) return;
+    const isMaintenance = !!state.settings.maintenanceMode;
+    const admin = isAdminUser();
+    if (isMaintenance && !admin) {
+        maintenanceModal.classList.remove('hidden');
+    } else {
+        maintenanceModal.classList.add('hidden');
+    }
+}
+
+window.checkAdminAccessFromMaintenance = function () {
+    openLoginModal();
+};
 
 window.showToast = function (message, type = 'success') {
     const container = el('toast-container');
@@ -961,7 +1014,11 @@ window.renderAnnouncement = function () {
     } else {
         badgeContainer.style.display = 'none';
     }
-    el('announcement-text').innerText = state.settings.announcement;
+    
+    const textEl = el('announcement-text');
+    textEl.innerText = state.settings.announcement;
+    const isMarquee = state.settings.marqueeEnabled !== false;
+    textEl.className = isMarquee ? 'text-xs font-bold animate-marquee text-black' : 'text-xs font-bold text-black text-center w-full block truncate';
 };
 
 window.renderWeeklyEvent = function () {
@@ -991,12 +1048,14 @@ window.renderEventBar = function () {
 };
 
 window.renderHeaderLogo = function () {
-    const url = (state.settings.logoUrl || '').trim() || DEFAULT_LOGO;
+    const url = (state.settings.logoUrl || '').trim();
     const box = el('ws-logo');
     if (!box) return;
-    box.innerHTML = `
-        <img src="${esc(url)}" alt="SAVO XP" class="h-40 md:h-48 w-auto object-contain" onerror="this.onerror=null; this.style.display='none';">
-        <span class="font-black italic tracking-tighter text-supercellGold game-badge text-4xl md:text-5xl -mt-1">SAVO XP</span>`;
+    if (url !== '') {
+        box.innerHTML = `<img src="${esc(url)}" alt="SAVO XP" class="h-40 md:h-48 w-auto object-contain" onerror="this.onerror=null; this.style.display='none';">`;
+    } else {
+        box.innerHTML = `<span class="font-black italic tracking-tighter text-supercellGold game-badge text-4xl md:text-5xl">SAVO XP</span>`;
+    }
 };
 
 window.renderFooterSocials = function () {
@@ -1802,7 +1861,6 @@ window.copyRedeemLink = function () {
     });
 };
 
-// ===================== تبويبات الموقع والآدمن =====================
 window.switchTab = function (tabId) {
     ['store', 'history', 'leaderboard', 'admin'].forEach(id => {
         const sec = el('tab-' + id);
@@ -1850,8 +1908,10 @@ window.lockAdminPanel = () => switchTab('store');
 
 function populateAdminSettingsForm() {
     const s = state.settings || {};
+    el('admin-maintenance-toggle').checked = !!s.maintenanceMode;
     el('admin-announcement-badge').value = s.badge || '';
     el('admin-announcement-input').value = s.announcement || '';
+    el('admin-marquee-toggle').checked = s.marqueeEnabled !== false;
     el('admin-weekly-text').value = s.weeklyText || '';
     el('admin-weekly-btn-text').value = s.weeklyBtnText || '';
     el('admin-weekly-btn-url').value = s.weeklyBtnUrl || '';
@@ -1879,8 +1939,10 @@ function populateAdminSettingsForm() {
 
 window.saveAdminSettings = function () {
     const newSettings = {
+        maintenanceMode: el('admin-maintenance-toggle').checked,
         badge: el('admin-announcement-badge').value.trim(),
         announcement: el('admin-announcement-input').value.trim(),
+        marqueeEnabled: el('admin-marquee-toggle').checked,
         weeklyText: el('admin-weekly-text').value.trim(),
         weeklyBtnText: el('admin-weekly-btn-text').value.trim(),
         weeklyBtnUrl: el('admin-weekly-btn-url').value.trim(),
