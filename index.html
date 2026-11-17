@@ -255,7 +255,7 @@
     <main class="flex-1 p-3 md:p-6 flex flex-col gap-4">
 
         <!-- TABS (Icons on top, Text below) -->
-        <div class="grid grid-cols-5 gap-1.5 bg-black/40 p-1.5 rounded-xl border border-supercellCardBorder">
+        <div class="grid grid-cols-4 gap-1.5 bg-black/40 p-1.5 rounded-xl border border-supercellCardBorder" id="tabs-container">
             <button onclick="switchTab('store')" id="tab-btn-store" class="py-2 px-1 rounded-lg font-black text-[11px] md:text-sm text-center flex flex-col items-center justify-center gap-1 transition-all">
                 <i class="fa-solid fa-store text-base"></i>
                 <span>المتجر</span>
@@ -273,6 +273,7 @@
                 <i class="fa-solid fa-trophy text-base"></i>
                 <span>المتصدرين</span>
             </button>
+            <!-- الأدمن زر مخفي افتراضياً ولا يظهر إلا للأدمن الحقيقي -->
             <button onclick="checkAdminAccess()" id="tab-btn-admin" class="hidden py-2 px-1 rounded-lg font-black text-[11px] md:text-sm text-center flex flex-col items-center justify-center gap-1 transition-all">
                 <i class="fa-solid fa-gear text-base"></i>
                 <span>الأدمن</span>
@@ -479,7 +480,7 @@
                         <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-flag-checkered ml-1"></i> إدارة مهام صانع المحتوى</h4>
                         <button onclick="openMissionModal()" class="btn-blue px-2.5 py-1 rounded text-black font-black text-[10px]"><i class="fa-solid fa-plus"></i> إضافة مهمة جديدة</button>
                     </div>
-                    <p class="text-[10px] text-gray-300">أنشئ مهام للمتابعين مع تحديد الجواهر ورابط الفيديو (مع عداد إلزامي للمشاهدة).</p>
+                    <p class="text-[10px] text-gray-300">أنشئ مهام للمتابعين مع تحديد الجواهر ورابط الفيديو.</p>
                     <div id="admin-missions-list" class="flex flex-col gap-2 pr-1"></div>
                 </div>
             </div>
@@ -587,32 +588,32 @@
     </div>
 </div>
 
-<!-- MISSION VIEW / TIMER MODAL -->
+<!-- MISSION VIEW / SECRET TIMER MODAL -->
 <div id="mission-timer-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-sm p-5 flex flex-col items-center text-center gap-3 animate-scaleIn">
         <div class="w-12 h-12 rounded-full bg-supercellBlue/20 border-2 border-supercellBlue flex items-center justify-center text-supercellBlue text-2xl animate-pulse">
-            <i class="fa-solid fa-clock"></i>
+            <i class="fa-solid fa-play"></i>
         </div>
         <h3 class="font-black text-base text-supercellGold">متابعة المهمة ومشاهدة الفيديو</h3>
-        <p id="mission-modal-desc-text" class="text-xs text-gray-200 leading-relaxed">يرجى مشاهدة الفيديو كاملاً ووضع لايك. انتظر انتهاء العد التنازلي لتتمكن من استلام الجواهر.</p>
+        <p class="text-xs text-gray-200 leading-relaxed">يرجى الضغط على زر فتح الفيديو أدناه، مشاهدته بالكامل، ووضع لايك لضمان وصول الجواهر لحسابك.</p>
         
         <input type="hidden" id="active-mission-id">
         <input type="hidden" id="active-mission-url">
 
-        <div class="w-full bg-black/60 border border-supercellCardBorder p-3 rounded-xl flex flex-col items-center gap-2 my-1">
-            <a id="mission-open-link-btn" href="#" target="_blank" rel="noopener" onclick="onMissionLinkClicked()" class="w-full btn-blue py-2.5 rounded text-black font-black text-xs text-center block">
-                <i class="fa-solid fa-external-link-alt ml-1"></i> 1. اضغط هنا لفتح الفيديو ومشاهدته
+        <div class="w-full bg-black/60 border border-supercellCardBorder p-3 rounded-xl flex flex-col items-center gap-2.5 my-1">
+            <a id="mission-open-link-btn" href="#" target="_blank" rel="noopener" onclick="onMissionLinkClicked()" class="w-full btn-blue py-3 rounded text-black font-black text-xs text-center block">
+                <i class="fa-solid fa-external-link-alt ml-1"></i> اضغط هنا لفتح ومشاهدة الفيديو
             </a>
-            <div id="mission-countdown-container" class="text-xs font-black text-supercellGold py-1">
-                الرجاء فتح الفيديو أولاً...
+            <div id="mission-status-text" class="text-xs text-gray-300 py-1">
+                بعد الانتهاء من مشاهدة الفيديو ووضع لايك، اضغط على زر الاستلام أدناه.
             </div>
         </div>
 
         <div class="flex flex-col gap-2 w-full mt-1">
             <button id="mission-final-claim-btn" onclick="executeClaimMission()" disabled class="py-2.5 rounded font-black text-xs bg-gray-700 text-gray-400 border border-gray-600 cursor-not-allowed">
-                2. استلام الجواهر (مغلق)
+                استلام الجواهر (يرجى مشاهدة الفيديو أولاً...)
             </button>
-            <button onclick="closeMissionTimerModal()" class="btn-red py-2 rounded text-white font-black text-xs">إلغاء</button>
+            <button onclick="closeMissionTimerModal()" class="btn-red py-2 rounded text-white font-black text-xs">إغلاق</button>
         </div>
     </div>
 </div>
@@ -918,8 +919,19 @@ function isAdminUser() { return !!state.currentUser && state.currentUser.email =
 
 function applyAdminTabVisibility() {
     const b = el('tab-btn-admin');
-    if (!b) return;
-    b.classList.toggle('hidden', !isAdminUser());
+    const tabsContainer = el('tabs-container');
+    if (!b || !tabsContainer) return;
+    
+    if (isAdminUser()) {
+        b.classList.remove('hidden');
+        tabsContainer.className = 'grid grid-cols-5 gap-1.5 bg-black/40 p-1.5 rounded-xl border border-supercellCardBorder';
+    } else {
+        b.classList.add('hidden');
+        tabsContainer.className = 'grid grid-cols-4 gap-1.5 bg-black/40 p-1.5 rounded-xl border border-supercellCardBorder';
+        if (!el('tab-admin').classList.contains('hidden')) {
+            switchTab('store');
+        }
+    }
 }
 
 function restoreSession() {
@@ -1049,14 +1061,19 @@ function initFirebaseSync() {
         updateNotificationBadge();
         refreshLeaderboardIfOpen();
         checkMaintenanceStatus();
-        if (!el('tab-admin').classList.contains('hidden')) renderAdminUsers();
+        if (isAdminUser()) {
+            applyAdminTabVisibility();
+            if (!el('tab-admin').classList.contains('hidden')) renderAdminUsers();
+        } else {
+            applyAdminTabVisibility();
+        }
     });
 
     onValue(ref(db, 'history'), (snapshot) => {
         const val = snapshot.val();
         state.history = val ? Object.values(val) : [];
         renderHistory();
-        if (!el('tab-admin').classList.contains('hidden')) renderAdminAuditLog();
+        if (isAdminUser() && !el('tab-admin').classList.contains('hidden')) renderAdminAuditLog();
     });
 }
 
@@ -1185,7 +1202,6 @@ window.renderFooterSocials = function () {
             ws.classList.toggle('hidden', url === '#');
         }
     });
-    // WhatsApp channel specific rendering
     const waSafe = safeUrl(waUrl);
     const footWa = el('social-link-wa');
     if (footWa) footWa.href = waSafe;
@@ -1380,7 +1396,6 @@ window.claimDailyJewel = async function () {
             cur.xp = (cur.xp || 0) + 1;
             cur.lastDailyClaim = now;
             
-            // Add to earning history log
             cur.earningsHistory = cur.earningsHistory || [];
             const nowDt = new Date();
             const timeStr = `${nowDt.getFullYear()}-${String(nowDt.getMonth() + 1).padStart(2, '0')}-${String(nowDt.getDate()).padStart(2, '0')} ${String(nowDt.getHours()).padStart(2, '0')}:${String(nowDt.getMinutes()).padStart(2, '0')}`;
@@ -1410,9 +1425,9 @@ window.claimDailyJewel = async function () {
     }
 };
 
-/* --- MISSIONS LOGIC WITH MANDATORY TIMER --- */
+/* --- MISSIONS LOGIC WITH SECRET BACKGROUND TIMER (40 SECONDS) --- */
 let missionTimerInterval = null;
-let secondsLeft = 40; // 40 seconds mandatory viewing timer
+let secondsLeft = 40; // 40 seconds mandatory background wait
 
 window.renderMissions = function () {
     const list = el('missions-list');
@@ -1449,7 +1464,7 @@ window.renderMissions = function () {
             <p class="text-xs text-gray-200 leading-relaxed">${esc(m.desc)}</p>
             <div class="flex items-center gap-2 pt-1">
                 <button onclick="startMissionVerification('${esc(m.id)}', '${esc(m.url)}')" ${isDone ? 'disabled' : ''} class="w-full py-2.5 rounded font-black text-xs ${isDone ? 'bg-gray-700 text-gray-400 border border-gray-600 cursor-not-allowed' : 'btn-gold'}">
-                    ${isDone ? 'تمت المهمة بنجاح ✅' : 'شاهد الفيديو واستلم الجواهر (عد تنازلي)'}
+                    ${isDone ? 'تمت المهمة بنجاح ✅' : 'شاهد الفيديو واستلم الجواهر'}
                 </button>
             </div>`;
         list.appendChild(card);
@@ -1471,13 +1486,13 @@ window.startMissionVerification = function (missionId, url) {
     el('active-mission-url').value = url;
     el('mission-open-link-btn').href = safeUrl(url);
 
-    // Reset timer
-    secondsLeft = 40; // 40 seconds mandatory wait
+    // Reset secret timer (40 seconds in background, clean UI)
+    secondsLeft = 40; 
     const claimBtn = el('mission-final-claim-btn');
     claimBtn.disabled = true;
     claimBtn.className = 'py-2.5 rounded font-black text-xs bg-gray-700 text-gray-400 border border-gray-600 cursor-not-allowed';
-    claimBtn.innerText = `2. انتظر انتهاء الوقت (${secondsLeft} ثانية)...`;
-    el('mission-countdown-container').innerHTML = `⏳ يرجى فتح الفيديو ومشاهدته. الوقت المتبقي: <span class="text-supercellBlue font-black text-sm">${secondsLeft}</span> ثانية`;
+    claimBtn.innerText = 'يرجى مشاهدة الفيديو ووضع لايك أولاً...';
+    el('mission-status-text').innerText = 'يرجى فتح الفيديو ومشاهدته بالكامل مع وضع لايك لضمان احتساب الجواهر.';
 
     el('mission-timer-modal').classList.remove('hidden');
 };
@@ -1485,21 +1500,19 @@ window.startMissionVerification = function (missionId, url) {
 window.onMissionLinkClicked = function () {
     if (missionTimerInterval) clearInterval(missionTimerInterval);
     
+    // Background timer countdown silently
     missionTimerInterval = setInterval(() => {
-        secondsLeft--;
-        const countdownBox = el('mission-countdown-container');
-        const claimBtn = el('mission-final-claim-btn');
-
         if (secondsLeft > 0) {
-            if (countdownBox) countdownBox.innerHTML = `⏳ الوقت المتبقي للمشاهدة: <span class="text-supercellBlue font-black text-sm">${secondsLeft}</span> ثانية`;
-            if (claimBtn) claimBtn.innerText = `2. انتظر انتهاء الوقت (${secondsLeft} ثانية)...`;
+            secondsLeft--;
         } else {
             clearInterval(missionTimerInterval);
-            if (countdownBox) countdownBox.innerHTML = `<span class="text-emerald-400 font-bold">✅ انتهى الوقت بنجاح! يمكنك الآن استلام جواهرك.</span>`;
+            const claimBtn = el('mission-final-claim-btn');
+            const statusText = el('mission-status-text');
+            if (statusText) statusText.innerText = '✅ تم التحقق من المشاهدة! يمكنك الآن استلام الجواهر.';
             if (claimBtn) {
                 claimBtn.disabled = false;
                 claimBtn.className = 'btn-gold py-2.5 rounded text-black font-black text-xs';
-                claimBtn.innerText = '2. اضغط هنا لاستلام الجواهر فوراً';
+                claimBtn.innerText = 'استلام الجواهر الآن 💎';
             }
         }
     }, 1000);
@@ -1525,7 +1538,7 @@ window.executeClaimMission = async function () {
         await runTransaction(ref(db, 'users/' + dbKey), (cur) => {
             if (!cur) return cur;
             cur.completedMissions = cur.completedMissions || {};
-            if (cur.completedMissions[missionId]) return; // already done
+            if (cur.completedMissions[missionId]) return;
             
             const nowDt = new Date();
             const timeStr = `${nowDt.getFullYear()}-${String(nowDt.getMonth() + 1).padStart(2, '0')}-${String(nowDt.getDate()).padStart(2, '0')} ${String(nowDt.getHours()).padStart(2, '0')}:${String(nowDt.getMinutes()).padStart(2, '0')}`;
@@ -1533,7 +1546,6 @@ window.executeClaimMission = async function () {
             cur.completedMissions[missionId] = serverNow();
             cur.xp = (cur.xp || 0) + reward;
 
-            // Add to earning history log
             cur.earningsHistory = cur.earningsHistory || [];
             cur.earningsHistory.push({
                 source: `مهمة: ${mission.title}`,
@@ -1612,7 +1624,6 @@ window.renderAdminMissions = function () {
         return;
     }
 
-    // Count how many users completed each mission
     const usersArr = Object.values(state.usersMap || {});
 
     state.missions.forEach(m => {
@@ -2290,6 +2301,10 @@ window.copyRedeemLink = function () {
 };
 
 window.switchTab = function (tabId) {
+    if (tabId === 'admin' && !isAdminUser()) {
+        showToast('غير مسموح بالدخول.', 'error');
+        return;
+    }
     ['store', 'missions', 'history', 'leaderboard', 'admin'].forEach(id => {
         const sec = el('tab-' + id);
         const btn = el('tab-btn-' + id);
@@ -2321,7 +2336,7 @@ window.switchAdminTab = function (subId) {
 };
 
 window.checkAdminAccess = function () {
-    if (!state.currentUser || state.currentUser.email !== ADMIN_EMAIL) {
+    if (!isAdminUser()) {
         showToast('عذراً، هذه اللوحة مخصصة للأدمن فقط.', 'error');
         return;
     }
@@ -2599,7 +2614,6 @@ window.openUserDetails = function (userKey) {
         <div><strong>المهام المكتملة:</strong> ${Object.keys(user.completedMissions || {}).length} مهمة</div>
     `;
 
-    // Render user earnings activity log inside admin user modal
     const logContainer = el('ud-activity-log');
     const earnings = user.earningsHistory || [];
     if (earnings.length === 0) {
