@@ -254,19 +254,28 @@
     <!-- MAIN -->
     <main class="flex-1 p-3 md:p-6 flex flex-col gap-4">
 
-        <!-- TABS -->
-        <div class="flex gap-1.5 bg-black/40 p-1 rounded-xl border border-supercellCardBorder">
-            <button onclick="switchTab('store')" id="tab-btn-store" class="flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm text-center transition-all">
-                <i class="fa-solid fa-store ml-1"></i> المتجر
+        <!-- TABS (Icons on top, Text below) -->
+        <div class="grid grid-cols-5 gap-1.5 bg-black/40 p-1.5 rounded-xl border border-supercellCardBorder">
+            <button onclick="switchTab('store')" id="tab-btn-store" class="py-2 px-1 rounded-lg font-black text-[11px] md:text-sm text-center flex flex-col items-center justify-center gap-1 transition-all">
+                <i class="fa-solid fa-store text-base"></i>
+                <span>المتجر</span>
             </button>
-            <button onclick="switchTab('history')" id="tab-btn-history" class="flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm text-center transition-all">
-                <i class="fa-solid fa-clock-rotate-left ml-1"></i> المشتريات
+            <button onclick="switchTab('missions')" id="tab-btn-missions" class="py-2 px-1 rounded-lg font-black text-[11px] md:text-sm text-center flex flex-col items-center justify-center gap-1 transition-all relative">
+                <i class="fa-solid fa-flag-checkered text-base"></i>
+                <span>المهام</span>
+                <span id="mission-badge-dot" class="keep-size absolute top-1 right-2 w-2 h-2 bg-supercellGold rounded-full hidden"></span>
             </button>
-            <button onclick="switchTab('leaderboard')" id="tab-btn-leaderboard" class="flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm text-center transition-all">
-                <i class="fa-solid fa-trophy ml-1"></i> المتصدرين
+            <button onclick="switchTab('history')" id="tab-btn-history" class="py-2 px-1 rounded-lg font-black text-[11px] md:text-sm text-center flex flex-col items-center justify-center gap-1 transition-all">
+                <i class="fa-solid fa-clock-rotate-left text-base"></i>
+                <span>السجل</span>
             </button>
-            <button onclick="checkAdminAccess()" id="tab-btn-admin" class="hidden flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm text-center transition-all">
-                <i class="fa-solid fa-gear ml-1"></i> الأدمن
+            <button onclick="switchTab('leaderboard')" id="tab-btn-leaderboard" class="py-2 px-1 rounded-lg font-black text-[11px] md:text-sm text-center flex flex-col items-center justify-center gap-1 transition-all">
+                <i class="fa-solid fa-trophy text-base"></i>
+                <span>المتصدرين</span>
+            </button>
+            <button onclick="checkAdminAccess()" id="tab-btn-admin" class="hidden py-2 px-1 rounded-lg font-black text-[11px] md:text-sm text-center flex flex-col items-center justify-center gap-1 transition-all">
+                <i class="fa-solid fa-gear text-base"></i>
+                <span>الأدمن</span>
             </button>
         </div>
 
@@ -280,6 +289,17 @@
             </div>
             <div id="game-filters" class="grid grid-cols-5 gap-2 pt-1.5"></div>
             <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3"></div>
+        </section>
+
+        <!-- MISSIONS TAB -->
+        <section id="tab-missions" class="flex flex-col gap-3 hidden">
+            <div class="flex items-center justify-between">
+                <h3 class="font-black text-sm md:text-base text-supercellGold flex items-center gap-1.5">
+                    <i class="fa-solid fa-flag-checkered"></i> مهمات صانع المحتوى
+                </h3>
+                <span class="text-[10px] md:text-xs text-supercellBlue font-bold">أتمم المهمة واكسب الجواهر</span>
+            </div>
+            <div id="missions-list" class="flex flex-col gap-3"></div>
         </section>
 
         <!-- HISTORY -->
@@ -308,22 +328,22 @@
             <div class="bg-supercellCard border-2 border-red-500/50 p-3 rounded-xl flex items-center justify-between">
                 <div>
                     <h3 class="font-black text-sm md:text-base text-red-400">لوحة تحكم المشرف (Admin - مهند أبو خضر)</h3>
-                    <p class="text-[10px] md:text-xs text-gray-300">تحكم كامل بالنقاط، المنتجات، الصيانة والإشعارات</p>
+                    <p class="text-[10px] md:text-xs text-gray-300">تحكم كامل بالنقاط، المنتجات، المهام والصيانة</p>
                 </div>
                 <button onclick="lockAdminPanel()" class="btn-red px-3 py-1.5 rounded text-white font-bold text-xs">قفل</button>
             </div>
 
             <!-- Admin sub tabs -->
-            <div class="flex gap-1 bg-black/40 p-1 rounded-xl border border-supercellCardBorder sticky top-[64px] z-30 backdrop-blur">
-                <button onclick="switchAdminTab('settings')" id="atab-btn-settings" class="flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm"><i class="fa-solid fa-sliders ml-1"></i> الإعدادات والصيانة</button>
-                <button onclick="switchAdminTab('products')" id="atab-btn-products" class="flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm"><i class="fa-solid fa-box ml-1"></i> المنتجات</button>
-                <button onclick="switchAdminTab('users')" id="atab-btn-users" class="flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm"><i class="fa-solid fa-users ml-1"></i> المتابعون</button>
-                <button onclick="switchAdminTab('log')" id="atab-btn-log" class="flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm"><i class="fa-solid fa-clipboard-list ml-1"></i> السجل</button>
+            <div class="flex gap-1 bg-black/40 p-1 rounded-xl border border-supercellCardBorder sticky top-[64px] z-30 backdrop-blur overflow-x-auto">
+                <button onclick="switchAdminTab('settings')" id="atab-btn-settings" class="flex-1 py-1.5 px-2 rounded-lg font-black text-[11px] md:text-sm whitespace-nowrap"><i class="fa-solid fa-sliders ml-1"></i> الإعدادات</button>
+                <button onclick="switchAdminTab('products')" id="atab-btn-products" class="flex-1 py-1.5 px-2 rounded-lg font-black text-[11px] md:text-sm whitespace-nowrap"><i class="fa-solid fa-box ml-1"></i> المنتجات</button>
+                <button onclick="switchAdminTab('missions')" id="atab-btn-admin-missions" class="flex-1 py-1.5 px-2 rounded-lg font-black text-[11px] md:text-sm whitespace-nowrap"><i class="fa-solid fa-flag-checkered ml-1"></i> المهام</button>
+                <button onclick="switchAdminTab('users')" id="atab-btn-users" class="flex-1 py-1.5 px-2 rounded-lg font-black text-[11px] md:text-sm whitespace-nowrap"><i class="fa-solid fa-users ml-1"></i> المتابعون</button>
+                <button onclick="switchAdminTab('log')" id="atab-btn-log" class="flex-1 py-1.5 px-2 rounded-lg font-black text-[11px] md:text-sm whitespace-nowrap"><i class="fa-solid fa-clipboard-list ml-1"></i> السجل</button>
             </div>
 
             <!-- A1: SETTINGS -->
             <div id="atab-settings" class="flex flex-col gap-4">
-                <!-- MAINTENANCE MODE PANEL -->
                 <div class="panel-card p-3.5 flex flex-col gap-3 border-2 border-red-500/50 bg-red-950/20">
                     <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
                         <h4 class="font-black text-xs md:text-sm text-red-400 flex items-center gap-1.5">
@@ -337,7 +357,6 @@
                             <div class="w-11 h-6 bg-black/60 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600 border border-supercellCardBorder"></div>
                         </label>
                     </div>
-                    <p class="text-[10px] text-gray-300">عند التفعيل، سيظهر نافذة الصيانة لجميع الزوار والمتابعين باستثناء حساب الأدمن الخاص بك.</p>
                 </div>
 
                 <div class="panel-card p-3.5 flex flex-col gap-3 border-2 border-supercellBlue/60">
@@ -354,14 +373,13 @@
                     <div class="flex gap-2">
                         <div class="flex flex-col gap-1 w-1/3">
                             <label class="text-[10px] text-gray-300">عنوان التنبيه:</label>
-                            <input type="text" id="admin-announcement-badge" placeholder="مثال: تنويه" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                            <input type="text" id="admin-announcement-badge" placeholder="مثال: تنويه" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
                         </div>
                         <div class="flex flex-col gap-1 flex-1">
                             <label class="text-[10px] text-gray-300">نص شريط الإعلان:</label>
-                            <input type="text" id="admin-announcement-input" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                            <input type="text" id="admin-announcement-input" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
                         </div>
                     </div>
-                    <!-- خيار حركة شريط الإعلان -->
                     <div class="flex items-center justify-between bg-black/40 border border-supercellCardBorder p-2.5 rounded">
                         <span class="text-xs text-gray-300">جعل شريط الإعلان متحركاً (Marquee):</span>
                         <label class="relative inline-flex items-center cursor-pointer">
@@ -381,22 +399,22 @@
 
                     <div class="flex flex-col gap-1">
                         <label class="text-[10px] text-gray-300">نص بار الأحداث الجديدة (فارغ = إخفاء):</label>
-                        <input type="text" id="admin-event-bar-input" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                        <input type="text" id="admin-event-bar-input" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
                     </div>
 
                     <div class="flex flex-col gap-1">
-                        <label class="text-[10px] text-gray-300">رابط الشعار المخصص (صورة الشعار في شاشة الترحيب):</label>
-                        <input type="text" id="admin-logo-input" dir="ltr" placeholder="https://..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                        <label class="text-[10px] text-gray-300">رابط الشعار المخصص:</label>
+                        <input type="text" id="admin-logo-input" dir="ltr" placeholder="https://..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
                     </div>
 
                     <div class="flex flex-col gap-1">
-                        <label class="text-[10px] text-supercellGold font-bold">وصف الموقع ("اقرأ المزيد" في شاشة الترحيب):</label>
+                        <label class="text-[10px] text-supercellGold font-bold">وصف الموقع ("اقرأ المزيد"):</label>
                         <textarea id="admin-about-text" rows="4" class="bg-black/60 border border-supercellGold/50 rounded px-2.5 py-1.5 text-xs text-white resize-none"></textarea>
                     </div>
 
                     <h5 class="font-black text-[11px] text-supercellGold pt-1 border-t border-supercellCardBorder">قنوات التواصل والتحصيل</h5>
                     <div class="flex flex-col gap-1">
-                        <label class="text-[10px] text-emerald-400 font-bold">تنويه قناة الواتساب (أسفل الموقع):</label>
+                        <label class="text-[10px] text-emerald-400 font-bold">تنويه قناة الواتساب:</label>
                         <input type="text" id="admin-whatsapp-notice" class="bg-black/60 border border-emerald-500/50 rounded px-2.5 py-1.5 text-xs text-white">
                     </div>
                     <div class="flex flex-col gap-1">
@@ -408,10 +426,10 @@
                         <input type="text" id="social-tik" placeholder="رابط تيك توك" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                         <input type="text" id="social-ig" placeholder="رابط انستغرام" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                         <input type="text" id="social-twi" placeholder="رابط تويتش" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
-                        <input type="text" id="social-wa" placeholder="رابط قناة الواتساب" dir="ltr" value="https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
+                        <input type="text" id="social-wa" placeholder="رابط قناة الواتساب" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
                     </div>
 
-                    <h5 class="font-black text-[11px] text-supercellGold pt-1 border-t border-supercellCardBorder">أيقونات خانات الألعاب (رابط الصورة من GitHub)</h5>
+                    <h5 class="font-black text-[11px] text-supercellGold pt-1 border-t border-supercellCardBorder">أيقونات خانات الألعاب</h5>
                     <div class="grid grid-cols-2 gap-2">
                         <input type="text" id="game-icon-all" placeholder="أيقونة الكل" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
                         <input type="text" id="game-icon-cr" placeholder="أيقونة كلاش رويال" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
@@ -419,15 +437,15 @@
                         <input type="text" id="game-icon-hd" placeholder="أيقونة هاي داي" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                         <input type="text" id="game-icon-bs" placeholder="أيقونة براول ستارز" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                     </div>
-                    <button onclick="saveAdminSettings()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حفظ الإعدادات والتحديث السحابي</button>
+                    <button onclick="saveAdminSettings()" class="btn-gold py-2 rounded text-black font-black text-xs mt-1">حفظ الإعدادات والتحديث سحابياً</button>
                 </div>
 
                 <div class="panel-card p-3.5 flex flex-col gap-3">
-                    <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1.5">🎟️ الأكواد الترويجية (جواهر مجانية)</h4>
+                    <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1.5">🎟️ الأكواد الترويجية</h4>
                     <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="promo-new-code" placeholder="الكود (حروف إنجليزية وأرقام)" dir="ltr" maxlength="30" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
+                        <input type="text" id="promo-new-code" placeholder="الكود" dir="ltr" maxlength="30" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
                         <input type="number" id="promo-new-reward" placeholder="عدد الجواهر" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
-                        <input type="number" id="promo-new-max" placeholder="عدد مرات الاستخدام" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
+                        <input type="number" id="promo-new-max" placeholder="عدد الاستخدامات" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                     </div>
                     <button onclick="createPromoCode()" class="btn-blue py-2 rounded text-black font-black text-xs">إنشاء الكود</button>
                     <div id="admin-promo-list" class="flex flex-col gap-2 max-h-64 overflow-y-auto pr-1"></div>
@@ -445,27 +463,38 @@
                 </div>
             </div>
 
-            <!-- A3: USERS -->
+            <!-- A3: MISSIONS (New Admin Tab) -->
+            <div id="atab-missions" class="hidden flex flex-col gap-4">
+                <div class="panel-card p-3.5 flex flex-col gap-3">
+                    <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
+                        <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-flag-checkered ml-1"></i> إدارة مهام صانع المحتوى</h4>
+                        <button onclick="openMissionModal()" class="btn-blue px-2.5 py-1 rounded text-black font-black text-[10px]"><i class="fa-solid fa-plus"></i> إضافة مهمة جديدة</button>
+                    </div>
+                    <p class="text-[10px] text-gray-300">أنشئ مهام للمتابعين (مثل: مشاهدة فيديو، وضع لايك، كتابة تعليق) مع تحديد عدد الجواهر المكتسبة ورابط المهمة.</p>
+                    <div id="admin-missions-list" class="flex flex-col gap-2 pr-1"></div>
+                </div>
+            </div>
+
+            <!-- A4: USERS -->
             <div id="atab-users" class="hidden flex flex-col gap-4">
                 <div class="panel-card p-3.5 flex flex-col gap-3">
                     <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
-                        <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-users ml-1"></i> إدارة المتابعين المسجلين</h4>
+                        <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-users ml-1"></i> إدارة المتابعين</h4>
                         <span id="admin-users-count" class="text-[10px] text-supercellBlue font-bold">0 متابع</span>
                     </div>
                     <div class="relative">
                         <span class="absolute right-3 top-2.5 text-gray-400 text-xs"><i class="fa-solid fa-magnifying-glass"></i></span>
                         <input type="text" id="admin-user-search" oninput="renderAdminUsers()" placeholder="بحث بالاسم أو الإيميل أو التاغ..." class="w-full bg-black/60 border border-supercellCardBorder rounded-lg pr-9 pl-3 py-2 text-xs text-white focus:outline-none focus:border-supercellGold">
                     </div>
-                    <p class="text-[10px] text-gray-400">مرتّبون حسب عدد الجواهر. اضغط على المتابع لعرض بياناته وتعديل جواهره.</p>
                     <div id="admin-users-list" class="flex flex-col gap-2 pr-1"></div>
                 </div>
             </div>
 
-            <!-- A4: LOG -->
+            <!-- A5: LOG -->
             <div id="atab-log" class="hidden flex flex-col gap-4">
                 <div class="panel-card p-3.5 flex flex-col gap-3">
                     <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
-                        <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-clipboard-list ml-1"></i> سجل مشتريات المتابعين</h4>
+                        <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-clipboard-list ml-1"></i> سجل المشتريات والمهام</h4>
                         <button onclick="clearAdminHistory()" class="text-[10px] text-red-400 hover:text-red-300 underline">مسح السجل</button>
                     </div>
                     <div id="admin-audit-log-list" class="flex flex-col gap-2 pr-1"></div>
@@ -635,6 +664,20 @@
     </div>
 </div>
 
+<!-- MISSION CLAIM CONFIRM MODAL -->
+<div id="mission-claim-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="panel-card w-full max-w-xs p-4 flex flex-col items-center text-center gap-3">
+        <div class="w-12 h-12 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-2xl"><i class="fa-solid fa-flag-checkered"></i></div>
+        <h3 class="font-black text-base text-supercellGold">تأكيد إتمام المهمة</h3>
+        <p class="text-xs text-gray-200 leading-relaxed">هل قمت بمشاهدة الفيديو ووضع اللايك والمطلوب كاملاً؟ اضغط أدناه لاستلام مكافأتك!</p>
+        <input type="hidden" id="pending-mission-id">
+        <div class="flex gap-2 w-full mt-2">
+            <button onclick="executeClaimMission()" class="flex-1 btn-gold py-2 rounded text-black font-black text-xs">نعم، استلم الجواهر</button>
+            <button onclick="closeMissionClaimModal()" class="flex-1 btn-red py-2 rounded text-white font-black text-xs">إلغاء</button>
+        </div>
+    </div>
+</div>
+
 <div id="product-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-sm p-4 flex flex-col gap-3 max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
@@ -655,25 +698,55 @@
             </div>
             <div class="flex flex-col gap-1">
                 <label class="text-[10px] text-gray-300">اسم المنتج:</label>
-                <input type="text" id="prod-name" placeholder="مثال: باقة جواهر 500" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                <input type="text" id="prod-name" placeholder="مثال: باقة جواهر 500" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
             </div>
             <div class="flex flex-col gap-1">
                 <label class="text-[10px] text-gray-300">الوصف:</label>
-                <input type="text" id="prod-desc" placeholder="مثال: جواهر كلاش رويال رسمية" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                <input type="text" id="prod-desc" placeholder="مثال: جواهر كلاش رويال رسمية" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
             </div>
             <div class="flex flex-col gap-1">
                 <label class="text-[10px] text-gray-300">السعر بالنقاط (XP):</label>
-                <input type="number" id="prod-price" placeholder="100" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                <input type="number" id="prod-price" placeholder="100" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
             </div>
             <div class="flex flex-col gap-1">
                 <label class="text-[10px] text-gray-300">رابط صورة المنتج (Image URL):</label>
-                <input type="text" id="prod-img" placeholder="https://..." dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold">
+                <input type="text" id="prod-img" placeholder="https://..." dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
             </div>
             <div class="flex flex-col gap-1">
                 <label class="text-[10px] text-gray-300">مخزون الأكواد (كل رابط/كود في سطر مستقل):</label>
-                <textarea id="prod-links" rows="4" dir="ltr" placeholder="https://link.clashroyale.com/?..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-supercellGold resize-none"></textarea>
+                <textarea id="prod-links" rows="4" dir="ltr" placeholder="https://link.clashroyale.com/?..." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white resize-none"></textarea>
             </div>
             <button onclick="saveProduct()" class="btn-gold py-2 rounded text-black font-black text-xs mt-2">حفظ المنتج سحابياً</button>
+        </div>
+    </div>
+</div>
+
+<!-- MISSION ADD/EDIT MODAL -->
+<div id="mission-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="panel-card w-full max-w-sm p-4 flex flex-col gap-3 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
+            <h3 id="mission-modal-title" class="font-black text-sm text-supercellGold flex items-center gap-1.5">إضافة مهمة جديدة</h3>
+            <button onclick="closeMissionModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <input type="hidden" id="edit-mission-id">
+        <div class="flex flex-col gap-2.5">
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">عنوان المهمة:</label>
+                <input type="text" id="mission-title" placeholder="مثال: شاهد فيديو التحديث الجديد واضع لايك" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">وصف أو المطلوب بالمهمة:</label>
+                <textarea id="mission-desc" rows="2" placeholder="مثال: ادخل الفيديو، شاهده بالكامل، اضع لايك واكتب تعليق." class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white resize-none"></textarea>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">رابط الفيديو أو المهمة (URL):</label>
+                <input type="text" id="mission-url" placeholder="https://youtube.com/..." dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-gray-300">عدد الجواهر المكافأة:</label>
+                <input type="number" id="mission-reward" value="3" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+            </div>
+            <button onclick="saveMission()" class="btn-gold py-2 rounded text-black font-black text-xs mt-2">حفظ المهمة سحابياً</button>
         </div>
     </div>
 </div>
@@ -747,6 +820,7 @@ const DEFAULT_ABOUT = 'SAVO XP هو متجر مكافآت لمتابعي الق�
 let state = {
     currentUser: null,
     products: [],
+    missions: [],
     history: [],
     usersMap: {},
     notifications: [],
@@ -764,7 +838,7 @@ let state = {
         logoUrl: '',
         aboutText: '',
         whatsappNoticeText: 'تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية',
-        earnInstructions: '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• الهدايا والمسابقات أثناء البث المباشر.',
+        earnInstructions: '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• إتمام المهمات اليومية.\n• الهدايا والمسابقات أثناء البث المباشر.',
         gameIcons: {},
         socials: {
             youtube: 'https://youtube.com',
@@ -829,6 +903,7 @@ function restoreSession() {
         state.currentUser = found;
         renderUserProfile();
         renderHistory();
+        renderMissions();
         updateNotificationBadge();
     }
 }
@@ -911,6 +986,12 @@ function initFirebaseSync() {
         if (!el('tab-admin').classList.contains('hidden')) renderAdminProducts();
     });
 
+    onValue(ref(db, 'missions'), (snapshot) => {
+        state.missions = snapshot.exists() ? Object.values(snapshot.val()) : [];
+        renderMissions();
+        if (!el('tab-admin').classList.contains('hidden')) renderAdminMissions();
+    });
+
     onValue(ref(db, 'notifications'), (snapshot) => {
         state.notifications = snapshot.exists() ? Object.values(snapshot.val()).sort((a, b) => b.timestamp - a.timestamp) : [];
         updateNotificationBadge();
@@ -933,6 +1014,7 @@ function initFirebaseSync() {
         usersLoaded = true;
         restoreSession();
         renderUserProfile();
+        renderMissions();
         updateNotificationBadge();
         refreshLeaderboardIfOpen();
         checkMaintenanceStatus();
@@ -1079,7 +1161,7 @@ window.renderFooterSocials = function () {
 window.renderEarnInstructions = function () {
     const box = el('earn-instructions-content');
     if (box) {
-        const instructions = state.settings.earnInstructions || '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• الهدايا والمسابقات أثناء البث المباشر.';
+        const instructions = state.settings.earnInstructions || '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• إتمام المهمات اليومية.\n• الهدايا والمسابقات أثناء البث المباشر.';
         box.innerHTML = instructions.split('\n').map(line => line.trim() ? `<div><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> ${esc(line.replace(/^[•\-\*]\s*/, ''))}</div>` : '').join('');
     }
 };
@@ -1123,7 +1205,7 @@ window.menuAction = function (action) {
     if (action === 'edit') openEditProfileModal();
     else if (action === 'referral') openReferralModal();
     else if (action === 'promo') openPromoModal();
-    else if (action === 'mission') showToast('قسم المهام قادم قريباً! 🚀');
+    else if (action === 'mission') switchTab('missions');
     else if (action === 'install') installApp();
     else if (action === 'logout') logoutUser();
 };
@@ -1279,6 +1361,172 @@ window.claimDailyJewel = async function () {
         claimingDaily = false;
     }
 };
+
+/* --- MISSIONS LOGIC --- */
+window.renderMissions = function () {
+    const list = el('missions-list');
+    const badgeDot = el('mission-badge-dot');
+    if (!list) return;
+    list.innerHTML = '';
+
+    if (!state.currentUser) {
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">يرجى تسجيل الدخول بحساب جوجل لعرض وإتمام المهام.</div>`;
+        if (badgeDot) badgeDot.classList.add('hidden');
+        return;
+    }
+
+    const completedMissions = state.currentUser.completedMissions || {};
+    const missions = state.missions || [];
+    
+    // Check uncompleted
+    const uncompletedCount = missions.filter(m => !completedMissions[m.id]).length;
+    if (badgeDot) badgeDot.classList.toggle('hidden', uncompletedCount === 0);
+
+    if (missions.length === 0) {
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لا توجد مهام متاحة حالياً. تفقد الموقع لاحقاً!</div>`;
+        return;
+    }
+
+    missions.forEach(m => {
+        const isDone = !!completedMissions[m.id];
+        const card = document.createElement('div');
+        card.className = 'panel-card p-3.5 flex flex-col gap-2.5';
+        card.innerHTML = `
+            <div class="flex items-center justify-between">
+                <h4 class="font-black text-xs md:text-sm text-supercellGold flex items-center gap-1.5"><i class="fa-solid fa-flag text-supercellBlue"></i> ${esc(m.title)}</h4>
+                <span class="bg-black/60 border border-supercellCardBorder px-2.5 py-1 rounded text-xs font-black text-supercellBlue">💎 +${m.reward || 3} جواهر</span>
+            </div>
+            <p class="text-xs text-gray-200 leading-relaxed">${esc(m.desc)}</p>
+            <div class="flex items-center gap-2 pt-1">
+                <a href="${esc(safeUrl(m.url))}" target="_blank" rel="noopener" class="flex-1 btn-blue py-2 rounded text-black font-black text-xs text-center"><i class="fa-solid fa-external-link-alt ml-1"></i> فتح الرابط (مشاهدة / لايك)</a>
+                <button onclick="promptClaimMission('${esc(m.id)}')" ${isDone ? 'disabled' : ''} class="flex-1 py-2 rounded font-black text-xs ${isDone ? 'bg-gray-700 text-gray-400 border border-gray-600 cursor-not-allowed' : 'btn-gold'}">
+                    ${isDone ? 'تمت المهمة بنجاح ✅' : 'تمت المشاهدة (استلم)'}
+                </button>
+            </div>`;
+        list.appendChild(card);
+    });
+};
+
+window.promptClaimMission = function (missionId) {
+    if (!state.currentUser) {
+        openLoginModal();
+        return;
+    }
+    const completed = (state.currentUser.completedMissions || {})[missionId];
+    if (completed) {
+        showToast('لقد قمت بإتمام هذه المهمة مسبقاً.', 'error');
+        return;
+    }
+    el('pending-mission-id').value = missionId;
+    el('mission-claim-modal').classList.remove('hidden');
+};
+
+window.closeMissionClaimModal = () => el('mission-claim-modal').classList.add('hidden');
+
+window.executeClaimMission = async function () {
+    const missionId = el('pending-mission-id').value;
+    closeMissionClaimModal();
+    if (!state.currentUser || !missionId) return;
+
+    const mission = state.missions.find(m => m.id === missionId);
+    if (!mission) return;
+
+    const reward = Number(mission.reward) || 3;
+    const dbKey = dbKeyOf(state.currentUser.email);
+
+    try {
+        await runTransaction(ref(db, 'users/' + dbKey), (cur) => {
+            if (!cur) return cur;
+            cur.completedMissions = cur.completedMissions || {};
+            if (cur.completedMissions[missionId]) return; // already done
+            cur.completedMissions[missionId] = serverNow();
+            cur.xp = (cur.xp || 0) + reward;
+            return cur;
+        });
+
+        launchConfetti();
+        showToast(`مبروك! تمت إضافة ${reward} جواهر إلى رصيدك بنجاح 💎`);
+        renderMissions();
+    } catch (e) {
+        showToast('حدث خطأ أثناء استلام الجوائز، حاول مرة أخرى.', 'error');
+    }
+};
+
+window.openMissionModal = function (missionId = null) {
+    el('edit-mission-id').value = '';
+    el('mission-title').value = '';
+    el('mission-desc').value = '';
+    el('mission-url').value = '';
+    el('mission-reward').value = '3';
+
+    if (missionId) {
+        const m = state.missions.find(item => item.id === missionId);
+        if (m) {
+            el('mission-modal-title').innerText = 'تعديل المهمة';
+            el('edit-mission-id').value = m.id;
+            el('mission-title').value = m.title || '';
+            el('mission-desc').value = m.desc || '';
+            el('mission-url').value = m.url || '';
+            el('mission-reward').value = m.reward || 3;
+        }
+    } else {
+        el('mission-modal-title').innerText = 'إضافة مهمة جديدة';
+    }
+    el('mission-modal').classList.remove('hidden');
+};
+
+window.closeMissionModal = () => el('mission-modal').classList.add('hidden');
+
+window.saveMission = function () {
+    const editId = el('edit-mission-id').value.trim();
+    const title = el('mission-title').value.trim();
+    const desc = el('mission-desc').value.trim();
+    const url = el('mission-url').value.trim();
+    const reward = Number(el('mission-reward').value) || 3;
+
+    if (!title || !url) {
+        showToast('عنوان المهمة والرابط حقول إجبارية.', 'error');
+        return;
+    }
+
+    const missionId = editId || ('mission_' + Date.now());
+    const missionObj = { id: missionId, title, desc, url, reward };
+
+    set(ref(db, 'missions/' + missionId), missionObj).then(() => {
+        closeMissionModal();
+        showToast('تم حفظ المهمة بنجاح!');
+    }).catch(() => showToast('حدث خطأ أثناء الحفظ.', 'error'));
+};
+
+window.deleteMission = function (missionId) {
+    if (!confirm('هل أنت متأكد من حذف هذه المهمة؟')) return;
+    remove(ref(db, 'missions/' + missionId)).then(() => showToast('تم حذف المهمة بنجاح.'));
+};
+
+window.renderAdminMissions = function () {
+    const container = el('admin-missions-list');
+    if (!container) return;
+    container.innerHTML = '';
+    if (state.missions.length === 0) {
+        container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs">لا توجد مهام مسجلة حالياً.</div>`;
+        return;
+    }
+    state.missions.forEach(m => {
+        const item = document.createElement('div');
+        item.className = 'bg-black/50 border border-supercellCardBorder p-2.5 rounded flex items-center justify-between gap-2';
+        item.innerHTML = `
+            <div class="overflow-hidden">
+                <h5 class="font-black text-xs text-white truncate">${esc(m.title)}</h5>
+                <span class="text-[10px] text-supercellBlue font-bold">💎 +${m.reward || 3} جواهر | <a href="${esc(safeUrl(m.url))}" target="_blank" rel="noopener" class="underline">رابط المهمة</a></span>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+                <button onclick="openMissionModal('${esc(m.id)}')" class="btn-blue px-2 py-1 rounded text-black font-bold text-[10px]">تعديل</button>
+                <button onclick="deleteMission('${esc(m.id)}')" class="btn-red px-2 py-1 rounded text-white font-bold text-[10px]">حذف</button>
+            </div>`;
+        container.appendChild(item);
+    });
+};
+/* --- END MISSIONS LOGIC --- */
 
 function gameIconHtml(g, size) {
     const url = (state.settings.gameIcons || {})[g.id];
@@ -1499,6 +1747,7 @@ window.handleGoogleSignIn = function (response) {
             closeLoginModal();
             renderUserProfile();
             renderHistory();
+            renderMissions();
             updateNotificationBadge();
             showToast(`مرحباً بك مجدداً ${existingUser.name}!`);
         } else {
@@ -1542,6 +1791,7 @@ window.saveGoogleProfile = async function () {
             el('google-profile-modal').classList.add('hidden');
             renderUserProfile();
             renderHistory();
+            renderMissions();
             updateNotificationBadge();
             showToast(`مرحباً بك مجدداً ${state.currentUser.name}!`);
             return;
@@ -1556,7 +1806,8 @@ window.saveGoogleProfile = async function () {
             lastReadNotification: 0,
             joinedAt: timeStr,
             authType: 'Google',
-            refCode: genRefCode()
+            refCode: genRefCode(),
+            completedMissions: {}
         };
 
         let refKey = null;
@@ -1580,6 +1831,7 @@ window.saveGoogleProfile = async function () {
         el('google-profile-modal').classList.add('hidden');
         renderUserProfile();
         renderHistory();
+        renderMissions();
         updateNotificationBadge();
         showToast(`أهلاً بك يا ${name}! تم إنشاء حسابك بنجاح.`);
     } catch (e) {
@@ -1661,6 +1913,7 @@ window.logoutUser = function () {
     switchTab('store');
     renderUserProfile();
     renderHistory();
+    renderMissions();
     updateNotificationBadge();
 };
 
@@ -1862,30 +2115,32 @@ window.copyRedeemLink = function () {
 };
 
 window.switchTab = function (tabId) {
-    ['store', 'history', 'leaderboard', 'admin'].forEach(id => {
+    ['store', 'missions', 'history', 'leaderboard', 'admin'].forEach(id => {
         const sec = el('tab-' + id);
         const btn = el('tab-btn-' + id);
         if (sec) sec.classList.toggle('hidden', id !== tabId);
         if (btn) {
             const active = id === tabId;
-            btn.className = `flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm text-center transition-all ${active ? 'bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow' : 'text-gray-300 hover:text-white'}`;
+            btn.className = `py-2 px-1 rounded-lg font-black text-[11px] md:text-sm text-center flex flex-col items-center justify-center gap-1 transition-all ${active ? 'bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow' : 'text-gray-300 hover:text-white'}`;
         }
     });
     if (tabId === 'leaderboard') renderLeaderboard();
     if (tabId === 'history') renderHistory();
+    if (tabId === 'missions') renderMissions();
 };
 
 window.switchAdminTab = function (subId) {
-    ['settings', 'products', 'users', 'log'].forEach(id => {
+    ['settings', 'products', 'missions', 'users', 'log'].forEach(id => {
         const sec = el('atab-' + id);
-        const btn = el('atab-btn-' + id);
+        const btn = el('atab-btn-' + (id === 'missions' ? 'admin-missions' : id));
         if (sec) sec.classList.toggle('hidden', id !== subId);
         if (btn) {
             const active = id === subId;
-            btn.className = `flex-1 py-1.5 rounded-lg font-black text-[11px] md:text-sm transition-all ${active ? 'admin-sub-on' : 'admin-sub-off'}`;
+            btn.className = `flex-1 py-1.5 px-2 rounded-lg font-black text-[11px] md:text-sm whitespace-nowrap transition-all ${active ? 'admin-sub-on' : 'admin-sub-off'}`;
         }
     });
     if (subId === 'products') renderAdminProducts();
+    if (subId === 'missions') renderAdminMissions();
     if (subId === 'users') renderAdminUsers();
     if (subId === 'log') renderAdminAuditLog();
 };
@@ -1899,6 +2154,7 @@ window.checkAdminAccess = function () {
     switchAdminTab('settings');
     populateAdminSettingsForm();
     renderAdminProducts();
+    renderAdminMissions();
     renderAdminPromoList();
     renderAdminUsers();
     renderAdminAuditLog();
@@ -2064,7 +2320,7 @@ window.createPromoCode = function () {
     const maxUses = Number(el('promo-new-max').value);
 
     if (!/^[A-Z0-9_-]{2,30}$/.test(code) || isNaN(reward) || reward <= 0 || isNaN(maxUses) || maxUses <= 0) {
-        showToast('يرجى إدخال بيانات الكود بشكل صحيح (الحروف إنجليزية وأرقام).', 'error');
+        showToast('يرجى إدخال بيانات الكود بشكل صحيح.', 'error');
         return;
     }
 
