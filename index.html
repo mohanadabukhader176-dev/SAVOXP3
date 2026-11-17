@@ -297,19 +297,23 @@
                 <h3 class="font-black text-sm md:text-base text-supercellGold flex items-center gap-1.5">
                     <i class="fa-solid fa-flag-checkered"></i> مهمات صانع المحتوى
                 </h3>
-                <span class="text-[10px] md:text-xs text-supercellBlue font-bold">أتمم المهمة واكسب الجواهر</span>
+                <span class="text-[10px] md:text-xs text-supercellBlue font-bold">شاهد الفيديو بالكامل واكسب الجواهر</span>
             </div>
             <div id="missions-list" class="flex flex-col gap-3"></div>
         </section>
 
         <!-- HISTORY -->
         <section id="tab-history" class="flex flex-col gap-3 hidden">
-            <div class="flex items-center justify-between">
-                <h3 class="font-black text-sm md:text-base text-supercellGold flex items-center gap-1.5">
-                    <i class="fa-solid fa-receipt"></i> سجل المشتريات الخاصة بك
-                </h3>
+            <div class="flex gap-1 bg-black/40 p-1 rounded-xl border border-supercellCardBorder">
+                <button onclick="switchHistoryTab('purchases')" id="htab-btn-purchases" class="flex-1 py-2 rounded-lg font-black text-xs text-center transition-all bg-supercellPurple text-supercellGold border border-supercellCardBorder">سجل المشتريات والاستبدال</button>
+                <button onclick="switchHistoryTab('earnings')" id="htab-btn-earnings" class="flex-1 py-2 rounded-lg font-black text-xs text-center transition-all text-gray-300 hover:text-white">سجل تحصيل الجواهر</button>
             </div>
-            <div id="history-list" class="flex flex-col gap-2"></div>
+            <div id="history-purchases-section" class="flex flex-col gap-2">
+                <div id="history-list" class="flex flex-col gap-2"></div>
+            </div>
+            <div id="history-earnings-section" class="flex flex-col gap-2 hidden">
+                <div id="earnings-history-list" class="flex flex-col gap-2"></div>
+            </div>
         </section>
 
         <!-- LEADERBOARD -->
@@ -413,10 +417,16 @@
                     </div>
 
                     <h5 class="font-black text-[11px] text-supercellGold pt-1 border-t border-supercellCardBorder">قنوات التواصل والتحصيل</h5>
+                    
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] text-emerald-400 font-bold">رابط قناة الواتساب الرسمية (خاص بالفوتر والزر):</label>
+                        <input type="text" id="admin-whatsapp-channel-url" dir="ltr" placeholder="https://whatsapp.com/channel/..." class="bg-black/60 border border-emerald-500/50 rounded px-2.5 py-1.5 text-xs text-white">
+                    </div>
                     <div class="flex flex-col gap-1">
                         <label class="text-[10px] text-emerald-400 font-bold">تنويه قناة الواتساب:</label>
-                        <input type="text" id="admin-whatsapp-notice" class="bg-black/60 border border-emerald-500/50 rounded px-2.5 py-1.5 text-xs text-white">
+                        <input type="text" id="admin-whatsapp-notice" class="bg-black/60 border border-emerald-500/30 rounded px-2.5 py-1.5 text-xs text-white">
                     </div>
+
                     <div class="flex flex-col gap-1">
                         <label class="text-[10px] text-supercellBlue font-bold">نص نافذة (كيف تحصل على الجواهر؟):</label>
                         <textarea id="admin-earn-instructions" rows="4" class="bg-black/60 border border-supercellBlue/50 rounded px-2.5 py-1.5 text-xs text-white resize-none"></textarea>
@@ -426,7 +436,6 @@
                         <input type="text" id="social-tik" placeholder="رابط تيك توك" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                         <input type="text" id="social-ig" placeholder="رابط انستغرام" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
                         <input type="text" id="social-twi" placeholder="رابط تويتش" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white">
-                        <input type="text" id="social-wa" placeholder="رابط قناة الواتساب" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-[11px] text-white col-span-2">
                     </div>
 
                     <h5 class="font-black text-[11px] text-supercellGold pt-1 border-t border-supercellCardBorder">أيقونات خانات الألعاب</h5>
@@ -463,14 +472,14 @@
                 </div>
             </div>
 
-            <!-- A3: MISSIONS (New Admin Tab) -->
+            <!-- A3: MISSIONS -->
             <div id="atab-missions" class="hidden flex flex-col gap-4">
                 <div class="panel-card p-3.5 flex flex-col gap-3">
                     <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
                         <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-flag-checkered ml-1"></i> إدارة مهام صانع المحتوى</h4>
                         <button onclick="openMissionModal()" class="btn-blue px-2.5 py-1 rounded text-black font-black text-[10px]"><i class="fa-solid fa-plus"></i> إضافة مهمة جديدة</button>
                     </div>
-                    <p class="text-[10px] text-gray-300">أنشئ مهام للمتابعين (مثل: مشاهدة فيديو، وضع لايك، كتابة تعليق) مع تحديد عدد الجواهر المكتسبة ورابط المهمة.</p>
+                    <p class="text-[10px] text-gray-300">أنشئ مهام للمتابعين مع تحديد الجواهر ورابط الفيديو (مع عداد إلزامي للمشاهدة).</p>
                     <div id="admin-missions-list" class="flex flex-col gap-2 pr-1"></div>
                 </div>
             </div>
@@ -494,7 +503,7 @@
             <div id="atab-log" class="hidden flex flex-col gap-4">
                 <div class="panel-card p-3.5 flex flex-col gap-3">
                     <div class="flex items-center justify-between border-b border-supercellCardBorder pb-1.5">
-                        <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-clipboard-list ml-1"></i> سجل المشتريات والمهام</h4>
+                        <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-clipboard-list ml-1"></i> سجل المشتريات والمهام العامة</h4>
                         <button onclick="clearAdminHistory()" class="text-[10px] text-red-400 hover:text-red-300 underline">مسح السجل</button>
                     </div>
                     <div id="admin-audit-log-list" class="flex flex-col gap-2 pr-1"></div>
@@ -505,7 +514,7 @@
 
     <footer class="w-full py-4 text-center border-t border-supercellCardBorder bg-black/40 mt-auto flex flex-col gap-3 px-3">
         <div id="footer-whatsapp-notice-box" class="bg-emerald-950/40 border border-emerald-500/30 py-1.5 px-3 rounded-lg max-w-sm mx-auto w-full">
-            <a id="footer-whatsapp-link" href="https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 text-[11px] font-bold flex items-center justify-center gap-1.5">
+            <a id="footer-whatsapp-link" href="#" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 text-[11px] font-bold flex items-center justify-center gap-1.5">
                 <i class="fa-brands fa-whatsapp text-sm"></i>
                 <span id="footer-whatsapp-text">تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية</span>
             </a>
@@ -515,7 +524,7 @@
             <a id="social-link-tik" href="#" target="_blank" rel="noopener" class="social-circle text-white hover:text-gray-300" title="تيك توك"><i class="fa-brands fa-tiktok"></i></a>
             <a id="social-link-ig" href="#" target="_blank" rel="noopener" class="social-circle text-pink-500 hover:text-pink-400" title="انستغرام"><i class="fa-brands fa-instagram"></i></a>
             <a id="social-link-twi" href="#" target="_blank" rel="noopener" class="social-circle text-purple-400 hover:text-purple-300" title="تويتش"><i class="fa-brands fa-twitch"></i></a>
-            <a id="social-link-wa" href="https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L" target="_blank" rel="noopener" class="social-circle text-emerald-500 hover:text-emerald-400" title="قناة الواتساب"><i class="fa-brands fa-whatsapp"></i></a>
+            <a id="social-link-wa" href="#" target="_blank" rel="noopener" class="social-circle text-emerald-500 hover:text-emerald-400" title="قناة الواتساب"><i class="fa-brands fa-whatsapp"></i></a>
         </div>
         <p class="text-[10px] text-gray-400 font-bold">SAVO XP © 2026 - جميع الحقوق محفوظة لصانع المحتوى</p>
         <p class="text-[9px] text-gray-500 mt-0.5">غير مرتبطة رسمياً بشركة Supercell (حقوق النشر محفوظة)</p>
@@ -574,6 +583,36 @@
         <div class="flex flex-col gap-2 w-full mt-1">
             <button id="daily-claim-btn" onclick="claimDailyJewel()" class="btn-gold py-2.5 rounded text-black font-black text-xs">مطالبة بالجوهرة الآن</button>
             <button onclick="closeDailyJewelModal()" class="btn-red py-2 rounded text-white font-black text-xs">إغلاق</button>
+        </div>
+    </div>
+</div>
+
+<!-- MISSION VIEW / TIMER MODAL -->
+<div id="mission-timer-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="panel-card w-full max-w-sm p-5 flex flex-col items-center text-center gap-3 animate-scaleIn">
+        <div class="w-12 h-12 rounded-full bg-supercellBlue/20 border-2 border-supercellBlue flex items-center justify-center text-supercellBlue text-2xl animate-pulse">
+            <i class="fa-solid fa-clock"></i>
+        </div>
+        <h3 class="font-black text-base text-supercellGold">متابعة المهمة ومشاهدة الفيديو</h3>
+        <p id="mission-modal-desc-text" class="text-xs text-gray-200 leading-relaxed">يرجى مشاهدة الفيديو كاملاً ووضع لايك. انتظر انتهاء العد التنازلي لتتمكن من استلام الجواهر.</p>
+        
+        <input type="hidden" id="active-mission-id">
+        <input type="hidden" id="active-mission-url">
+
+        <div class="w-full bg-black/60 border border-supercellCardBorder p-3 rounded-xl flex flex-col items-center gap-2 my-1">
+            <a id="mission-open-link-btn" href="#" target="_blank" rel="noopener" onclick="onMissionLinkClicked()" class="w-full btn-blue py-2.5 rounded text-black font-black text-xs text-center block">
+                <i class="fa-solid fa-external-link-alt ml-1"></i> 1. اضغط هنا لفتح الفيديو ومشاهدته
+            </a>
+            <div id="mission-countdown-container" class="text-xs font-black text-supercellGold py-1">
+                الرجاء فتح الفيديو أولاً...
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-2 w-full mt-1">
+            <button id="mission-final-claim-btn" onclick="executeClaimMission()" disabled class="py-2.5 rounded font-black text-xs bg-gray-700 text-gray-400 border border-gray-600 cursor-not-allowed">
+                2. استلام الجواهر (مغلق)
+            </button>
+            <button onclick="closeMissionTimerModal()" class="btn-red py-2 rounded text-white font-black text-xs">إلغاء</button>
         </div>
     </div>
 </div>
@@ -664,20 +703,6 @@
     </div>
 </div>
 
-<!-- MISSION CLAIM CONFIRM MODAL -->
-<div id="mission-claim-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="panel-card w-full max-w-xs p-4 flex flex-col items-center text-center gap-3">
-        <div class="w-12 h-12 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-2xl"><i class="fa-solid fa-flag-checkered"></i></div>
-        <h3 class="font-black text-base text-supercellGold">تأكيد إتمام المهمة</h3>
-        <p class="text-xs text-gray-200 leading-relaxed">هل قمت بمشاهدة الفيديو ووضع اللايك والمطلوب كاملاً؟ اضغط أدناه لاستلام مكافأتك!</p>
-        <input type="hidden" id="pending-mission-id">
-        <div class="flex gap-2 w-full mt-2">
-            <button onclick="executeClaimMission()" class="flex-1 btn-gold py-2 rounded text-black font-black text-xs">نعم، استلم الجواهر</button>
-            <button onclick="closeMissionClaimModal()" class="flex-1 btn-red py-2 rounded text-white font-black text-xs">إلغاء</button>
-        </div>
-    </div>
-</div>
-
 <div id="product-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-sm p-4 flex flex-col gap-3 max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
@@ -752,9 +777,9 @@
 </div>
 
 <div id="custom-points-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
+    <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3 max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
-            <h3 class="font-black text-sm text-supercellGold">بيانات المتابع</h3>
+            <h3 class="font-black text-sm text-supercellGold">بيانات المتابع التفصيلية</h3>
             <button onclick="closeCustomPointsModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <input type="hidden" id="target-user-key">
@@ -766,8 +791,12 @@
             </div>
         </div>
         <div id="ud-info" class="bg-black/40 border border-supercellCardBorder rounded p-2.5 flex flex-col gap-1.5 text-[11px] text-gray-200"></div>
-        <div class="flex flex-col gap-2">
-            <label class="text-[10px] text-gray-300">عدد الجواهر:</label>
+        <div class="border-t border-supercellCardBorder pt-2 flex flex-col gap-1.5">
+            <h5 class="font-black text-xs text-supercellGold">سجل نشاطات وتحصيل هذا المستخدم:</h5>
+            <div id="ud-activity-log" class="max-h-36 overflow-y-auto flex flex-col gap-1 text-[10px] bg-black/60 p-2 rounded border border-supercellCardBorder"></div>
+        </div>
+        <div class="flex flex-col gap-2 pt-2 border-t border-supercellCardBorder">
+            <label class="text-[10px] text-gray-300">تعديل رصيد الجواهر:</label>
             <input type="number" id="custom-points-val" min="1" placeholder="مثال: 50" class="bg-black/60 border border-supercellCardBorder rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-supercellGold">
             <div class="grid grid-cols-2 gap-2">
                 <button onclick="applyCustomPoints(1)" class="btn-gold py-2 rounded text-black font-black text-xs">+ زيادة</button>
@@ -790,7 +819,7 @@
             <a id="redeem-open-link-btn" href="#" target="_blank" rel="noopener" class="w-full btn-blue py-2 rounded text-black font-black text-xs text-center block"><i class="fa-solid fa-external-link-alt ml-1"></i> فتح الرابط مباشرة</a>
             <div class="flex gap-2 w-full">
                 <button onclick="copyRedeemLink()" class="flex-1 btn-gold py-2 rounded text-black font-black text-xs"><i class="fa-solid fa-copy ml-1"></i> نسخ الرابط</button>
-                <button onclick="closeRedeemModal()" class="flex-1 btn-red py-2 rounded text-white font-black text-xs">إغلاق / تم</button>
+                <button onclick="closeRedeemModal()" class="flex-1 btn-red py-2 rounded text-white font-black text-xs">إلغاء / تم</button>
             </div>
         </div>
     </div>
@@ -837,15 +866,15 @@ let state = {
         eventBarText: '',
         logoUrl: '',
         aboutText: '',
+        whatsappChannelUrl: 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L',
         whatsappNoticeText: 'تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية',
-        earnInstructions: '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• إتمام المهمات اليومية.\n• الهدايا والمسابقات أثناء البث المباشر.',
+        earnInstructions: '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• إتمام المهمات اليومية ومشاهدة الفيديوهات.\n• الهدايا والمسابقات أثناء البث المباشر.',
         gameIcons: {},
         socials: {
             youtube: 'https://youtube.com',
             tiktok: 'https://tiktok.com',
             instagram: 'https://instagram.com',
-            twitch: 'https://twitch.tv',
-            whatsapp: 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L'
+            twitch: 'https://twitch.tv'
         }
     }
 };
@@ -903,6 +932,7 @@ function restoreSession() {
         state.currentUser = found;
         renderUserProfile();
         renderHistory();
+        renderEarningsHistory();
         renderMissions();
         updateNotificationBadge();
     }
@@ -1006,6 +1036,9 @@ function initFirebaseSync() {
                     const oldXp = state.currentUser.xp;
                     state.currentUser = updatedMe;
                     if (oldXp !== updatedMe.xp) showToast(`تم تحديث رصيدك إلى 💎 ${updatedMe.xp || 0} XP`);
+                    renderHistory();
+                    renderEarningsHistory();
+                    renderMissions();
                 }
             }
         } else {
@@ -1013,8 +1046,6 @@ function initFirebaseSync() {
         }
         usersLoaded = true;
         restoreSession();
-        renderUserProfile();
-        renderMissions();
         updateNotificationBadge();
         refreshLeaderboardIfOpen();
         checkMaintenanceStatus();
@@ -1142,8 +1173,8 @@ window.renderHeaderLogo = function () {
 
 window.renderFooterSocials = function () {
     const socials = state.settings.socials || {};
-    const waUrl = socials.whatsapp || 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L';
-    const map = { yt: socials.youtube, tik: socials.tiktok, ig: socials.instagram, twi: socials.twitch, wa: waUrl };
+    const waUrl = state.settings.whatsappChannelUrl || 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L';
+    const map = { yt: socials.youtube, tik: socials.tiktok, ig: socials.instagram, twi: socials.twitch };
     Object.entries(map).forEach(([key, raw]) => {
         const url = safeUrl(raw);
         const foot = el('social-link-' + key);
@@ -1154,14 +1185,20 @@ window.renderFooterSocials = function () {
             ws.classList.toggle('hidden', url === '#');
         }
     });
-    el('footer-whatsapp-link').href = safeUrl(waUrl);
+    // WhatsApp channel specific rendering
+    const waSafe = safeUrl(waUrl);
+    const footWa = el('social-link-wa');
+    if (footWa) footWa.href = waSafe;
+    const wsWa = el('ws-social-wa');
+    if (wsWa) { wsWa.href = waSafe; wsWa.classList.remove('hidden'); }
+    el('footer-whatsapp-link').href = waSafe;
     el('footer-whatsapp-text').innerText = state.settings.whatsappNoticeText || 'تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية';
 };
 
 window.renderEarnInstructions = function () {
     const box = el('earn-instructions-content');
     if (box) {
-        const instructions = state.settings.earnInstructions || '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• إتمام المهمات اليومية.\n• الهدايا والمسابقات أثناء البث المباشر.';
+        const instructions = state.settings.earnInstructions || '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• إتمام المهمات اليومية ومشاهدة الفيديوهات.\n• الهدايا والمسابقات أثناء البث المباشر.';
         box.innerHTML = instructions.split('\n').map(line => line.trim() ? `<div><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> ${esc(line.replace(/^[•\-\*]\s*/, ''))}</div>` : '').join('');
     }
 };
@@ -1342,6 +1379,17 @@ window.claimDailyJewel = async function () {
             if (last <= now + 60000 && (now - last) < DAILY_COOLDOWN) { outcome = 'cooldown'; return; }
             cur.xp = (cur.xp || 0) + 1;
             cur.lastDailyClaim = now;
+            
+            // Add to earning history log
+            cur.earningsHistory = cur.earningsHistory || [];
+            const nowDt = new Date();
+            const timeStr = `${nowDt.getFullYear()}-${String(nowDt.getMonth() + 1).padStart(2, '0')}-${String(nowDt.getDate()).padStart(2, '0')} ${String(nowDt.getHours()).padStart(2, '0')}:${String(nowDt.getMinutes()).padStart(2, '0')}`;
+            cur.earningsHistory.push({
+                source: 'الجوهرة اليومية المجانية',
+                reward: 1,
+                timestamp: timeStr
+            });
+
             outcome = 'ok';
             return cur;
         });
@@ -1362,7 +1410,10 @@ window.claimDailyJewel = async function () {
     }
 };
 
-/* --- MISSIONS LOGIC --- */
+/* --- MISSIONS LOGIC WITH MANDATORY TIMER --- */
+let missionTimerInterval = null;
+let secondsLeft = 40; // 40 seconds mandatory viewing timer
+
 window.renderMissions = function () {
     const list = el('missions-list');
     const badgeDot = el('mission-badge-dot');
@@ -1378,7 +1429,6 @@ window.renderMissions = function () {
     const completedMissions = state.currentUser.completedMissions || {};
     const missions = state.missions || [];
     
-    // Check uncompleted
     const uncompletedCount = missions.filter(m => !completedMissions[m.id]).length;
     if (badgeDot) badgeDot.classList.toggle('hidden', uncompletedCount === 0);
 
@@ -1398,16 +1448,15 @@ window.renderMissions = function () {
             </div>
             <p class="text-xs text-gray-200 leading-relaxed">${esc(m.desc)}</p>
             <div class="flex items-center gap-2 pt-1">
-                <a href="${esc(safeUrl(m.url))}" target="_blank" rel="noopener" class="flex-1 btn-blue py-2 rounded text-black font-black text-xs text-center"><i class="fa-solid fa-external-link-alt ml-1"></i> فتح الرابط (مشاهدة / لايك)</a>
-                <button onclick="promptClaimMission('${esc(m.id)}')" ${isDone ? 'disabled' : ''} class="flex-1 py-2 rounded font-black text-xs ${isDone ? 'bg-gray-700 text-gray-400 border border-gray-600 cursor-not-allowed' : 'btn-gold'}">
-                    ${isDone ? 'تمت المهمة بنجاح ✅' : 'تمت المشاهدة (استلم)'}
+                <button onclick="startMissionVerification('${esc(m.id)}', '${esc(m.url)}')" ${isDone ? 'disabled' : ''} class="w-full py-2.5 rounded font-black text-xs ${isDone ? 'bg-gray-700 text-gray-400 border border-gray-600 cursor-not-allowed' : 'btn-gold'}">
+                    ${isDone ? 'تمت المهمة بنجاح ✅' : 'شاهد الفيديو واستلم الجواهر (عد تنازلي)'}
                 </button>
             </div>`;
         list.appendChild(card);
     });
 };
 
-window.promptClaimMission = function (missionId) {
+window.startMissionVerification = function (missionId, url) {
     if (!state.currentUser) {
         openLoginModal();
         return;
@@ -1417,15 +1466,53 @@ window.promptClaimMission = function (missionId) {
         showToast('لقد قمت بإتمام هذه المهمة مسبقاً.', 'error');
         return;
     }
-    el('pending-mission-id').value = missionId;
-    el('mission-claim-modal').classList.remove('hidden');
+
+    el('active-mission-id').value = missionId;
+    el('active-mission-url').value = url;
+    el('mission-open-link-btn').href = safeUrl(url);
+
+    // Reset timer
+    secondsLeft = 40; // 40 seconds mandatory wait
+    const claimBtn = el('mission-final-claim-btn');
+    claimBtn.disabled = true;
+    claimBtn.className = 'py-2.5 rounded font-black text-xs bg-gray-700 text-gray-400 border border-gray-600 cursor-not-allowed';
+    claimBtn.innerText = `2. انتظر انتهاء الوقت (${secondsLeft} ثانية)...`;
+    el('mission-countdown-container').innerHTML = `⏳ يرجى فتح الفيديو ومشاهدته. الوقت المتبقي: <span class="text-supercellBlue font-black text-sm">${secondsLeft}</span> ثانية`;
+
+    el('mission-timer-modal').classList.remove('hidden');
 };
 
-window.closeMissionClaimModal = () => el('mission-claim-modal').classList.add('hidden');
+window.onMissionLinkClicked = function () {
+    if (missionTimerInterval) clearInterval(missionTimerInterval);
+    
+    missionTimerInterval = setInterval(() => {
+        secondsLeft--;
+        const countdownBox = el('mission-countdown-container');
+        const claimBtn = el('mission-final-claim-btn');
+
+        if (secondsLeft > 0) {
+            if (countdownBox) countdownBox.innerHTML = `⏳ الوقت المتبقي للمشاهدة: <span class="text-supercellBlue font-black text-sm">${secondsLeft}</span> ثانية`;
+            if (claimBtn) claimBtn.innerText = `2. انتظر انتهاء الوقت (${secondsLeft} ثانية)...`;
+        } else {
+            clearInterval(missionTimerInterval);
+            if (countdownBox) countdownBox.innerHTML = `<span class="text-emerald-400 font-bold">✅ انتهى الوقت بنجاح! يمكنك الآن استلام جواهرك.</span>`;
+            if (claimBtn) {
+                claimBtn.disabled = false;
+                claimBtn.className = 'btn-gold py-2.5 rounded text-black font-black text-xs';
+                claimBtn.innerText = '2. اضغط هنا لاستلام الجواهر فوراً';
+            }
+        }
+    }, 1000);
+};
+
+window.closeMissionTimerModal = function () {
+    if (missionTimerInterval) clearInterval(missionTimerInterval);
+    el('mission-timer-modal').classList.add('hidden');
+};
 
 window.executeClaimMission = async function () {
-    const missionId = el('pending-mission-id').value;
-    closeMissionClaimModal();
+    const missionId = el('active-mission-id').value;
+    closeMissionTimerModal();
     if (!state.currentUser || !missionId) return;
 
     const mission = state.missions.find(m => m.id === missionId);
@@ -1439,8 +1526,21 @@ window.executeClaimMission = async function () {
             if (!cur) return cur;
             cur.completedMissions = cur.completedMissions || {};
             if (cur.completedMissions[missionId]) return; // already done
+            
+            const nowDt = new Date();
+            const timeStr = `${nowDt.getFullYear()}-${String(nowDt.getMonth() + 1).padStart(2, '0')}-${String(nowDt.getDate()).padStart(2, '0')} ${String(nowDt.getHours()).padStart(2, '0')}:${String(nowDt.getMinutes()).padStart(2, '0')}`;
+            
             cur.completedMissions[missionId] = serverNow();
             cur.xp = (cur.xp || 0) + reward;
+
+            // Add to earning history log
+            cur.earningsHistory = cur.earningsHistory || [];
+            cur.earningsHistory.push({
+                source: `مهمة: ${mission.title}`,
+                reward: reward,
+                timestamp: timeStr
+            });
+
             return cur;
         });
 
@@ -1511,13 +1611,22 @@ window.renderAdminMissions = function () {
         container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs">لا توجد مهام مسجلة حالياً.</div>`;
         return;
     }
+
+    // Count how many users completed each mission
+    const usersArr = Object.values(state.usersMap || {});
+
     state.missions.forEach(m => {
+        let completedCount = 0;
+        usersArr.forEach(u => {
+            if (u && u.completedMissions && u.completedMissions[m.id]) completedCount++;
+        });
+
         const item = document.createElement('div');
         item.className = 'bg-black/50 border border-supercellCardBorder p-2.5 rounded flex items-center justify-between gap-2';
         item.innerHTML = `
             <div class="overflow-hidden">
                 <h5 class="font-black text-xs text-white truncate">${esc(m.title)}</h5>
-                <span class="text-[10px] text-supercellBlue font-bold">💎 +${m.reward || 3} جواهر | <a href="${esc(safeUrl(m.url))}" target="_blank" rel="noopener" class="underline">رابط المهمة</a></span>
+                <span class="text-[10px] text-supercellBlue font-bold">💎 +${m.reward || 3} جواهر | أكملها (${completedCount} متابع) | <a href="${esc(safeUrl(m.url))}" target="_blank" rel="noopener" class="underline">رابط المهمة</a></span>
             </div>
             <div class="flex items-center gap-1.5 shrink-0">
                 <button onclick="openMissionModal('${esc(m.id)}')" class="btn-blue px-2 py-1 rounded text-black font-bold text-[10px]">تعديل</button>
@@ -1615,8 +1724,18 @@ window.renderStore = function () {
     });
 };
 
+window.switchHistoryTab = function (sub) {
+    const isPurchases = sub === 'purchases';
+    el('history-purchases-section').classList.toggle('hidden', !isPurchases);
+    el('history-earnings-section').classList.toggle('hidden', isPurchases);
+    
+    el('htab-btn-purchases').className = `flex-1 py-2 rounded-lg font-black text-xs text-center transition-all ${isPurchases ? 'bg-supercellPurple text-supercellGold border border-supercellCardBorder' : 'text-gray-300 hover:text-white'}`;
+    el('htab-btn-earnings').className = `flex-1 py-2 rounded-lg font-black text-xs text-center transition-all ${!isPurchases ? 'bg-supercellPurple text-supercellGold border border-supercellCardBorder' : 'text-gray-300 hover:text-white'}`;
+};
+
 window.renderHistory = function () {
     const list = el('history-list');
+    if (!list) return;
     list.innerHTML = '';
     if (!state.currentUser) {
         list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">يرجى تسجيل الدخول عبر جوجل لعرض سجل المشتريات.</div>`;
@@ -1640,6 +1759,35 @@ window.renderHistory = function () {
             <div class="flex items-center gap-1 bg-red-950/40 border border-red-500/30 px-2.5 py-1.5 rounded shrink-0">
                 <span class="text-xs">💎</span>
                 <span class="font-black text-red-400 text-xs">-${esc(item.xpSpent)} XP</span>
+            </div>`;
+        list.appendChild(row);
+    });
+};
+
+window.renderEarningsHistory = function () {
+    const list = el('earnings-history-list');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!state.currentUser) {
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">يرجى تسجيل الدخول عبر جوجل لعرض سجل التحصيل.</div>`;
+        return;
+    }
+    const earnings = state.currentUser.earningsHistory || [];
+    if (earnings.length === 0) {
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لا توجد عمليات تحصيل مسجلة بعد. ابدأ بجمع الجواهر الآن!</div>`;
+        return;
+    }
+    earnings.slice().reverse().forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'panel-card p-3.5 flex items-center justify-between gap-2';
+        row.innerHTML = `
+            <div class="flex flex-col gap-1 overflow-hidden">
+                <h4 class="font-black text-xs md:text-sm text-white flex items-center gap-1.5"><i class="fa-solid fa-coins text-supercellGold"></i> ${esc(item.source)}</h4>
+                <span class="text-[9px] text-gray-400">${esc(item.timestamp)}</span>
+            </div>
+            <div class="flex items-center gap-1 bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-1.5 rounded shrink-0">
+                <span class="text-xs">💎</span>
+                <span class="font-black text-emerald-400 text-xs">+${esc(item.reward)} XP</span>
             </div>`;
         list.appendChild(row);
     });
@@ -1720,6 +1868,16 @@ async function creditReferrer(refKey) {
             if (count >= MAX_REFERRALS) return;
             cur.referralCount = count + 1;
             cur.xp = (cur.xp || 0) + 1;
+            
+            cur.earningsHistory = cur.earningsHistory || [];
+            const nowDt = new Date();
+            const timeStr = `${nowDt.getFullYear()}-${String(nowDt.getMonth() + 1).padStart(2, '0')}-${String(nowDt.getDate()).padStart(2, '0')} ${String(nowDt.getHours()).padStart(2, '0')}:${String(nowDt.getMinutes()).padStart(2, '0')}`;
+            cur.earningsHistory.push({
+                source: 'دعوة صديق جديد عبر الرابط',
+                reward: 1,
+                timestamp: timeStr
+            });
+
             return cur;
         });
     } catch (e) {}
@@ -1747,6 +1905,7 @@ window.handleGoogleSignIn = function (response) {
             closeLoginModal();
             renderUserProfile();
             renderHistory();
+            renderEarningsHistory();
             renderMissions();
             updateNotificationBadge();
             showToast(`مرحباً بك مجدداً ${existingUser.name}!`);
@@ -1791,6 +1950,7 @@ window.saveGoogleProfile = async function () {
             el('google-profile-modal').classList.add('hidden');
             renderUserProfile();
             renderHistory();
+            renderEarningsHistory();
             renderMissions();
             updateNotificationBadge();
             showToast(`مرحباً بك مجدداً ${state.currentUser.name}!`);
@@ -1807,7 +1967,8 @@ window.saveGoogleProfile = async function () {
             joinedAt: timeStr,
             authType: 'Google',
             refCode: genRefCode(),
-            completedMissions: {}
+            completedMissions: {},
+            earningsHistory: []
         };
 
         let refKey = null;
@@ -1831,6 +1992,7 @@ window.saveGoogleProfile = async function () {
         el('google-profile-modal').classList.add('hidden');
         renderUserProfile();
         renderHistory();
+        renderEarningsHistory();
         renderMissions();
         updateNotificationBadge();
         showToast(`أهلاً بك يا ${name}! تم إنشاء حسابك بنجاح.`);
@@ -1913,6 +2075,7 @@ window.logoutUser = function () {
     switchTab('store');
     renderUserProfile();
     renderHistory();
+    renderEarningsHistory();
     renderMissions();
     updateNotificationBadge();
 };
@@ -1957,7 +2120,19 @@ window.redeemPromo = async function () {
         });
 
         if (res.committed && outcome === 'ok') {
-            await runTransaction(ref(db, 'users/' + dbKey + '/xp'), (cur) => (cur || 0) + reward);
+            await runTransaction(ref(db, 'users/' + dbKey), (cur) => {
+                if (!cur) return cur;
+                cur.xp = (cur.xp || 0) + reward;
+                cur.earningsHistory = cur.earningsHistory || [];
+                const nowDt = new Date();
+                const timeStr = `${nowDt.getFullYear()}-${String(nowDt.getMonth() + 1).padStart(2, '0')}-${String(nowDt.getDate()).padStart(2, '0')} ${String(nowDt.getHours()).padStart(2, '0')}:${String(nowDt.getMinutes()).padStart(2, '0')}`;
+                cur.earningsHistory.push({
+                    source: `استرداد كود ترويجي (${code})`,
+                    reward: reward,
+                    timestamp: timeStr
+                });
+                return cur;
+            });
             closePromoModal();
             launchConfetti();
             showToast(`تمت إضافة ${reward} جوهرة إلى رصيدك 💎`);
@@ -2125,7 +2300,7 @@ window.switchTab = function (tabId) {
         }
     });
     if (tabId === 'leaderboard') renderLeaderboard();
-    if (tabId === 'history') renderHistory();
+    if (tabId === 'history') { renderHistory(); renderEarningsHistory(); }
     if (tabId === 'missions') renderMissions();
 };
 
@@ -2174,6 +2349,7 @@ function populateAdminSettingsForm() {
     el('admin-event-bar-input').value = s.eventBarText || '';
     el('admin-logo-input').value = s.logoUrl || '';
     el('admin-about-text').value = s.aboutText || '';
+    el('admin-whatsapp-channel-url').value = s.whatsappChannelUrl || '';
     el('admin-whatsapp-notice').value = s.whatsappNoticeText || '';
     el('admin-earn-instructions').value = s.earnInstructions || '';
 
@@ -2182,7 +2358,6 @@ function populateAdminSettingsForm() {
     el('social-tik').value = soc.tiktok || '';
     el('social-ig').value = soc.instagram || '';
     el('social-twi').value = soc.twitch || '';
-    el('social-wa').value = soc.whatsapp || '';
 
     const icons = s.gameIcons || {};
     el('game-icon-all').value = icons.all || '';
@@ -2205,14 +2380,14 @@ window.saveAdminSettings = function () {
         eventBarText: el('admin-event-bar-input').value.trim(),
         logoUrl: el('admin-logo-input').value.trim(),
         aboutText: el('admin-about-text').value.trim(),
+        whatsappChannelUrl: el('admin-whatsapp-channel-url').value.trim(),
         whatsappNoticeText: el('admin-whatsapp-notice').value.trim(),
         earnInstructions: el('admin-earn-instructions').value.trim(),
         socials: {
             youtube: el('social-yt').value.trim(),
             tiktok: el('social-tik').value.trim(),
             instagram: el('social-ig').value.trim(),
-            twitch: el('social-twi').value.trim(),
-            whatsapp: el('social-wa').value.trim()
+            twitch: el('social-twi').value.trim()
         },
         gameIcons: {
             all: el('game-icon-all').value.trim(),
@@ -2421,7 +2596,22 @@ window.openUserDetails = function (userKey) {
         <div><strong>الدولة:</strong> ${esc(user.country || 'غير محدد')}</div>
         <div><strong>تاريخ الانضمام:</strong> ${esc(user.joinedAt || 'غير متوفر')}</div>
         <div><strong>عدد الإحالات:</strong> ${user.referralCount || 0}</div>
+        <div><strong>المهام المكتملة:</strong> ${Object.keys(user.completedMissions || {}).length} مهمة</div>
     `;
+
+    // Render user earnings activity log inside admin user modal
+    const logContainer = el('ud-activity-log');
+    const earnings = user.earningsHistory || [];
+    if (earnings.length === 0) {
+        logContainer.innerHTML = `<span class="text-gray-400">لا توجد عمليات تحصيل مسجلة.</span>`;
+    } else {
+        logContainer.innerHTML = earnings.slice().reverse().map(e => `
+            <div class="flex justify-between items-center border-b border-gray-800 pb-1">
+                <span>✅ ${esc(e.source)}</span>
+                <span class="text-supercellGold font-bold">+${e.reward} XP (${esc(e.timestamp)})</span>
+            </div>
+        `).join('');
+    }
 
     el('custom-points-modal').classList.remove('hidden');
 };
@@ -2437,7 +2627,21 @@ window.applyCustomPoints = async function (multiplier) {
     }
     const delta = val * multiplier;
     try {
-        await runTransaction(ref(db, 'users/' + userKey + '/xp'), (cur) => Math.max((cur || 0) + delta, 0));
+        await runTransaction(ref(db, 'users/' + userKey), (cur) => {
+            if (!cur) return cur;
+            cur.xp = Math.max((cur.xp || 0) + delta, 0);
+            if (delta > 0) {
+                cur.earningsHistory = cur.earningsHistory || [];
+                const nowDt = new Date();
+                const timeStr = `${nowDt.getFullYear()}-${String(nowDt.getMonth() + 1).padStart(2, '0')}-${String(nowDt.getDate()).padStart(2, '0')} ${String(nowDt.getHours()).padStart(2, '0')}:${String(nowDt.getMinutes()).padStart(2, '0')}`;
+                cur.earningsHistory.push({
+                    source: 'إضافة يدوية بواسطة المشرف (Admin)',
+                    reward: delta,
+                    timestamp: timeStr
+                });
+            }
+            return cur;
+        });
         closeCustomPointsModal();
         showToast('تم تحديث نقاط المتابع بنجاح!');
         renderAdminUsers();
