@@ -1484,4 +1484,2264 @@ window.toggleAbout = function () {
     const box = el('ws-about');
     const open = box.classList.toggle('open');
     el('ws-more-icon').style.transform = open ? 'rotate(180deg)' : '';
-    if (open) setTimeout(() => box.scrollIntoView({
+    if (open) setTimeout(() => box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
+};
+
+window.renderAbout = function () {
+    const t = (state.settings.aboutText || '').trim();
+    el('ws-about-text').innerText = t !== '' ? t : DEFAULT_ABOUT;
+};
+
+(function buildSparks() {
+    const bg = el('ws-bg');
+    if (!bg) return;
+    const colors = ['#FFD700', '#00E5FF', '#B388FF'];
+    for (let i = 0; i < 14; i++) {
+        const s = document.createElement('span');
+        s.className = 'ws-spark';
+        const size = 2 + Math.random() * 3;
+        const c = colors[i % colors.length];
+        s.style.cssText = `left:${Math.random() * 98}%;width:${size}px;height:${size}px;background:${c};box-shadow:0 0 ${size * 2}px ${c};animation-duration:${10 + Math.random() * 10}s;animation-delay:${-Math.random() * 18}s;`;
+        bg.appendChild(s);
+    }
+})();
+
+function initFirebaseSync() {
+    onValue(ref(db, '.info/serverTimeOffset'), (snap) => {
+        serverOffset = Number(snap.val()) || 0;
+        updateDailyBtnState();
+    });
+
+    onValue(ref(db, 'settings'), (snapshot) => {
+        const val = snapshot.val();
+        if (val) state.settings = { ...state.settings, ...val };
+        renderAnnouncement();
+        renderWeeklyEvent();
+        renderEventBar();
+        renderHeaderLogo();
+        renderFooterSocials();
+        renderEarnInstructions();
+        renderAbout();
+        renderStore();
+        renderProSection();
+        renderUserProfile();
+        checkMaintenanceStatus();
+        if (isAdminUser()) {
+            populateAdminSettingsForm();
+            renderAdminProTab();
+        }
+    });
+
+    onValue(ref(db, 'products'), (snapshot) => {
+        state.products = snapshot.exists() ? Object.values(snapshot.val()) : [];
+        renderStore();
+        if (!el('tab-admin').classList.contains('hidden')) renderAdminProducts();
+    });
+
+    onValue(ref(db, 'missions'), (snapshot) => {
+        state.missions = snapshot.exists() ? Object.values(snapshot.val()) : [];
+        renderMissions();
+        if (!el('tab-admin').classList.contains('hidden')) renderAdminMissions();
+    });
+
+    onValue(ref(db, 'notifications'), (snapshot) => {
+        state.notifications = snapshot.exists() ? Object.values(snapshot.val()).sort((a, b) => b.timestamp - a.timestamp) : [];
+        updateNotificationBadge();
+    });
+
+    onValue(ref(db, 'proRequests'), (snapshot) => {
+        state.proRequests = snapshot.exists() ? snapshot.val() : {};
+        if (isAdminUser() && !el('tab-admin').classList.contains('hidden')) renderAdminProTab();
+    });
+
+    onValue(ref(db, 'proCodes'), (snapshot) => {
+        state.proCodes = snapshot.exists() ? snapshot.val() : {};
+        if (isAdminUser() && !el('tab-admin').classList.contains('hidden')) renderAdminProTab();
+    });
+
+    onValue(ref(db, 'users'), (snapshot) => {
+        if (snapshot.exists()) {
+            state.usersMap = snapshot.val();
+            if (state.currentUser) {
+                const updatedMe = Object.values(state.usersMap).find(u => u && u.email && u.email.toLowerCase() === state.currentUser.email.toLowerCase());
+                if (updatedMe) {
+                    const oldXp = state.currentUser.xp;
+                    state.currentUser = updatedMe;
+                    if (oldXp !== updatedMe.xp) showToast(`تم تحديث رصيدك إلى 💎 ${updatedMe.xp || 0} XP`);
+                    renderUserProfile();
+                    renderHistory();
+                    renderEarningsHistory();
+                    renderMissions();
+                    renderProSection();
+                }
+            }
+        } else {
+            state.usersMap = {};
+        }
+        usersLoaded = true;
+        restoreSession();
+        updateNotificationBadge();
+        refreshLeaderboardIfOpen();
+        checkMaintenanceStatus();
+        applyAdminTabVisibility();
+        if (isAdminUser() && !el('tab-admin').classList.contains('hidden')) {
+            renderAdminUsers();
+        }
+    });
+
+    onValue(ref(db, 'history'), (snapshot) => {
+        const val = snapshot.val();
+        state.history = val ? Object.values(val) : [];
+        renderHistory();
+        if (isAdminUser() && !el('tab-admin').classList.contains('hidden')) renderAdminAuditLog();
+    });
+}
+
+function checkMaintenanceStatus() {
+    const maintenanceModal = el('maintenance-modal');
+    if (!maintenanceModal) return;
+    const isMaintenance = !!state.settings.maintenanceMode;
+    const admin = isAdminUser();
+    if (isMaintenance && !admin) {
+        maintenanceModal.classList.remove('hidden');
+    } else {
+        maintenanceModal.classList.add('hidden');
+    }
+}
+
+window.checkAdminAccessFromMaintenance = function () {
+    openLoginModal();
+};
+
+window.showToast = function (message, type = 'success') {
+    const container = el('toast-container');
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? 'bg-emerald-600 border-emerald-400' : 'bg-red-600 border-red-400';
+    toast.className = `pointer-events-auto ${bgColor} text-white px-4 py-2.5 rounded-xl border-2 shadow-xl flex items-center justify-between gap-3 text-xs font-bold`;
+    toast.style.animation = 'scaleIn 0.2s ease-out';
+    toast.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid ${type === 'success' ? 'fa-circle-check text-supercellGold' : 'fa-triangle-exclamation'} text-sm"></i><span>${esc(message)}</span></div>`;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+};
+
+window.launchConfetti = function () {
+    const colors = ['#FFD700', '#00E5FF', '#FF5252', '#B388FF', '#69F0AE'];
+    for (let i = 0; i < 36; i++) {
+        const d = document.createElement('div');
+        d.className = 'confetti-piece';
+        d.style.left = (Math.random() * 100) + 'vw';
+        d.style.background = colors[i % colors.length];
+        d.style.animationDelay = (Math.random() * 0.4) + 's';
+        d.style.animationDuration = (1.4 + Math.random() * 1.2) + 's';
+        document.body.appendChild(d);
+        setTimeout(() => d.remove(), 3500);
+    }
+};
+
+document.addEventListener('pointerdown', (e) => {
+    const b = e.target.closest('.btn-gold, .btn-blue, .btn-red');
+    if (!b || b.disabled) return;
+    const r = b.getBoundingClientRect();
+    const s = Math.max(r.width, r.height) * 2;
+    const d = document.createElement('span');
+    d.className = 'ripple-dot';
+    d.style.cssText = `width:${s}px;height:${s}px;left:${e.clientX - r.left - s / 2}px;top:${e.clientY - r.top - s / 2}px`;
+    b.appendChild(d);
+    setTimeout(() => d.remove(), 650);
+});
+
+window.renderAnnouncement = function () {
+    const badgeEl = el('announcement-badge');
+    const badgeContainer = el('announcement-badge-container');
+    const badgeText = state.settings.badge ? state.settings.badge.trim() : '';
+    if (badgeText !== '') {
+        badgeContainer.style.display = 'inline-block';
+        badgeEl.innerText = badgeText;
+    } else {
+        badgeContainer.style.display = 'none';
+    }
+
+    const textEl = el('announcement-text');
+    textEl.innerText = state.settings.announcement;
+    const isMarquee = state.settings.marqueeEnabled !== false;
+    textEl.className = isMarquee ? 'text-xs font-bold animate-marquee text-black' : 'text-xs font-bold text-black text-center w-full block truncate';
+};
+
+window.renderWeeklyEvent = function () {
+    const container = el('weekly-event-container');
+    const text = state.settings.weeklyText ? state.settings.weeklyText.trim() : '';
+    const btnText = state.settings.weeklyBtnText ? state.settings.weeklyBtnText.trim() : 'فتح الرابط';
+    const btnUrl = state.settings.weeklyBtnUrl ? state.settings.weeklyBtnUrl.trim() : '#';
+    if (text !== '') {
+        el('weekly-event-text').innerText = text;
+        el('weekly-event-btn').innerText = btnText;
+        el('weekly-event-btn').href = safeUrl(btnUrl);
+        container.classList.remove('hidden');
+    } else {
+        container.classList.add('hidden');
+    }
+};
+
+window.renderEventBar = function () {
+    const container = el('event-bar-container');
+    const eventText = state.settings.eventBarText ? state.settings.eventBarText.trim() : '';
+    if (eventText !== '') {
+        el('event-bar-text').innerText = eventText;
+        container.classList.remove('hidden');
+    } else {
+        container.classList.add('hidden');
+    }
+};
+
+window.renderHeaderLogo = function () {
+    const url = (state.settings.logoUrl || '').trim();
+    const box = el('ws-logo');
+    if (!box) return;
+    if (url !== '') {
+        box.innerHTML = `<img src="${esc(url)}" alt="SAVO XP" class="h-36 md:h-44 w-auto object-contain" onerror="this.onerror=null; this.style.display='none';">`;
+    } else {
+        box.innerHTML = `<span class="font-black italic tracking-tighter text-supercellGold game-badge text-4xl md:text-5xl">SAVO XP</span>`;
+    }
+};
+
+window.renderFooterSocials = function () {
+    const socials = state.settings.socials || {};
+    const waUrl = state.settings.whatsappChannelUrl || 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L';
+    const map = { yt: socials.youtube, tik: socials.tiktok, ig: socials.instagram, twi: socials.twitch };
+    Object.entries(map).forEach(([key, raw]) => {
+        const url = safeUrl(raw);
+        const foot = el('social-link-' + key);
+        if (foot) foot.href = url;
+        const ws = el('ws-social-' + key);
+        if (ws) {
+            ws.href = url;
+            ws.classList.toggle('hidden', url === '#');
+        }
+    });
+    const waSafe = safeUrl(waUrl);
+    const footWa = el('social-link-wa');
+    if (footWa) footWa.href = waSafe;
+    const wsWa = el('ws-social-wa');
+    if (wsWa) { wsWa.href = waSafe; wsWa.classList.remove('hidden'); }
+    el('footer-whatsapp-link').href = waSafe;
+    el('footer-whatsapp-text').innerText = state.settings.whatsappNoticeText || 'تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية';
+};
+
+window.renderEarnInstructions = function () {
+    const box = el('earn-instructions-content');
+    if (box) {
+        const instructions = state.settings.earnInstructions || '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• الهدايا والمسابقات أثناء البث المباشر.';
+        box.innerHTML = instructions.split('\n').map(line => line.trim() ? `<div><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> ${esc(line.replace(/^[•\-\*]\s*/, ''))}</div>` : '').join('');
+    }
+};
+
+window.renderUserProfile = function () {
+    const xpDisplay = el('header-xp-balance');
+    const avatarBtn = el('header-avatar-btn');
+    const userNameEl = el('header-user-name');
+    const dailyBtn = el('header-daily-btn');
+    const proBadge = el('header-pro-badge');
+    const menuProPill = el('menu-pro-pill');
+
+    if (state.currentUser) {
+        dailyBtn.classList.remove('hidden');
+        avatarBtn.classList.remove('hidden');
+        if (userNameEl) {
+            userNameEl.innerText = state.currentUser.name || '';
+            userNameEl.classList.remove('hidden');
+        }
+        el('menu-name').innerText = state.currentUser.name || '';
+        el('menu-tag').innerText = state.currentUser.tag || '';
+        xpDisplay.innerText = state.currentUser.xp || 0;
+        const isPro = hasProAccess(state.currentUser);
+        if (proBadge) { proBadge.classList.toggle('hidden', !isPro); proBadge.classList.toggle('flex', isPro); }
+        if (menuProPill) menuProPill.classList.toggle('hidden', !isPro);
+        updateDailyBtnState();
+        if (state.currentUser.avatar) {
+            avatarBtn.innerHTML = `<img src="${esc(state.currentUser.avatar)}" alt="" class="w-full h-full object-cover" onerror="this.outerHTML='<i class=&quot;fa-solid fa-crown&quot;></i>'">`;
+        } else {
+            avatarBtn.innerHTML = `<i class="fa-solid fa-crown"></i>`;
+        }
+    } else {
+        dailyBtn.classList.add('hidden');
+        avatarBtn.classList.add('hidden');
+        if (userNameEl) userNameEl.classList.add('hidden');
+        if (proBadge) { proBadge.classList.add('hidden'); proBadge.classList.remove('flex'); }
+        xpDisplay.innerText = '0';
+        closeUserMenu();
+    }
+    applyAdminTabVisibility();
+    syncWelcomeScreen();
+};
+
+window.toggleUserMenu = function (e) {
+    if (e) e.stopPropagation();
+    if (!state.currentUser) return;
+    el('user-menu-overlay').classList.toggle('hidden');
+};
+window.closeUserMenu = function () { el('user-menu-overlay').classList.add('hidden'); };
+
+window.menuAction = function (action) {
+    closeUserMenu();
+    if (action === 'pro') switchTab('pro');
+    else if (action === 'edit') openEditProfileModal();
+    else if (action === 'referral') openReferralModal();
+    else if (action === 'promo') openPromoModal();
+    else if (action === 'mission') switchTab('missions');
+    else if (action === 'install') installApp();
+    else if (action === 'logout') logoutUser();
+};
+
+window.updateNotificationBadge = function () {
+    const dot = el('notif-badge-dot');
+    if (!state.currentUser) { dot.classList.add('hidden'); return; }
+    const lastRead = state.currentUser.lastReadNotification || 0;
+    const unreadCount = state.notifications.filter(n => n.timestamp > lastRead).length;
+    if (unreadCount > 0) {
+        dot.innerText = unreadCount > 9 ? '9+' : unreadCount;
+        dot.classList.remove('hidden');
+    } else {
+        dot.classList.add('hidden');
+    }
+};
+
+window.openNotificationsModal = function () {
+    if (!state.currentUser) {
+        showToast('يرجى تسجيل الدخول أولاً لعرض الإشعارات.', 'error');
+        openLoginModal();
+        return;
+    }
+    const listContainer = el('notifications-list');
+    listContainer.innerHTML = '';
+
+    if (state.notifications.length === 0) {
+        listContainer.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لا توجد إشعارات أو رسائل جديدة حالياً.</div>`;
+    } else {
+        state.notifications.forEach(notif => {
+            const dateStr = new Date(notif.timestamp).toLocaleString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const item = document.createElement('div');
+            item.className = 'bg-black/50 border border-supercellCardBorder p-3 rounded-xl flex flex-col gap-1.5';
+            item.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <h5 class="font-black text-xs text-supercellGold flex items-center gap-1.5"><i class="fa-solid fa-bullhorn text-supercellBlue"></i> ${esc(notif.title)}</h5>
+                    <span class="text-[9px] text-gray-400">${esc(dateStr)}</span>
+                </div>
+                <p class="text-xs text-gray-200 leading-relaxed">${esc(notif.message)}</p>`;
+            listContainer.appendChild(item);
+        });
+    }
+
+    const nowTime = serverNow();
+    state.currentUser.lastReadNotification = nowTime;
+    update(ref(db, 'users/' + dbKeyOf(state.currentUser.email)), { lastReadNotification: nowTime });
+    updateNotificationBadge();
+    el('notifications-modal').classList.remove('hidden');
+};
+
+window.closeNotificationsModal = () => el('notifications-modal').classList.add('hidden');
+
+window.sendGlobalNotification = function () {
+    const title = el('admin-notif-title').value.trim();
+    const message = el('admin-notif-text').value.trim();
+    if (!title || !message) {
+        showToast('يرجى إدخال عنوان ونص الإشعار أولاً.', 'error');
+        return;
+    }
+    const notifId = 'notif_' + Date.now();
+    set(ref(db, 'notifications/' + notifId), { id: notifId, title, message, timestamp: serverNow() }).then(() => {
+        el('admin-notif-title').value = '';
+        el('admin-notif-text').value = '';
+        showToast('تم إرسال الإشعار بنجاح لجميع المتابعين!');
+    });
+};
+
+function dailyRemaining() {
+    const last = (state.currentUser && state.currentUser.lastDailyClaim) || 0;
+    const now = serverNow();
+    if (last > now + 60000) return 0;
+    return Math.min(Math.max(DAILY_COOLDOWN - (now - last), 0), DAILY_COOLDOWN);
+}
+
+function formatRemaining(ms) {
+    const total = Math.ceil(ms / 1000);
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+function updateDailyBtnState() {
+    if (!state.currentUser) return;
+    const dailyBtn = el('header-daily-btn');
+    if (!dailyBtn) return;
+    const base = 'btn-gold px-2.5 py-1.5 rounded-lg text-black font-black text-[11px] whitespace-nowrap flex items-center gap-1';
+    dailyBtn.className = dailyRemaining() > 0 ? base + ' opacity-60' : base;
+}
+
+function refreshDailyModal() {
+    const rem = dailyRemaining();
+    const timerText = el('daily-timer-text');
+    const claimBtn = el('daily-claim-btn');
+    if (rem > 0) {
+        timerText.innerText = `المتبقي على جوهرتك القادمة: ${formatRemaining(rem)}`;
+        claimBtn.disabled = true;
+        claimBtn.className = 'btn-red py-2.5 rounded text-white font-black text-xs opacity-50 cursor-not-allowed';
+    } else {
+        timerText.innerText = 'صلِّ على النبي ﷺ، جوهرتك المجانية جاهزة الآن.';
+        claimBtn.disabled = false;
+        claimBtn.className = 'btn-gold py-2.5 rounded text-black font-black text-xs';
+    }
+}
+
+window.openDailyJewelModal = function () {
+    if (!state.currentUser) {
+        showToast('يرجى تسجيل الدخول أولاً للمطالبة بالجائزة اليومية.', 'error');
+        openLoginModal();
+        return;
+    }
+    refreshDailyModal();
+    el('daily-jewel-modal').classList.remove('hidden');
+};
+
+window.closeDailyJewelModal = () => el('daily-jewel-modal').classList.add('hidden');
+
+let claimingDaily = false;
+window.claimDailyJewel = async function () {
+    if (!state.currentUser || claimingDaily) return;
+    if (dailyRemaining() > 0) {
+        showToast('لقد استلمت جوهرتك اليومية مسبقاً، انتظر حتى انقضاء 24 ساعة.', 'error');
+        refreshDailyModal();
+        return;
+    }
+    claimingDaily = true;
+    const dbKey = dbKeyOf(state.currentUser.email);
+    let outcome = 'nodata';
+    try {
+        const res = await runTransaction(ref(db, 'users/' + dbKey), (cur) => {
+            if (cur === null) { outcome = 'nodata'; return cur; }
+            const last = cur.lastDailyClaim || 0;
+            const now = serverNow();
+            if (last <= now + 60000 && (now - last) < DAILY_COOLDOWN) { outcome = 'cooldown'; return; }
+            cur.xp = (cur.xp || 0) + 1;
+            cur.lastDailyClaim = now;
+
+            cur.earningsHistory = cur.earningsHistory || [];
+            const nowDt = new Date();
+            const timeStr = `${nowDt.getFullYear()}-${String(nowDt.getMonth() + 1).padStart(2, '0')}-${String(nowDt.getDate()).padStart(2, '0')} ${String(nowDt.getHours()).padStart(2, '0')}:${String(nowDt.getMinutes()).padStart(2, '0')}`;
+            cur.earningsHistory.push({
+                source: 'الجوهرة اليومية المجانية',
+                reward: 1,
+                timestamp: timeStr
+            });
+
+            outcome = 'ok';
+            return cur;
+        });
+        if (res.committed && outcome === 'ok') {
+            closeDailyJewelModal();
+            launchConfetti();
+            showToast('تمت إضافة جوهرة واحدة إلى رصيدك 💎 صلِّ على النبي ﷺ');
+        } else if (outcome === 'cooldown') {
+            showToast('لقد استلمت جوهرتك اليومية مسبقاً، انتظر حتى انقضاء 24 ساعة.', 'error');
+            refreshDailyModal();
+        } else {
+            showToast('تعذر إتمام العملية، حاول مرة أخرى.', 'error');
+        }
+    } catch (e) {
+        showToast('تعذر إتمام العملية، تحقق من الاتصال وحاول مرة أخرى.', 'error');
+    } finally {
+        claimingDaily = false;
+    }
+};
+
+/* --- MISSIONS (Admin kept intact, User tab shows Coming Soon) --- */
+window.renderMissions = function () {
+    const badgeDot = el('mission-badge-dot');
+    if (badgeDot) badgeDot.classList.add('hidden');
+};
+
+window.openMissionModal = function (missionId = null) {
+    el('edit-mission-id').value = '';
+    el('mission-title').value = '';
+    el('mission-desc').value = '';
+    el('mission-url').value = '';
+    el('mission-reward').value = '3';
+
+    if (missionId) {
+        const m = state.missions.find(item => item.id === missionId);
+        if (m) {
+            el('mission-modal-title').innerText = 'تعديل المهمة';
+            el('edit-mission-id').value = m.id;
+            el('mission-title').value = m.title || '';
+            el('mission-desc').value = m.desc || '';
+            el('mission-url').value = m.url || '';
+            el('mission-reward').value = m.reward || 3;
+        }
+    } else {
+        el('mission-modal-title').innerText = 'إضافة مهمة جديدة';
+    }
+    el('mission-modal').classList.remove('hidden');
+};
+
+window.closeMissionModal = () => el('mission-modal').classList.add('hidden');
+
+window.saveMission = function () {
+    const editId = el('edit-mission-id').value.trim();
+    const title = el('mission-title').value.trim();
+    const desc = el('mission-desc').value.trim();
+    const url = el('mission-url').value.trim();
+    const reward = Number(el('mission-reward').value) || 3;
+
+    if (!title || !url) {
+        showToast('عنوان المهمة والرابط حقول إجبارية.', 'error');
+        return;
+    }
+
+    const missionId = editId || ('mission_' + Date.now());
+    const missionObj = { id: missionId, title, desc, url, reward };
+
+    set(ref(db, 'missions/' + missionId), missionObj).then(() => {
+        closeMissionModal();
+        showToast('تم حفظ المهمة بنجاح!');
+    }).catch(() => showToast('حدث خطأ أثناء الحفظ.', 'error'));
+};
+
+window.deleteMission = function (missionId) {
+    if (!confirm('هل أنت متأكد من حذف هذه المهمة؟')) return;
+    remove(ref(db, 'missions/' + missionId)).then(() => showToast('تم حذف المهمة بنجاح.'));
+};
+
+window.renderAdminMissions = function () {
+    const container = el('admin-missions-list');
+    if (!container) return;
+    container.innerHTML = '';
+    if (state.missions.length === 0) {
+        container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs">لا توجد مهام مسجلة حالياً.</div>`;
+        return;
+    }
+
+    const usersArr = Object.values(state.usersMap || {});
+
+    state.missions.forEach(m => {
+        let completedCount = 0;
+        usersArr.forEach(u => {
+            if (u && u.completedMissions && u.completedMissions[m.id]) completedCount++;
+        });
+
+        const item = document.createElement('div');
+        item.className = 'bg-black/50 border border-supercellCardBorder p-2.5 rounded flex items-center justify-between gap-2';
+        item.innerHTML = `
+            <div class="overflow-hidden">
+                <h5 class="font-black text-xs text-white truncate">${esc(m.title)}</h5>
+                <span class="text-[10px] text-supercellBlue font-bold">💎 +${m.reward || 3} جواهر | أكملها (${completedCount} متابع) | <a href="${esc(safeUrl(m.url))}" target="_blank" rel="noopener" class="underline">رابط المهمة</a></span>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+                <button onclick="openMissionModal('${esc(m.id)}')" class="btn-blue px-2 py-1 rounded text-black font-bold text-[10px]">تعديل</button>
+                <button onclick="deleteMission('${esc(m.id)}')" class="btn-red px-2 py-1 rounded text-white font-bold text-[10px]">حذف</button>
+            </div>`;
+        container.appendChild(item);
+    });
+};
+
+/* --- CLASH ROYALE WORKER & PRO STATS (RoyaleAPI / Triage Style + In-Game Deck) --- */
+function normalizeTag(raw) {
+    let t = String(raw || '').trim().toUpperCase().replace(/^#/, '');
+    t = t.replace(/O/g, '0');
+    return t;
+}
+
+async function verifyAndFetchCrPlayer(rawTag) {
+    const clean = normalizeTag(rawTag);
+    if (!/^[0289PYLQGRJCUV]{3,14}$/.test(clean)) {
+        return { ok: false, error: 'صيغة تاغ كلاش رويال غير صحيحة. تأكد من إدخال التاغ الحقيقي.' };
+    }
+    try {
+        const res = await fetch(`${CR_WORKER_URL}?tag=${encodeURIComponent(clean)}`);
+        if (!res.ok) {
+            return { ok: false, error: 'لم يتم العثور على لاعب بهذا الهاشتاج في كلاش رويال.' };
+        }
+        const data = await res.json();
+        if (!data || !data.name) {
+            return { ok: false, error: 'تعذر التحقق من وجود الهاشتاج. تأكد من كتابته بشكل صحيح.' };
+        }
+        state.crCache[clean] = { data, fetchedAt: Date.now() };
+        return { ok: true, cleanTag: '#' + clean, data };
+    } catch (e) {
+        return { ok: false, error: 'تعذر الاتصال بخادم التحقق حالياً، حاول مرة أخرى.' };
+    }
+}
+
+window.handleGameSelectionChange = function () {
+    const game = el('g-profile-game').value;
+    const label = el('g-tag-label');
+    const input = el('g-profile-tag');
+    const feedback = el('g-tag-feedback');
+    if (feedback) feedback.classList.add('hidden');
+
+    const map = {
+        cr: { label: 'تاغ كلاش رويال (يتم التحقق منه فعلياً):', ph: '#UYQQ20PJQ' },
+        coc: { label: 'تاغ كلاش أوف كلانس:', ph: '#2PP98V' },
+        hd: { label: 'هاشتاج / معرف مزرعة هاي داي:', ph: '#P8Q2L9' },
+        bs: { label: 'تاغ براول ستارز:', ph: '#98Q2V' }
+    };
+    const cfg = map[game] || map.cr;
+    if (label) label.innerText = cfg.label;
+    if (input) input.placeholder = cfg.ph;
+};
+
+window.renderProSection = function () {
+    const box = el('pro-content');
+    const seasonBadge = el('pro-season-badge');
+    const countdownEl = el('pro-season-countdown');
+    if (!box) return;
+
+    const seasonNum = Number(state.settings.seasonNumber || 1);
+    const timing = getSeasonTimingInfo();
+    if (seasonBadge) seasonBadge.innerText = `السيزون #${seasonNum}`;
+    if (countdownEl) countdownEl.innerText = timing.text;
+
+    if (!state.currentUser) {
+        box.innerHTML = `<div class="panel-card p-6 text-center text-xs text-gray-300">يرجى تسجيل الدخول بحساب جوجل لاستعراض ميزات وبيانات نسخة البرو.</div>`;
+        return;
+    }
+
+    const activePro = hasProAccess(state.currentUser);
+
+    if (!activePro) {
+        box.innerHTML = `
+            <div class="pro-card p-5 flex flex-col gap-4 text-center">
+                <div class="w-14 h-14 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-2xl mx-auto">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <h4 class="font-black text-base text-supercellGold">احصل على SAVO PRO (بأسلوب RoyaleAPI)</h4>
+                    <p class="text-xs text-gray-200 leading-relaxed">
+                        استعرض إحصائيات حسابك في كلاش رويال، الكؤوس، الكلان، البطاقات والتشكيلة بشكلها الحقيقي داخل اللعبة، ونسب الفوز والخسارة؛ اشتراكها <strong>100 ليرة سورية جديدة</strong> عبر شام كاش أو عبر كود PRO لمرة واحدة.
+                    </p>
+                </div>
+                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-3 text-right text-xs flex flex-col gap-1.5">
+                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> عرض الكؤوس، أعلى الكؤوس، المستوى، التبرعات، والكلان</div>
+                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> استعراض تشكيلة القتال (4×2) ومتوسط الإكسير وتطور البطاقات</div>
+                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> حساب نسبة الفوز والخسارة والتاج الثلاثي وسجل آخر المعارك</div>
+                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> صالحة للسيزون الحالي (#${seasonNum}) — ${esc(timing.text)}</div>
+                </div>
+                <button onclick="openProBuyModal()" class="btn-gold w-full py-3 rounded-xl text-black font-black text-sm">
+                    <i class="fa-solid fa-crown ml-1"></i> شراء / تفعيل البرو (100 ليرة جديدة)
+                </button>
+            </div>`;
+        return;
+    }
+
+    const userGame = state.currentUser.game || 'cr';
+    const rawTag = state.currentUser.tag || (isAdminUser() ? DEFAULT_CR_TAG : '');
+    const cleanTag = normalizeTag(rawTag);
+
+    if (!cleanTag) {
+        box.innerHTML = `<div class="panel-card p-4 text-center text-xs text-gray-300">يرجى إضافة التاغ الخاص بك من «تعديل الحساب» لعرض إحصائيات البرو.</div>`;
+        return;
+    }
+
+    if (userGame !== 'cr' && !isAdminUser()) {
+        box.innerHTML = `
+            <div class="pro-card p-4 flex flex-col gap-2.5 text-xs">
+                <div class="flex items-center justify-between border-b border-supercellGold/30 pb-2">
+                    <span class="font-black text-supercellGold"><i class="fa-solid fa-crown ml-1"></i> حساب PRO مفعل</span>
+                    <span class="text-supercellBlue font-bold">${esc(state.currentUser.tag)}</span>
+                </div>
+                <p class="text-gray-200 leading-relaxed">إحصائيات الـ API المباشرة حالياً مفعلة لكلاش رويال، ويمكنك تحديث لعبتك وتاغك من «تعديل الحساب» في أي وقت.</p>
+            </div>`;
+        return;
+    }
+
+    box.innerHTML = `
+        <div class="pro-card p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between border-b border-supercellGold/30 pb-2">
+                <div class="flex items-center gap-2">
+                    <span class="bg-supercellGold text-black font-black text-[10px] px-2 py-0.5 rounded">PRO</span>
+                    <span class="font-black text-xs md:text-sm text-white">تحليل حساب كلاش رويال (${esc('#' + cleanTag)})</span>
+                </div>
+                <button onclick="loadProCrStats('${esc(cleanTag)}', true)" class="text-xs text-supercellBlue hover:underline font-bold">
+                    <i class="fa-solid fa-rotate"></i> تحديث
+                </button>
+            </div>
+            <div id="pro-cr-stats-body" class="py-4 text-center text-xs text-gray-300">
+                <i class="fa-solid fa-spinner fa-spin text-supercellGold text-lg mb-2"></i>
+                <div>جاري جلب بيانات اللاعب من الخادم...</div>
+            </div>
+        </div>`;
+
+    loadProCrStats(cleanTag, false);
+};
+
+window.loadProCrStats = async function (cleanTag, forceRefresh = false) {
+    const body = el('pro-cr-stats-body');
+    if (!body) return;
+
+    let player = null;
+    if (!forceRefresh && state.crCache[cleanTag] && (Date.now() - state.crCache[cleanTag].fetchedAt) < 120000) {
+        player = state.crCache[cleanTag].data;
+    } else {
+        const res = await verifyAndFetchCrPlayer(cleanTag);
+        if (!res.ok) {
+            body.innerHTML = `<div class="text-red-400 text-xs py-3">${esc(res.error)}</div>`;
+            return;
+        }
+        player = res.data;
+    }
+
+    const wins = Number(player.wins || 0);
+    const losses = Number(player.losses || 0);
+    const battleCount = Number(player.battleCount || (wins + losses));
+    const totalWL = wins + losses;
+    const winRate = totalWL > 0 ? ((wins / totalWL) * 100).toFixed(1) : '0.0';
+    const lossRate = totalWL > 0 ? ((losses / totalWL) * 100).toFixed(1) : '0.0';
+    const threeCrowns = Number(player.threeCrownWins || 0);
+    const threeCrownRate = wins > 0 ? ((threeCrowns / wins) * 100).toFixed(1) : '0.0';
+
+    const arenaName = (player.arena && player.arena.name) ? player.arena.name : 'غير محدد';
+    const clanName = (player.clan && player.clan.name) ? player.clan.name : 'بدون كلان';
+    const clanTag = (player.clan && player.clan.tag) ? player.clan.tag : '';
+    const clanRoleMap = { leader: 'قائد الكلان', coLeader: 'نائب القائد', elder: 'عضو مميز', member: 'عضو' };
+    const clanRole = (player.clan && player.clan.role) ? (clanRoleMap[player.clan.role] || player.clan.role) : '';
+
+    const donations = Number(player.donations || 0);
+    const donationsReceived = Number(player.donationsReceived || 0);
+    const totalDonations = Number(player.totalDonations || 0);
+    const challengeMaxWins = Number(player.challengeMaxWins || 0);
+    const challengeCardsWon = Number(player.challengeCardsWon || 0);
+    const warDayWins = Number(player.warDayWins || 0);
+    const favCard = player.currentFavouriteCard ? player.currentFavouriteCard.name : 'غير محدد';
+    const favCardImg = (player.currentFavouriteCard && player.currentFavouriteCard.iconUrls && player.currentFavouriteCard.iconUrls.medium) || '';
+
+    const deck = Array.isArray(player.currentDeck) ? player.currentDeck : [];
+    const avgElixir = deck.length > 0
+        ? (deck.reduce((sum, c) => sum + (Number(c.elixirCost) || 0), 0) / deck.length).toFixed(1)
+        : '-';
+
+    let recentBattlesHtml = '';
+    try {
+        const bRes = await fetch(`${CR_WORKER_URL}?tag=${encodeURIComponent(cleanTag)}&endpoint=battlelog`);
+        if (bRes.ok) {
+            const bData = await bRes.json();
+            if (Array.isArray(bData) && bData.length > 0) {
+                const topBattles = bData.slice(0, 6);
+                recentBattlesHtml = `
+                    <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-3 flex flex-col gap-2 text-right">
+                        <h5 class="font-black text-xs text-supercellGold flex items-center gap-1.5"><i class="fa-solid fa-swords text-supercellBlue"></i> سجل آخر المعارك (Battle Log)</h5>
+                        <div class="flex flex-col gap-2">
+                            ${topBattles.map(m => {
+                                const myTeam = (m.team && m.team[0]) || {};
+                                const oppTeam = (m.opponent && m.opponent[0]) || {};
+                                const myCrowns = myTeam.crowns ?? 0;
+                                const oppCrowns = oppTeam.crowns ?? 0;
+                                const won = myCrowns > oppCrowns;
+                                const draw = myCrowns === oppCrowns;
+                                const oppName = oppTeam.name || 'خصم';
+                                const modeName = (m.gameMode && m.gameMode.name) ? m.gameMode.name : (m.type || 'مباراة');
+                                const oppCards = Array.isArray(oppTeam.cards) ? oppTeam.cards.slice(0, 8) : [];
+                                return `<div class="bg-black/50 p-2.5 rounded-lg border ${won ? 'border-emerald-500/30' : draw ? 'border-gray-500/30' : 'border-red-500/30'} flex flex-col gap-1.5">
+                                    <div class="flex items-center justify-between text-[11px]">
+                                        <span class="truncate font-bold text-white">ضد: ${esc(oppName)} <span class="text-[10px] text-gray-400">(${esc(modeName)})</span></span>
+                                        <span class="font-black px-2 py-0.5 rounded text-[10px] ${won ? 'bg-emerald-500/20 text-emerald-400' : draw ? 'bg-gray-500/20 text-gray-300' : 'bg-red-500/20 text-red-400'}">
+                                            ${won ? 'فوز' : draw ? 'تعادل' : 'خسارة'} (${myCrowns} - ${oppCrowns})
+                                        </span>
+                                    </div>
+                                    ${oppCards.length > 0 ? `
+                                    <div class="flex items-center gap-1 overflow-x-auto pt-0.5">
+                                        <span class="text-[9px] text-gray-400 shrink-0 ml-1">تشكيلة الخصم:</span>
+                                        ${oppCards.map(c => {
+                                            const cImg = (c.iconUrls && c.iconUrls.medium) || '';
+                                            return cImg ? `<img src="${esc(cImg)}" alt="${esc(c.name)}" title="${esc(c.name)}" class="w-6 h-7 object-contain shrink-0">` : '';
+                                        }).join('')}
+                                    </div>` : ''}
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </div>`;
+            }
+        }
+    } catch (e) {}
+
+    body.innerHTML = `
+        <div class="flex flex-col gap-3.5 text-right">
+            <!-- Player Header Card -->
+            <div class="bg-black/50 border border-supercellCardBorder rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-2">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-supercellBlue text-black font-black text-xs px-2 py-0.5 rounded">Lv.${esc(player.expLevel || '-')}</span>
+                        <h4 class="font-black text-base text-white">${esc(player.name)}</h4>
+                        <span class="text-supercellBlue text-xs font-bold" dir="ltr">${esc(player.tag || '#' + cleanTag)}</span>
+                    </div>
+                    <p class="text-[11px] text-gray-300 mt-1">
+                        الكلان: <strong class="text-supercellGold">${esc(clanName)}</strong> ${clanTag ? `<span class="text-gray-400" dir="ltr">(${esc(clanTag)})</span>` : ''} ${clanRole ? `• <span class="text-supercellBlue">${esc(clanRole)}</span>` : ''}
+                    </p>
+                    <p class="text-[11px] text-gray-300">الساحة: <strong class="text-white">${esc(arenaName)}</strong></p>
+                </div>
+                <div class="text-left bg-black/50 border border-supercellGold/40 px-3 py-2 rounded-xl">
+                    <div class="font-black text-lg text-supercellGold">🏆 ${esc(player.trophies || 0)}</div>
+                    <div class="text-[10px] text-gray-300">أعلى كؤوس: <strong class="text-supercellBlue">${esc(player.bestTrophies || 0)}</strong></div>
+                </div>
+            </div>
+
+            <!-- Win/Loss Bar (RoyaleAPI style) -->
+            <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-3 flex flex-col gap-2">
+                <div class="flex items-center justify-between text-xs font-black">
+                    <span class="text-emerald-400">نسبة الفوز: ${winRate}% (${wins})</span>
+                    <span class="text-red-400">نسبة الخسارة: ${lossRate}% (${losses})</span>
+                </div>
+                <div class="w-full h-2.5 bg-red-500/40 rounded-full overflow-hidden flex border border-white/10">
+                    <div class="bg-emerald-500 h-full" style="width: ${winRate}%"></div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 pt-1 text-center">
+                    <div class="bg-black/50 rounded-lg p-2 border border-white/5">
+                        <div class="text-[10px] text-gray-400">إجمالي المعارك</div>
+                        <div class="font-black text-xs text-white">${battleCount.toLocaleString()}</div>
+                    </div>
+                    <div class="bg-black/50 rounded-lg p-2 border border-white/5">
+                        <div class="text-[10px] text-gray-400">فوز 3 تيجان</div>
+                        <div class="font-black text-xs text-supercellGold">${threeCrowns.toLocaleString()} (${threeCrownRate}%)</div>
+                    </div>
+                    <div class="bg-black/50 rounded-lg p-2 border border-white/5">
+                        <div class="text-[10px] text-gray-400">أقصى انتصارات تحدي</div>
+                        <div class="font-black text-xs text-supercellBlue">${challengeMaxWins} فوز</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- In-Game 4x2 Deck Board -->
+            ${deck.length > 0 ? `
+            <div class="cr-deck-board flex flex-col gap-2.5">
+                <div class="flex items-center justify-between border-b border-white/15 pb-2">
+                    <h5 class="font-black text-xs md:text-sm text-supercellGold flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved text-supercellBlue"></i> تشكيلة القتال الحالية
+                    </h5>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-fuchsia-950/80 border border-fuchsia-400/50 text-fuchsia-200 px-2.5 py-0.5 rounded-full text-[11px] font-black">
+                            💧 متوسط الإكسير: ${avgElixir}
+                        </span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 gap-2 pt-1">
+                    ${deck.map((card, idx) => {
+                        const isEvo = idx < 2 && card.iconUrls && card.iconUrls.evolutionMedium;
+                        const imgUrl = isEvo ? card.iconUrls.evolutionMedium : ((card.iconUrls && card.iconUrls.medium) || '');
+                        const displayLevel = (card.level || 1) + (15 - (card.maxLevel || 15));
+                        return `<div class="cr-card-slot ${isEvo ? 'evo-card' : ''}">
+                            ${card.elixirCost ? `<div class="cr-elixir-drop"><span>${esc(card.elixirCost)}</span></div>` : ''}
+                            ${imgUrl
+                                ? `<img src="${esc(imgUrl)}" alt="${esc(card.name)}" class="w-14 h-16 md:w-16 md:h-20 object-contain drop-shadow" loading="lazy">`
+                                : `<div class="w-14 h-16 flex items-center justify-center text-supercellGold"><i class="fa-solid fa-clone text-xl"></i></div>`}
+                            <span class="cr-level-pill">مستوى ${esc(displayLevel)}</span>
+                            <span class="text-[9px] font-bold text-gray-100 truncate w-full text-center mt-1 px-0.5">${esc(card.name)}</span>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>` : ''}
+
+            <!-- Extra Stats Grid (Donations, Challenges, Fav Card) -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
+                    <div class="text-[10px] text-gray-400">إجمالي التبرعات</div>
+                    <div class="font-black text-xs text-emerald-400 mt-0.5">${totalDonations.toLocaleString()}</div>
+                    <div class="text-[9px] text-gray-400">الأسبوع: ${donations} / استلام: ${donationsReceived}</div>
+                </div>
+                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
+                    <div class="text-[10px] text-gray-400">بطاقات التحديات</div>
+                    <div class="font-black text-xs text-supercellBlue mt-0.5">${challengeCardsWon.toLocaleString()}</div>
+                </div>
+                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
+                    <div class="text-[10px] text-gray-400">انتصارات الحرب</div>
+                    <div class="font-black text-xs text-supercellGold mt-0.5">${warDayWins}</div>
+                </div>
+                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5 flex flex-col items-center justify-center">
+                    <div class="text-[10px] text-gray-400">البطاقة المفضلة</div>
+                    <div class="flex items-center gap-1 mt-0.5">
+                        ${favCardImg ? `<img src="${esc(favCardImg)}" class="w-5 h-6 object-contain">` : ''}
+                        <span class="font-black text-[10px] text-white truncate max-w-[80px]">${esc(favCard)}</span>
+                    </div>
+                </div>
+            </div>
+
+            ${recentBattlesHtml}
+        </div>`;
+};
+
+/* --- SHAMCASH PRO PURCHASE (QR + Transaction ID) + PRO CODES + SEASON DATES --- */
+window.openProBuyModal = function () {
+    if (!state.currentUser) {
+        openLoginModal();
+        return;
+    }
+    el('shamcash-display-code').innerText = state.settings.shamCashCode || 'SAVO-SHAMCASH-100';
+    el('shamcash-display-note').innerText = state.settings.shamCashNote || 'حوّل 100 ليرة سورية جديدة عبر شام كاش ثم أدخل رقم العملية لتفعيل نسخة البرو للسيزون الحالي.';
+
+    const qrUrl = (state.settings.shamCashQrUrl || '').trim();
+    const qrBox = el('shamcash-qr-box');
+    const qrImg = el('shamcash-qr-img');
+    if (qrUrl && qrBox && qrImg) {
+        qrImg.src = qrUrl;
+        qrBox.classList.remove('hidden');
+        qrBox.classList.add('flex');
+    } else if (qrBox) {
+        qrBox.classList.add('hidden');
+        qrBox.classList.remove('flex');
+    }
+
+    el('pro-transaction-id').value = '';
+    el('pro-redeem-code-input').value = '';
+    el('pro-buy-modal').classList.remove('hidden');
+};
+
+window.closeProBuyModal = () => el('pro-buy-modal').classList.add('hidden');
+
+window.copyShamCashCode = function () {
+    const code = el('shamcash-display-code').innerText;
+    navigator.clipboard.writeText(code).then(() => showToast('تم نسخ كود الشام كاش!')).catch(() => {});
+};
+
+window.submitShamCashProRequest = async function () {
+    if (!state.currentUser) return;
+    const txId = el('pro-transaction-id').value.trim();
+    if (!txId || txId.length < 3) {
+        showToast('يرجى إدخال رقم عملية التحويل بشكل صحيح.', 'error');
+        return;
+    }
+
+    const reqId = 'proreq_' + Date.now();
+    const now = new Date();
+    const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const reqObj = {
+        id: reqId,
+        userKey: dbKeyOf(state.currentUser.email),
+        userEmail: state.currentUser.email,
+        userName: state.currentUser.name,
+        userTag: state.currentUser.tag || '',
+        amount: '100 ليرة سورية جديدة',
+        transactionId: txId,
+        seasonNumber: Number(state.settings.seasonNumber || 1),
+        status: 'pending',
+        timestamp: timeStr
+    };
+
+    try {
+        await set(ref(db, 'proRequests/' + reqId), reqObj);
+        closeProBuyModal();
+        showToast('تم إرسال رقم العملية بنجاح، بانتظار مراجعة الأدمن.');
+    } catch (err) {
+        showToast('تعذر إرسال الطلب، حاول مرة أخرى.', 'error');
+    }
+};
+
+window.redeemProCode = async function () {
+    if (!state.currentUser) return;
+    const rawCode = el('pro-redeem-code-input').value.trim().toUpperCase();
+    if (!rawCode) {
+        showToast('يرجى إدخال كود البرو.', 'error');
+        return;
+    }
+    const dbKey = dbKeyOf(state.currentUser.email);
+    const currentSeason = Number(state.settings.seasonNumber || 1);
+    let outcome = 'invalid';
+
+    try {
+        const res = await runTransaction(ref(db, 'proCodes/' + rawCode), (cur) => {
+            if (!cur || cur.used) { outcome = 'invalid'; return cur; }
+            cur.used = true;
+            cur.usedBy = state.currentUser.email;
+            cur.usedAt = serverNow();
+            outcome = 'ok';
+            return cur;
+        });
+
+        if (res.committed && outcome === 'ok') {
+            await update(ref(db, 'users/' + dbKey), {
+                proSeason: currentSeason,
+                proExpiresAt: getSeasonEndTimestamp()
+            });
+            closeProBuyModal();
+            launchConfetti();
+            showToast('تم تفعيل نسخة البرو بنجاح! 👑');
+            renderProSection();
+            renderUserProfile();
+        } else {
+            showToast('الكود غير صحيح أو تم استخدامه مسبقاً.', 'error');
+        }
+    } catch (e) {
+        showToast('حدث خطأ أثناء تفعيل الكود.', 'error');
+    }
+};
+
+window.saveProSettings = function () {
+    update(ref(db, 'settings'), {
+        shamCashCode: el('admin-shamcash-code').value.trim() || 'SAVO-SHAMCASH-100',
+        shamCashQrUrl: el('admin-shamcash-qr').value.trim(),
+        shamCashNote: el('admin-shamcash-note').value.trim()
+    }).then(() => showToast('تم حفظ إعدادات الشام كاش والباركود بنجاح!'));
+};
+
+window.saveSeasonDates = function () {
+    const num = Number(el('admin-season-number-input').value) || 1;
+    const start = el('admin-season-start').value;
+    const end = el('admin-season-end').value;
+    if (start && end && new Date(end) < new Date(start)) {
+        showToast('تاريخ نهاية السيزون يجب أن يكون بعد تاريخ البداية.', 'error');
+        return;
+    }
+    update(ref(db, 'settings'), {
+        seasonNumber: num,
+        seasonStartDate: start,
+        seasonEndDate: end
+    }).then(() => {
+        showToast('تم حفظ تواريخ ورقم السيزون بنجاح!');
+        renderAdminProTab();
+    });
+};
+
+window.advanceSeasonOnly = function () {
+    const nextSeason = Number(state.settings.seasonNumber || 1) + 1;
+    update(ref(db, 'settings'), { seasonNumber: nextSeason }).then(() => {
+        showToast(`تم الانتقال إلى السيزون #${nextSeason} (بدون منح تلقائي للبرو).`);
+        renderAdminProTab();
+    });
+};
+
+window.generateSingleProCode = function () {
+    const custom = el('admin-pro-code-input').value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '');
+    const code = custom || ('PRO-' + Math.random().toString(36).slice(2, 8).toUpperCase());
+    set(ref(db, 'proCodes/' + code), {
+        code,
+        used: false,
+        singleUse: true,
+        createdAt: serverNow()
+    }).then(() => {
+        el('admin-pro-code-input').value = '';
+        showToast(`تم إنشاء كود PRO لمرة واحدة: ${code}`);
+    });
+};
+
+window.deleteProCode = function (code) {
+    remove(ref(db, 'proCodes/' + code)).then(() => showToast('تم حذف الكود.'));
+};
+
+window.approveProRequest = async function (reqId) {
+    const reqItem = state.proRequests[reqId];
+    if (!reqItem) return;
+    const currentSeason = Number(state.settings.seasonNumber || 1);
+    const uKey = reqItem.userKey || dbKeyOf(reqItem.userEmail);
+    try {
+        await update(ref(db, 'users/' + uKey), {
+            proSeason: currentSeason,
+            proExpiresAt: getSeasonEndTimestamp()
+        });
+        await update(ref(db, 'proRequests/' + reqId), { status: 'approved' });
+        showToast(`تم قبول الطلب وتفعيل البرو لحساب ${reqItem.userName}!`);
+    } catch (e) {
+        showToast('حدث خطأ أثناء التفعيل.', 'error');
+    }
+};
+
+window.rejectProRequest = async function (reqId) {
+    const reqItem = state.proRequests[reqId];
+    if (!reqItem) return;
+    await update(ref(db, 'proRequests/' + reqId), { status: 'rejected' });
+    showToast('تم رفض الطلب.');
+};
+
+window.renderAdminProTab = function () {
+    if (!isAdminUser()) return;
+    el('admin-shamcash-code').value = state.settings.shamCashCode || '';
+    el('admin-shamcash-qr').value = state.settings.shamCashQrUrl || '';
+    el('admin-shamcash-note').value = state.settings.shamCashNote || '';
+    el('admin-season-number-input').value = Number(state.settings.seasonNumber || 1);
+    el('admin-season-start').value = state.settings.seasonStartDate || '';
+    el('admin-season-end').value = state.settings.seasonEndDate || '';
+
+    const timing = getSeasonTimingInfo();
+    const preview = el('admin-season-status-preview');
+    if (preview) {
+        preview.innerText = `حالة السيزون #${Number(state.settings.seasonNumber || 1)}: ${timing.text}`;
+    }
+
+    const codesBox = el('admin-pro-codes-list');
+    if (codesBox) {
+        const codes = Object.values(state.proCodes || {});
+        codesBox.innerHTML = codes.length === 0
+            ? `<div class="text-center text-xs text-gray-400 py-3">لا توجد أكواد PRO مولّدة حالياً.</div>`
+            : codes.slice().reverse().map(c => `
+                <div class="bg-black/50 border border-supercellCardBorder rounded p-2 flex items-center justify-between text-xs">
+                    <div>
+                        <strong class="text-supercellGold" dir="ltr">${esc(c.code)}</strong>
+                        <span class="text-[10px] mr-2 ${c.used ? 'text-red-400' : 'text-emerald-400'}">${c.used ? `مستخدم (${esc(c.usedBy || '')})` : 'متاح (لمرة واحدة)'}</span>
+                    </div>
+                    <button onclick="deleteProCode('${esc(c.code)}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
+                </div>`).join('');
+    }
+
+    const reqBox = el('admin-pro-requests-list');
+    if (reqBox) {
+        const list = Object.values(state.proRequests || {}).sort((a, b) => (b.id > a.id ? 1 : -1));
+        reqBox.innerHTML = list.length === 0
+            ? `<div class="text-center text-xs text-gray-400 py-4">لا توجد طلبات شراء برو حالياً.</div>`
+            : list.map(r => {
+                const statusBadge = r.status === 'approved'
+                    ? `<span class="text-emerald-400 font-bold">مقبول ✅</span>`
+                    : r.status === 'rejected'
+                        ? `<span class="text-red-400 font-bold">مرفوض ❌</span>`
+                        : `<span class="text-supercellGold font-bold">قيد المراجعة</span>`;
+                const txDisplay = r.transactionId
+                    ? `<span class="text-supercellBlue font-black select-all bg-black/60 px-2 py-0.5 rounded border border-supercellBlue/40" dir="ltr">رقم العملية: ${esc(r.transactionId)}</span>`
+                    : `<span class="text-[10px] text-gray-400">إيصال: ${esc(r.fileName || 'قديم')}</span>`;
+
+                return `
+                    <div class="bg-black/50 border border-supercellCardBorder rounded-xl p-3 flex flex-col gap-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <strong class="text-white">${esc(r.userName)}</strong>
+                                <span class="text-[10px] text-supercellBlue mr-1">${esc(r.userTag || '')}</span>
+                            </div>
+                            ${statusBadge}
+                        </div>
+                        <div class="text-[11px] text-gray-300">${esc(r.userEmail)} • ${esc(r.amount || '100 ليرة جديدة')} • <span class="text-gray-400">${esc(r.timestamp)}</span></div>
+                        <div class="flex items-center justify-between gap-2 pt-1 flex-wrap">
+                            ${txDisplay}
+                            ${r.status === 'pending' ? `
+                            <div class="flex gap-1.5">
+                                <button onclick="approveProRequest('${esc(r.id)}')" class="btn-gold px-2.5 py-1 rounded text-black font-black text-[10px]">قبول وتفعيل</button>
+                                <button onclick="rejectProRequest('${esc(r.id)}')" class="btn-red px-2.5 py-1 rounded text-white font-black text-[10px]">رفض</button>
+                            </div>` : ''}
+                        </div>
+                    </div>`;
+            }).join('');
+    }
+};
+
+/* --- STORE & GAMES --- */
+function gameIconHtml(g, size) {
+    const url = (state.settings.gameIcons || {})[g.id];
+    if (url && String(url).trim() !== '') {
+        return `<img src="${esc(url)}" alt="" class="${size} object-contain rounded" onerror="this.outerHTML='<span>${g.emoji}</span>'">`;
+    }
+    return `<span>${g.emoji}</span>`;
+}
+
+function productStock(p) { return p && p.links ? p.links.length : 0; }
+
+function isNewProduct(p) {
+    const m = /^prod_(\d+)$/.exec(String(p.id || ''));
+    if (!m) return false;
+    return (serverNow() - Number(m[1])) < 7 * 24 * 60 * 60 * 1000;
+}
+
+window.renderGameFilters = function () {
+    const box = el('game-filters');
+    if (!box) return;
+    const counts = { all: state.products.length };
+    GAMES.forEach(g => { counts[g.id] = state.products.filter(p => p.game === g.id).length; });
+    const allIconUrl = (state.settings.gameIcons || {}).all;
+    const allIconHtml = allIconUrl ? `<img src="${esc(allIconUrl)}" class="w-7 h-7 object-contain rounded" onerror="this.outerHTML='<span>🎮</span>'">` : '<span>🎮</span>';
+
+    const chips = [{ id: 'all', name: 'الكل', short: 'الكل', customIcon: allIconHtml }, ...GAMES.map(g => ({ ...g, customIcon: gameIconHtml(g, 'w-7 h-7') }))];
+    box.innerHTML = chips.map(c => {
+        const active = state.activeGame === c.id;
+        return `<button onclick="setGameFilter('${c.id}')" title="${esc(c.name || c.short)}" class="relative flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-xl border-2 font-black transition-all min-w-0 ${active ? 'bg-supercellGold text-black border-yellow-200 shadow-lg' : 'bg-black/40 text-gray-200 border-supercellCardBorder hover:border-supercellGold'}">
+            <span class="h-7 flex items-center justify-center text-xl leading-none">${c.customIcon}</span>
+            <span class="text-[10px] md:text-xs leading-tight whitespace-nowrap">${c.short}</span>
+            <span class="keep-size absolute -top-2 -left-1.5 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] flex items-center justify-center ${active ? 'bg-black text-supercellGold' : 'bg-supercellPurple text-gray-200 border border-supercellCardBorder'}">${counts[c.id]}</span>
+        </button>`;
+    }).join('');
+};
+
+window.setGameFilter = function (id) {
+    state.activeGame = id;
+    renderStore();
+};
+
+window.renderStore = function () {
+    const grid = el('products-grid');
+    const countEl = el('store-count');
+    if (!grid) return;
+    renderGameFilters();
+    grid.innerHTML = '';
+
+    const list = (state.activeGame === 'all' ? state.products : state.products.filter(p => p.game === state.activeGame)).slice();
+    list.sort((a, b) => (productStock(a) === 0 ? 1 : 0) - (productStock(b) === 0 ? 1 : 0));
+    countEl.innerText = `${list.length} منتج`;
+
+    if (list.length === 0) {
+        const msg = state.activeGame === 'all' ? 'لا توجد منتجات متاحة حالياً في المتجر.' : 'لا توجد منتجات بهذا القسم حالياً.';
+        grid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400 text-xs">${msg}</div>`;
+        return;
+    }
+
+    list.forEach(prod => {
+        const stockCount = productStock(prod);
+        const isSoldOut = stockCount === 0;
+        const game = GAMES.find(g => g.id === prod.game);
+        const gameBadge = game ? `<span class="flex items-center gap-1 bg-black/70 border border-supercellCardBorder px-1.5 py-0.5 rounded text-[9px] text-supercellBlue font-bold">${gameIconHtml(game, 'w-3.5 h-3.5')}</span>` : '';
+        const newBadge = isNewProduct(prod) ? `<span class="bg-supercellGold text-black px-1.5 py-0.5 rounded text-[9px] font-black">جديد</span>` : '';
+
+        const card = document.createElement('div');
+        card.className = 'panel-card p-3 flex flex-col justify-between gap-2.5 relative overflow-hidden';
+        card.innerHTML = `
+            <div class="absolute top-2 left-2 bg-black/70 border border-supercellCardBorder px-2 py-0.5 rounded text-[9px] text-supercellGold font-bold">${stockCount > 0 ? `متبقي: ${stockCount}` : 'نفذت'}</div>
+            <div class="absolute top-2 right-2 flex items-center gap-1">${gameBadge}${newBadge}</div>
+            <div class="flex flex-col items-center gap-2 pt-6">
+                <img src="${esc(prod.image)}" alt="${esc(prod.name)}" loading="lazy" class="w-16 h-16 md:w-20 md:h-20 object-contain rounded-lg border border-supercellCardBorder bg-black/40" onerror="this.src='https://placehold.co/150x150/2B1055/FFD700?text=Item'">
+                <h4 class="font-black text-xs md:text-sm text-white text-center truncate w-full">${esc(prod.name)}</h4>
+                <p class="text-[10px] md:text-xs text-gray-300 text-center line-clamp-2 h-9">${esc(prod.desc)}</p>
+            </div>
+            <div class="flex flex-col gap-2 mt-1">
+                <div class="flex items-center justify-center gap-1.5 bg-black/40 py-1.5 rounded border border-supercellCardBorder">
+                    <span class="text-supercellBlue text-xs">💎</span>
+                    <span class="font-black text-supercellBlue text-xs md:text-sm">${esc(prod.price)} XP</span>
+                </div>
+                <button onclick="confirmRedeem('${esc(prod.id)}')" class="w-full py-2 rounded text-black font-black text-xs ${isSoldOut ? 'bg-gray-600 text-gray-300 border-2 border-gray-500 cursor-not-allowed' : 'btn-gold'}">
+                    ${isSoldOut ? 'نفذت الكمية ❌' : 'استبدال الكود'}
+                </button>
+            </div>`;
+        grid.appendChild(card);
+    });
+};
+
+window.switchHistoryTab = function (sub) {
+    const isPurchases = sub === 'purchases';
+    el('history-purchases-section').classList.toggle('hidden', !isPurchases);
+    el('history-earnings-section').classList.toggle('hidden', isPurchases);
+
+    el('htab-btn-purchases').className = `flex-1 py-2 rounded-lg font-black text-xs text-center transition-all ${isPurchases ? 'bg-supercellPurple text-supercellGold border border-supercellCardBorder' : 'text-gray-300 hover:text-white'}`;
+    el('htab-btn-earnings').className = `flex-1 py-2 rounded-lg font-black text-xs text-center transition-all ${!isPurchases ? 'bg-supercellPurple text-supercellGold border border-supercellCardBorder' : 'text-gray-300 hover:text-white'}`;
+};
+
+window.renderHistory = function () {
+    const list = el('history-list');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!state.currentUser) {
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">يرجى تسجيل الدخول عبر جوجل لعرض سجل المشتريات.</div>`;
+        return;
+    }
+    const me = state.currentUser;
+    const userHistory = state.history.filter(h => h.userEmail ? h.userEmail.toLowerCase() === me.email.toLowerCase() : h.userTag === me.tag);
+    if (userHistory.length === 0) {
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لم تقم بشراء أي منتج بعد.</div>`;
+        return;
+    }
+    userHistory.slice().reverse().forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'panel-card p-3.5 flex items-center justify-between gap-2';
+        row.innerHTML = `
+            <div class="flex flex-col gap-1 overflow-hidden">
+                <h4 class="font-black text-xs md:text-sm text-white">${esc(item.productName)}</h4>
+                <span class="text-[9px] text-gray-400">${esc(item.timestamp)}</span>
+                <a href="${esc(safeUrl(item.assignedLink))}" target="_blank" rel="noopener" class="text-[10px] text-supercellBlue truncate underline select-all">فتح الرابط: ${esc(item.assignedLink)}</a>
+            </div>
+            <div class="flex items-center gap-1 bg-red-950/40 border border-red-500/30 px-2.5 py-1.5 rounded shrink-0">
+                <span class="text-xs">💎</span>
+                <span class="font-black text-red-400 text-xs">-${esc(item.xpSpent)} XP</span>
+            </div>`;
+        list.appendChild(row);
+    });
+};
+
+window.renderEarningsHistory = function () {
+    const list = el('earnings-history-list');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!state.currentUser) {
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">يرجى تسجيل الدخول عبر جوجل لعرض سجل التحصيل.</div>`;
+        return;
+    }
+    const earnings = state.currentUser.earningsHistory || [];
+    if (earnings.length === 0) {
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لا توجد عمليات تحصيل مسجلة بعد. ابدأ بجمع الجواهر الآن!</div>`;
+        return;
+    }
+    earnings.slice().reverse().forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'panel-card p-3.5 flex items-center justify-between gap-2';
+        row.innerHTML = `
+            <div class="flex flex-col gap-1 overflow-hidden">
+                <h4 class="font-black text-xs md:text-sm text-white flex items-center gap-1.5"><i class="fa-solid fa-coins text-supercellGold"></i> ${esc(item.source)}</h4>
+                <span class="text-[9px] text-gray-400">${esc(item.timestamp)}</span>
+            </div>
+            <div class="flex items-center gap-1 bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-1.5 rounded shrink-0">
+                <span class="text-xs">💎</span>
+                <span class="font-black text-emerald-400 text-xs">+${esc(item.reward)} XP</span>
+            </div>`;
+        list.appendChild(row);
+    });
+};
+
+window.renderLeaderboard = function () {
+    const list = el('leaderboard-list');
+    if (!list) return;
+
+    const users = Object.values(state.usersMap || {}).filter(u => u && !isAdminUser(u));
+    const ranked = users.filter(u => (u.xp || 0) > 0).sort((a, b) => (b.xp || 0) - (a.xp || 0));
+    const meEmail = state.currentUser ? (state.currentUser.email || '').toLowerCase() : null;
+
+    if (ranked.length === 0) {
+        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لا يوجد متصدرون حالياً. كن أول من يجمع الجواهر!</div>`;
+        return;
+    }
+
+    const top = ranked.slice(0, 3);
+    const slots = [
+        { i: 1, h: 'h-24', ring: '#C0C7D1', grad: 'from-slate-300 to-slate-500', delay: '0.1s', av: 'w-14 h-14' },
+        { i: 0, h: 'h-32', ring: '#FFD700', grad: 'from-yellow-300 to-amber-500', delay: '0s', av: 'w-[72px] h-[72px]' },
+        { i: 2, h: 'h-20', ring: '#CD7F32', grad: 'from-orange-400 to-orange-700', delay: '0.2s', av: 'w-14 h-14' }
+    ];
+
+    const cols = slots.map(s => {
+        const u = top[s.i];
+        if (!u) return `<div class="flex-1"></div>`;
+        const isMe = meEmail && (u.email || '').toLowerCase() === meEmail;
+        const avatar = u.avatar
+            ? `<img src="${esc(u.avatar)}" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'">`
+            : `<i class="fa-solid fa-crown"></i>`;
+        return `
+            <div class="podium-col flex-1 flex flex-col items-center min-w-0" style="animation-delay:${s.delay}">
+                <div class="${s.av} rounded-full border-[3px] overflow-hidden bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-supercellGold text-xl" style="border-color:${s.ring}">${avatar}</div>
+                <span class="font-black text-xs md:text-sm text-white truncate w-full text-center mt-2 px-1" dir="auto">${esc(u.name)}</span>
+                ${isMe ? '<span class="text-[10px] text-supercellGold font-bold">(أنت)</span>' : ''}
+                <span class="font-black text-supercellBlue text-xs md:text-sm mt-0.5">💎 ${esc(u.xp || 0)}</span>
+                <div class="w-full ${s.h} mt-2 rounded-t-xl bg-gradient-to-b ${s.grad} border-2 border-white/25 flex items-start justify-center pt-2 font-black text-3xl text-black/60">${s.i + 1}</div>
+            </div>`;
+    }).join('');
+
+    let html = `<div dir="ltr" class="panel-card px-3 pt-5 pb-0 flex items-end gap-2 overflow-hidden">${cols}</div>`;
+
+    if (meEmail && !isAdminUser(state.currentUser)) {
+        const me = users.find(u => (u.email || '').toLowerCase() === meEmail);
+        if (me) {
+            const myXp = me.xp || 0;
+            const rank = users.filter(u => (u.xp || 0) > myXp).length + 1;
+            html += `
+                <div class="panel-card border-supercellGold p-3 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="font-black text-xl text-supercellGold">#${rank}</span>
+                        <span class="font-black text-xs md:text-sm text-white">أنت رتبتك ${rank}</span>
+                    </div>
+                    <div class="flex items-center gap-1 bg-black/50 border border-supercellBlue/40 px-2.5 py-1 rounded">
+                        <span class="text-xs">💎</span>
+                        <span class="font-black text-supercellBlue text-xs">${esc(myXp)}</span>
+                    </div>
+                </div>`;
+        }
+    }
+    list.innerHTML = html;
+};
+
+function genRefCode() {
+    const taken = new Set(Object.values(state.usersMap || {}).map(u => u && u.refCode));
+    let c = '';
+    do { c = Math.random().toString(36).slice(2, 10); } while (c.length < 6 || taken.has(c));
+    return c;
+}
+
+async function creditReferrer(refKey) {
+    try {
+        await runTransaction(ref(db, 'users/' + refKey), (cur) => {
+            if (cur === null) return cur;
+            const count = cur.referralCount || 0;
+            if (count >= MAX_REFERRALS) return;
+            cur.referralCount = count + 1;
+            cur.xp = (cur.xp || 0) + 1;
+
+            cur.earningsHistory = cur.earningsHistory || [];
+            const nowDt = new Date();
+            const timeStr = `${nowDt.getFullYear()}-${String(nowDt.getMonth() + 1).padStart(2, '0')}-${String(nowDt.getDate()).padStart(2, '0')} ${String(nowDt.getHours()).padStart(2, '0')}:${String(nowDt.getMinutes()).padStart(2, '0')}`;
+            cur.earningsHistory.push({
+                source: 'دعوة صديق جديد عبر الرابط',
+                reward: 1,
+                timestamp: timeStr
+            });
+
+            return cur;
+        });
+    } catch (e) {}
+}
+
+window.handleGoogleSignIn = function (response) {
+    try {
+        const base64Url = response.credential.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        const payload = JSON.parse(jsonPayload);
+
+        const name = payload.name;
+        const email = payload.email;
+        const avatar = payload.picture;
+
+        localStorage.setItem('savo_logged_email', email);
+
+        const existingUser = Object.values(state.usersMap).find(u => u && u.email && u.email.toLowerCase() === email.toLowerCase());
+
+        if (existingUser) {
+            state.currentUser = existingUser;
+            closeLoginModal();
+            renderUserProfile();
+            renderHistory();
+            renderEarningsHistory();
+            renderMissions();
+            renderProSection();
+            updateNotificationBadge();
+            enforceValidPlayerTag(existingUser);
+            showToast(`مرحباً بك مجدداً ${existingUser.name}!`);
+        } else {
+            closeLoginModal();
+            el('g-temp-email').value = email;
+            el('g-temp-name').value = name;
+            el('g-temp-avatar').value = avatar;
+            el('g-profile-game').value = 'cr';
+            el('g-profile-yt').value = '';
+            el('g-profile-tag').value = '';
+            el('g-profile-country').value = '';
+            handleGameSelectionChange();
+            el('google-profile-modal').classList.remove('hidden');
+        }
+    } catch (e) {
+        showToast('حدث خطأ أثناء تسجيل الدخول عبر جوجل.', 'error');
+    }
+};
+
+let savingProfile = false;
+window.saveGoogleProfile = async function () {
+    if (savingProfile) return;
+    const email = el('g-temp-email').value;
+    const name = el('g-temp-name').value;
+    const avatar = el('g-temp-avatar').value;
+    const game = el('g-profile-game').value || 'cr';
+    const ytChannel = el('g-profile-yt').value.trim() || 'قناة يوتيوب';
+    let tag = el('g-profile-tag').value.trim().toUpperCase();
+    const country = el('g-profile-country').value.trim() || 'غير محدد';
+    const feedback = el('g-tag-feedback');
+    const saveBtn = el('g-save-profile-btn');
+
+    if (!tag) {
+        showToast('يرجى إدخال الهاشتاج/التاغ الخاص بحسابك.', 'error');
+        return;
+    }
+    if (!tag.startsWith('#')) tag = '#' + tag;
+
+    savingProfile = true;
+    if (saveBtn) saveBtn.disabled = true;
+
+    try {
+        if (game === 'cr') {
+            if (feedback) {
+                feedback.classList.remove('hidden');
+                feedback.className = 'text-[10px] text-supercellBlue';
+                feedback.innerText = 'جاري التحقق من وجود الهاشتاج في كلاش رويال...';
+            }
+            const check = await verifyAndFetchCrPlayer(tag);
+            if (!check.ok) {
+                if (feedback) {
+                    feedback.classList.remove('hidden');
+                    feedback.className = 'text-[10px] text-red-400';
+                    feedback.innerText = check.error;
+                }
+                showToast(check.error, 'error');
+                return;
+            }
+            tag = check.cleanTag;
+        }
+
+        const dbKey = dbKeyOf(email);
+        const snap = await get(ref(db, 'users/' + dbKey));
+        if (snap.exists()) {
+            state.currentUser = snap.val();
+            localStorage.setItem('savo_logged_email', email);
+            el('google-profile-modal').classList.add('hidden');
+            renderUserProfile();
+            renderHistory();
+            renderEarningsHistory();
+            renderMissions();
+            renderProSection();
+            updateNotificationBadge();
+            enforceValidPlayerTag(state.currentUser);
+            showToast(`مرحباً بك مجدداً ${state.currentUser.name}!`);
+            return;
+        }
+
+        const now = new Date();
+        const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+        const newUser = {
+            name, email, avatar, game, ytChannel, tag, country,
+            tagVerified: true,
+            xp: 0,
+            lastReadNotification: 0,
+            joinedAt: timeStr,
+            authType: 'Google',
+            refCode: genRefCode(),
+            completedMissions: {},
+            earningsHistory: []
+        };
+
+        let refKey = null;
+        let savedRef = null;
+        try { savedRef = localStorage.getItem('savo_ref'); } catch (e) {}
+        if (savedRef) {
+            const found = Object.entries(state.usersMap || {}).find(([k, u]) => u && u.refCode === savedRef);
+            if (found && (found[1].email || '').toLowerCase() !== email.toLowerCase()) {
+                refKey = found[0];
+                newUser.referredBy = refKey;
+            }
+        }
+
+        await set(ref(db, 'users/' + dbKey), newUser);
+        state.currentUser = newUser;
+        localStorage.setItem('savo_logged_email', email);
+
+        if (refKey) await creditReferrer(refKey);
+        try { localStorage.removeItem('savo_ref'); } catch (e) {}
+
+        el('google-profile-modal').classList.add('hidden');
+        renderUserProfile();
+        renderHistory();
+        renderEarningsHistory();
+        renderMissions();
+        renderProSection();
+        updateNotificationBadge();
+        showToast(`أهلاً بك يا ${name}! تم إنشاء حسابك بنجاح.`);
+    } catch (e) {
+        showToast('حدث خطأ أثناء حفظ الحساب، حاول مرة أخرى.', 'error');
+    } finally {
+        savingProfile = false;
+        if (saveBtn) saveBtn.disabled = false;
+    }
+};
+
+function initGoogleButton() {
+    const container = el('google-signin-btn-container');
+    if (container && window.google && window.google.accounts) {
+        container.innerHTML = '';
+        try {
+            google.accounts.id.initialize({
+                client_id: "702112953676-htntgj2u2uqnci23frjsqvtvsvmsvvtl.apps.googleusercontent.com",
+                callback: handleGoogleSignIn
+            });
+            google.accounts.id.renderButton(
+                container,
+                { type: "standard", size: "large", theme: "outline", text: "sign_in_with", shape: "rectangular", logo_alignment: "left" }
+            );
+        } catch (err) {
+            console.log('Google Auth init error:', err);
+        }
+    } else if (container) {
+        container.innerHTML = '<p class="text-xs text-red-300">تعذر تحميل زر جوجل. تحقق من الاتصال ثم أعد المحاولة.</p>';
+    }
+}
+
+window.openLoginModal = function () {
+    el('login-modal').classList.remove('hidden');
+    setTimeout(initGoogleButton, 150);
+};
+
+window.closeLoginModal = () => el('login-modal').classList.add('hidden');
+window.openEarnPointsModal = () => el('earn-points-modal').classList.remove('hidden');
+window.closeEarnPointsModal = () => el('earn-points-modal').classList.add('hidden');
+
+window.openEditProfileModal = function () {
+    if (!state.currentUser) return;
+    el('edit-name').value = state.currentUser.name || '';
+    el('edit-game').value = state.currentUser.game || 'cr';
+    el('edit-yt').value = state.currentUser.ytChannel || '';
+    el('edit-tag').value = state.currentUser.tag || '';
+    el('edit-country').value = state.currentUser.country || '';
+    el('edit-profile-modal').classList.remove('hidden');
+};
+
+window.closeEditProfileModal = () => el('edit-profile-modal').classList.add('hidden');
+
+window.saveEditedProfile = async function () {
+    if (!state.currentUser) return;
+    const name = el('edit-name').value.trim();
+    const game = el('edit-game').value || 'cr';
+    const ytChannel = el('edit-yt').value.trim();
+    let tag = el('edit-tag').value.trim().toUpperCase();
+    const country = el('edit-country').value.trim();
+
+    if (!name || !tag) {
+        showToast('الاسم والتاغ حقول إجبارية.', 'error');
+        return;
+    }
+    if (!tag.startsWith('#')) tag = '#' + tag;
+
+    if (game === 'cr') {
+        const check = await verifyAndFetchCrPlayer(tag);
+        if (!check.ok) {
+            showToast(check.error, 'error');
+            return;
+        }
+        tag = check.cleanTag;
+    }
+
+    state.currentUser.name = name;
+    state.currentUser.game = game;
+    state.currentUser.ytChannel = ytChannel;
+    state.currentUser.tag = tag;
+    state.currentUser.country = country;
+    state.currentUser.tagVerified = true;
+
+    update(ref(db, 'users/' + dbKeyOf(state.currentUser.email)), { name, game, ytChannel, tag, country, tagVerified: true });
+
+    closeEditProfileModal();
+    renderUserProfile();
+    renderProSection();
+    showToast('تم تحديث الملف الشخصي بنجاح!');
+};
+
+window.logoutUser = function () {
+    try { localStorage.removeItem('savo_logged_email'); } catch (e) {}
+    state.currentUser = null;
+    switchTab('store');
+    renderUserProfile();
+    renderHistory();
+    renderEarningsHistory();
+    renderMissions();
+    renderProSection();
+    updateNotificationBadge();
+};
+
+window.openPromoModal = function () {
+    if (!state.currentUser) {
+        showToast('يرجى تسجيل الدخول أولاً.', 'error');
+        openLoginModal();
+        return;
+    }
+    el('promo-code-input').value = '';
+    el('promo-modal').classList.remove('hidden');
+};
+window.closePromoModal = () => el('promo-modal').classList.add('hidden');
+
+let promoBusy = false;
+window.redeemPromo = async function () {
+    if (!state.currentUser || promoBusy) return;
+    const code = el('promo-code-input').value.trim().toUpperCase();
+    if (!/^[A-Z0-9_-]{2,30}$/.test(code)) {
+        showToast('الكود غير صحيح.', 'error');
+        return;
+    }
+
+    promoBusy = true;
+    const dbKey = dbKeyOf(state.currentUser.email);
+    let outcome = 'invalid';
+    let reward = 0;
+    try {
+        const res = await runTransaction(ref(db, 'promoCodes/' + code), (cur) => {
+            if (cur === null) { outcome = 'invalid'; return cur; }
+            if (!cur.active) { outcome = 'inactive'; return; }
+            if (cur.redeemedBy && cur.redeemedBy[dbKey]) { outcome = 'used'; return; }
+            const uses = cur.uses || 0;
+            if (uses >= (cur.maxUses || 0)) { outcome = 'full'; return; }
+            cur.uses = uses + 1;
+            cur.redeemedBy = cur.redeemedBy || {};
+            cur.redeemedBy[dbKey] = serverNow();
+            reward = Number(cur.reward) || 0;
+            outcome = 'ok';
+            return cur;
+        });
+
+        if (res.committed && outcome === 'ok') {
+            await runTransaction(ref(db, 'users/' + dbKey), (cur) => {
+                if (!cur) return cur;
+                cur.xp = (cur.xp || 0) + reward;
+                cur.earningsHistory = cur.earningsHistory || [];
+                const nowDt = new Date();
+                const timeStr = `${nowDt.getFullYear()}-${String(nowDt.getMonth() + 1).padStart(2, '0')}-${String(nowDt.getDate()).padStart(2, '0')} ${String(nowDt.getHours()).padStart(2, '0')}:${String(nowDt.getMinutes()).padStart(2, '0')}`;
+                cur.earningsHistory.push({
+                    source: `استرداد كود ترويجي (${code})`,
+                    reward: reward,
+                    timestamp: timeStr
+                });
+                return cur;
+            });
+            closePromoModal();
+            launchConfetti();
+            showToast(`تمت إضافة ${reward} جوهرة إلى رصيدك 💎`);
+        } else {
+            const messages = {
+                invalid: 'الكود غير صحيح.',
+                inactive: 'هذا الكود غير فعّال حالياً.',
+                used: 'لقد استخدمت هذا الكود من قبل.',
+                full: 'انتهت الكمية المتاحة لهذا الكود.'
+            };
+            showToast(messages[outcome] || 'تعذر تفعيل الكود، حاول مرة أخرى.', 'error');
+        }
+    } catch (e) {
+        showToast('تعذر تفعيل الكود، تحقق من الاتصال وحاول مرة أخرى.', 'error');
+    } finally {
+        promoBusy = false;
+    }
+};
+
+window.openReferralModal = async function () {
+    if (!state.currentUser) {
+        showToast('يرجى تسجيل الدخول أولاً.', 'error');
+        openLoginModal();
+        return;
+    }
+    if (!state.currentUser.refCode) {
+        const code = genRefCode();
+        try {
+            await update(ref(db, 'users/' + dbKeyOf(state.currentUser.email)), { refCode: code });
+            state.currentUser.refCode = code;
+        } catch (e) {
+            showToast('تعذر إنشاء رابط الإحالة، حاول مرة أخرى.', 'error');
+            return;
+        }
+    }
+    el('referral-link-output').value = location.origin + location.pathname + '?ref=' + state.currentUser.refCode;
+    el('referral-count').innerText = `${state.currentUser.referralCount || 0} / ${MAX_REFERRALS}`;
+    el('referral-modal').classList.remove('hidden');
+};
+window.closeReferralModal = () => el('referral-modal').classList.add('hidden');
+window.copyReferralLink = function () {
+    const input = el('referral-link-output');
+    navigator.clipboard.writeText(input.value).then(() => {
+        showToast('تم نسخ رابط الإحالة!');
+    }).catch(() => {
+        input.select();
+        document.execCommand('copy');
+        showToast('تم النسخ!');
+    });
+};
+
+window.confirmRedeem = function (productId) {
+    if (!state.currentUser) {
+        showToast('يجب تسجيل الدخول عبر جوجل أولاً.', 'error');
+        openLoginModal();
+        return;
+    }
+    const product = state.products.find(p => p.id === productId);
+    if (!product || !product.links || product.links.length === 0) {
+        showToast('عذراً، نفذ مخزون هذا المنتج مؤقتاً.', 'error');
+        return;
+    }
+    if ((state.currentUser.xp || 0) < Number(product.price)) {
+        showToast('رصيدك من الجواهر لا يكفي لشراء هذا المنتج.', 'error');
+        return;
+    }
+    el('pending-product-id').value = productId;
+    el('confirm-purchase-text').innerText = `هل أنت متأكد من رغبتك في شراء "${product.name}" مقابل ${product.price} جوهرة؟`;
+    el('confirm-purchase-modal').classList.remove('hidden');
+};
+
+window.closeConfirmModal = () => el('confirm-purchase-modal').classList.add('hidden');
+
+let redeeming = false;
+window.executeRedeem = async function () {
+    if (redeeming || !state.currentUser) return;
+    const productId = el('pending-product-id').value;
+    closeConfirmModal();
+    redeeming = true;
+
+    const userDbKey = dbKeyOf(state.currentUser.email);
+    let assignedLink = null;
+    let productName = '';
+    let priceSpent = 0;
+    let outcome = 'ok';
+
+    try {
+        const prodRef = ref(db, 'products/' + productId);
+        await runTransaction(prodRef, (p) => {
+            if (!p || !p.links || p.links.length === 0) { outcome = 'soldout'; return p; }
+            assignedLink = p.links.shift();
+            productName = p.name;
+            priceSpent = Number(p.price) || 0;
+            return p;
+        });
+
+        if (outcome === 'soldout' || !assignedLink) {
+            showToast('عذراً، نفذ مخزون هذا المنتج.', 'error');
+            redeeming = false;
+            return;
+        }
+
+        await runTransaction(ref(db, 'users/' + userDbKey + '/xp'), (cur) => {
+            const currentXp = cur || 0;
+            if (currentXp < priceSpent) {
+                outcome = 'poor';
+                return currentXp;
+            }
+            return currentXp - priceSpent;
+        });
+
+        if (outcome === 'poor') {
+            showToast('رصيدك لا يكفي.', 'error');
+            redeeming = false;
+            return;
+        }
+
+        const now = new Date();
+        const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        const historyId = 'hist_' + Date.now();
+        const historyItem = {
+            id: historyId,
+            userEmail: state.currentUser.email,
+            userTag: state.currentUser.tag,
+            userName: state.currentUser.name,
+            productId,
+            productName,
+            xpSpent: priceSpent,
+            assignedLink,
+            timestamp: timeStr
+        };
+
+        await set(ref(db, 'history/' + historyId), historyItem);
+
+        launchConfetti();
+        el('redeem-success-desc').innerText = `تم خصم ${priceSpent} جوهرة وحصولك على "${productName}" بنجاح.`;
+        el('redeem-link-output').value = assignedLink;
+        el('redeem-open-link-btn').href = safeUrl(assignedLink);
+        el('redeem-success-modal').classList.remove('hidden');
+    } catch (e) {
+        showToast('حدث خطأ أثناء إتمام الشراء، حاول مرة أخرى.', 'error');
+    } finally {
+        redeeming = false;
+    }
+};
+
+window.closeRedeemModal = () => el('redeem-success-modal').classList.add('hidden');
+window.copyRedeemLink = function () {
+    const input = el('redeem-link-output');
+    navigator.clipboard.writeText(input.value).then(() => showToast('تم نسخ الرابط!')).catch(() => {
+        input.select();
+        document.execCommand('copy');
+        showToast('تم النسخ!');
+    });
+};
+
+window.switchTab = function (tabId) {
+    if (tabId === 'admin' && !isAdminUser()) {
+        showToast('غير مسموح بالدخول.', 'error');
+        return;
+    }
+    state.activeTab = tabId;
+    ['store', 'missions', 'pro', 'history', 'leaderboard', 'admin'].forEach(id => {
+        const sec = el('tab-' + id);
+        const btn = el('tab-btn-' + id);
+        if (sec) sec.classList.toggle('hidden', id !== tabId);
+        if (btn) {
+            btn.classList.toggle('active', id === tabId);
+        }
+    });
+    if (tabId === 'pro') renderProSection();
+    if (tabId === 'leaderboard') renderLeaderboard();
+    if (tabId === 'history') { renderHistory(); renderEarningsHistory(); }
+    if (tabId === 'missions') renderMissions();
+};
+
+window.switchAdminTab = function (subId) {
+    ['settings', 'pro', 'products', 'missions', 'users', 'log'].forEach(id => {
+        const sec = el('atab-' + id);
+        const btn = el('atab-btn-' + (id === 'missions' ? 'admin-missions' : id));
+        if (sec) sec.classList.toggle('hidden', id !== subId);
+        if (btn) {
+            const active = id === subId;
+            btn.className = `flex-1 py-1.5 px-2 rounded-lg font-black text-[11px] md:text-xs whitespace-nowrap transition-all ${active ? 'admin-sub-on' : 'admin-sub-off'}`;
+        }
+    });
+    if (subId === 'pro') renderAdminProTab();
+    if (subId === 'products') renderAdminProducts();
+    if (subId === 'missions') renderAdminMissions();
+    if (subId === 'users') renderAdminUsers();
+    if (subId === 'log') renderAdminAuditLog();
+};
+
+window.checkAdminAccess = function () {
+    if (!isAdminUser()) {
+        showToast('عذراً، هذه اللوحة مخصصة للأدمن فقط.', 'error');
+        return;
+    }
+    switchTab('admin');
+    switchAdminTab('settings');
+    populateAdminSettingsForm();
+    renderAdminProTab();
+    renderAdminProducts();
+    renderAdminMissions();
+    renderAdminPromoList();
+    renderAdminUsers();
+    renderAdminAuditLog();
+};
+
+window.lockAdminPanel = () => switchTab('store');
+
+function populateAdminSettingsForm() {
+    const s = state.settings || {};
+    el('admin-maintenance-toggle').checked = !!s.maintenanceMode;
+    el('admin-announcement-badge').value = s.badge || '';
+    el('admin-announcement-input').value = s.announcement || '';
+    el('admin-marquee-toggle').checked = s.marqueeEnabled !== false;
+    el('admin-weekly-text').value = s.weeklyText || '';
+    el('admin-weekly-btn-text').value = s.weeklyBtnText || '';
+    el('admin-weekly-btn-url').value = s.weeklyBtnUrl || '';
+    el('admin-event-bar-input').value = s.eventBarText || '';
+    el('admin-logo-input').value = s.logoUrl || '';
+    el('admin-about-text').value = s.aboutText || '';
+    el('admin-whatsapp-channel-url').value = s.whatsappChannelUrl || '';
+    el('admin-whatsapp-notice').value = s.whatsappNoticeText || '';
+    el('admin-earn-instructions').value = s.earnInstructions || '';
+
+    const soc = s.socials || {};
+    el('social-yt').value = soc.youtube || '';
+    el('social-tik').value = soc.tiktok || '';
+    el('social-ig').value = soc.instagram || '';
+    el('social-twi').value = soc.twitch || '';
+
+    const icons = s.gameIcons || {};
+    el('game-icon-all').value = icons.all || '';
+    el('game-icon-cr').value = icons.cr || '';
+    el('game-icon-coc').value = icons.coc || '';
+    el('game-icon-hd').value = icons.hd || '';
+    el('game-icon-bs').value = icons.bs || '';
+    renderAdminPromoList();
+}
+
+window.saveAdminSettings = function () {
+    const updated = {
+        ...state.settings,
+        maintenanceMode: el('admin-maintenance-toggle').checked,
+        badge: el('admin-announcement-badge').value.trim(),
+        announcement: el('admin-announcement-input').value.trim(),
+        marqueeEnabled: el('admin-marquee-toggle').checked,
+        weeklyText: el('admin-weekly-text').value.trim(),
+        weeklyBtnText: el('admin-weekly-btn-text').value.trim(),
+        weeklyBtnUrl: el('admin-weekly-btn-url').value.trim(),
+        eventBarText: el('admin-event-bar-input').value.trim(),
+        logoUrl: el('admin-logo-input').value.trim(),
+        aboutText: el('admin-about-text').value.trim(),
+        whatsappChannelUrl: el('admin-whatsapp-channel-url').value.trim(),
+        whatsappNoticeText: el('admin-whatsapp-notice').value.trim(),
+        earnInstructions: el('admin-earn-instructions').value.trim(),
+        socials: {
+            youtube: el('social-yt').value.trim(),
+            tiktok: el('social-tik').value.trim(),
+            instagram: el('social-ig').value.trim(),
+            twitch: el('social-twi').value.trim()
+        },
+        gameIcons: {
+            all: el('game-icon-all').value.trim(),
+            cr: el('game-icon-cr').value.trim(),
+            coc: el('game-icon-coc').value.trim(),
+            hd: el('game-icon-hd').value.trim(),
+            bs: el('game-icon-bs').value.trim()
+        }
+    };
+
+    set(ref(db, 'settings'), updated).then(() => {
+        showToast('تم حفظ الإعدادات بنجاح!');
+    }).catch(() => showToast('حدث خطأ أثناء الحفظ.', 'error'));
+};
+
+window.openProductModal = function (productId = null) {
+    el('edit-product-id').value = '';
+    el('prod-game').value = '';
+    el('prod-name').value = '';
+    el('prod-desc').value = '';
+    el('prod-price').value = '';
+    el('prod-img').value = '';
+    el('prod-links').value = '';
+
+    if (productId) {
+        const prod = state.products.find(p => p.id === productId);
+        if (prod) {
+            el('product-modal-title').innerText = 'تعديل المنتج';
+            el('edit-product-id').value = prod.id;
+            el('prod-game').value = prod.game || '';
+            el('prod-name').value = prod.name || '';
+            el('prod-desc').value = prod.desc || '';
+            el('prod-price').value = prod.price || '';
+            el('prod-img').value = prod.image || '';
+            el('prod-links').value = prod.links ? prod.links.join('\n') : '';
+        }
+    } else {
+        el('product-modal-title').innerText = 'إضافة منتج جديد';
+    }
+    el('product-modal').classList.remove('hidden');
+};
+
+window.closeProductModal = () => el('product-modal').classList.add('hidden');
+
+window.saveProduct = function () {
+    const editId = el('edit-product-id').value.trim();
+    const game = el('prod-game').value;
+    const name = el('prod-name').value.trim();
+    const desc = el('prod-desc').value.trim();
+    const price = Number(el('prod-price').value);
+    const image = el('prod-img').value.trim();
+    const linksRaw = el('prod-links').value.trim();
+
+    if (!name || isNaN(price) || price < 0) {
+        showToast('يرجى إدخال اسم المنتج والسعر بشكل صحيح.', 'error');
+        return;
+    }
+
+    const links = linksRaw ? linksRaw.split('\n').map(l => l.trim()).filter(Boolean) : [];
+    const productId = editId || ('prod_' + Date.now());
+    const productObj = { id: productId, game, name, desc, price, image, links };
+
+    set(ref(db, 'products/' + productId), productObj).then(() => {
+        closeProductModal();
+        showToast('تم حفظ المنتج بنجاح!');
+    }).catch(() => showToast('حدث خطأ أثناء الحفظ.', 'error'));
+};
+
+window.deleteProduct = function (productId) {
+    if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
+    remove(ref(db, 'products/' + productId)).then(() => showToast('تم الحذف بنجاح.'));
+};
+
+window.renderAdminProducts = function () {
+    const container = el('admin-products-list');
+    if (!container) return;
+    container.innerHTML = '';
+    if (state.products.length === 0) {
+        container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs">لا توجد منتجات مسجلة.</div>`;
+        return;
+    }
+    state.products.forEach(p => {
+        const stock = productStock(p);
+        const item = document.createElement('div');
+        item.className = 'bg-black/50 border border-supercellCardBorder p-2.5 rounded flex items-center justify-between gap-2';
+        item.innerHTML = `
+            <div class="flex items-center gap-2 overflow-hidden">
+                <img src="${esc(p.image)}" alt="" class="w-10 h-10 object-contain rounded bg-black/40 border border-supercellCardBorder shrink-0" onerror="this.src='https://placehold.co/100x100/2B1055/FFD700?text=Item'">
+                <div class="overflow-hidden">
+                    <h5 class="font-black text-xs text-white truncate">${esc(p.name)}</h5>
+                    <span class="text-[10px] text-supercellBlue">💎 ${esc(p.price)} XP | مخزون: ${stock}</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+                <button onclick="openProductModal('${esc(p.id)}')" class="btn-blue px-2 py-1 rounded text-black font-bold text-[10px]">تعديل</button>
+                <button onclick="deleteProduct('${esc(p.id)}')" class="btn-red px-2 py-1 rounded text-white font-bold text-[10px]">حذف</button>
+            </div>`;
+        container.appendChild(item);
+    });
+};
+
+window.createPromoCode = function () {
+    const code = el('promo-new-code').value.trim().toUpperCase();
+    const reward = Number(el('promo-new-reward').value);
+    const maxUses = Number(el('promo-new-max').value);
+
+    if (!/^[A-Z0-9_-]{2,30}$/.test(code) || isNaN(reward) || reward <= 0 || isNaN(maxUses) || maxUses <= 0) {
+        showToast('يرجى إدخال بيانات الكود بشكل صحيح.', 'error');
+        return;
+    }
+
+    const promoObj = { code, reward, maxUses, uses: 0, active: true, createdAt: serverNow() };
+    set(ref(db, 'promoCodes/' + code), promoObj).then(() => {
+        el('promo-new-code').value = '';
+        el('promo-new-reward').value = '';
+        el('promo-new-max').value = '';
+        showToast('تم إنشاء الكود الترويجي بنجاح!');
+        renderAdminPromoList();
+    });
+};
+
+window.renderAdminPromoList = async function () {
+    const container = el('admin-promo-list');
+    if (!container) return;
+    try {
+        const snap = await get(ref(db, 'promoCodes'));
+        if (!snap.exists()) {
+            container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs">لا توجد أكواد ترويجية حالياً.</div>`;
+            return;
+        }
+        const val = snap.val();
+        container.innerHTML = Object.values(val).map(c => `
+            <div class="bg-black/50 border border-supercellCardBorder p-2 rounded flex items-center justify-between text-xs">
+                <div>
+                    <span class="font-black text-supercellGold" dir="ltr">${esc(c.code)}</span>
+                    <span class="text-gray-300 mr-2">(💎 ${c.reward} - استُخدم: ${c.uses}/${c.maxUses})</span>
+                </div>
+                <button onclick="deletePromoCode('${esc(c.code)}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
+            </div>`).join('');
+    } catch (e) {}
+};
+
+window.deletePromoCode = function (code) {
+    if (!confirm('هل أنت متأكد من حذف هذا الكود؟')) return;
+    remove(ref(db, 'promoCodes/' + code)).then(() => {
+        showToast('تم حذف الكود.');
+        renderAdminPromoList();
+    });
+};
+
+window.renderAdminUsers = function () {
+    const list = el('admin-users-list');
+    const countEl = el('admin-users-count');
+    const searchVal = (el('admin-user-search').value || '').toLowerCase().trim();
+    if (!list) return;
+
+    let users = Object.entries(state.usersMap || {}).map(([k, u]) => ({ key: k, ...u }));
+    users = users.filter(u => !isAdminUser(u));
+    countEl.innerText = `${users.length} متابع`;
+
+    if (searchVal) {
+        users = users.filter(u => (u.name || '').toLowerCase().includes(searchVal) || (u.email || '').toLowerCase().includes(searchVal) || (u.tag || '').toLowerCase().includes(searchVal));
+    }
+
+    users.sort((a, b) => (b.xp || 0) - (a.xp || 0));
+
+    if (users.length === 0) {
+        list.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">لا يوجد متابعون مطابقة للبحث.</div>`;
+        return;
+    }
+
+    list.innerHTML = users.map(u => {
+        const proTag = hasProAccess(u) ? `<span class="bg-supercellGold text-black font-black text-[9px] px-1.5 py-0.5 rounded mr-1">PRO</span>` : '';
+        return `
+        <div onclick="openUserDetails('${esc(u.key)}')" class="bg-black/50 border border-supercellCardBorder p-2.5 rounded-xl flex items-center justify-between gap-2 cursor-pointer hover:border-supercellGold transition-colors">
+            <div class="flex items-center gap-2.5 overflow-hidden">
+                <div class="w-10 h-10 shrink-0 rounded-full bg-purple-900 border border-supercellGold flex items-center justify-center text-supercellGold overflow-hidden">
+                    ${u.avatar ? `<img src="${esc(u.avatar)}" alt="" class="w-full h-full object-cover">` : `<i class="fa-solid fa-crown"></i>`}
+                </div>
+                <div class="overflow-hidden">
+                    <h5 class="font-black text-xs text-white truncate">${esc(u.name)}${proTag}</h5>
+                    <p class="text-[10px] text-supercellBlue font-bold">${esc(u.tag)} | <span class="text-gray-300">${esc(u.email)}</span></p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1.5 bg-black/60 border border-supercellCardBorder px-2.5 py-1 rounded shrink-0">
+                <span class="text-xs">💎</span>
+                <span class="font-black text-supercellBlue text-xs">${esc(u.xp || 0)}</span>
+            </div>
+        </div>`;
+    }).join('');
+};
+
+window.openUserDetails = function (userKey) {
+    const user = state.usersMap[userKey];
+    if (!user) return;
+    el('target-user-key').value = userKey;
+    el('ud-name').innerText = user.name || '';
+    el('ud-balance').innerText = `💎 ${user.xp || 0} جوهرة`;
+    el('custom-points-val').value = '';
+
+    const av = el('ud-avatar');
+    if (user.avatar) av.innerHTML = `<img src="${esc(user.avatar)}" class="w-full h-full object-cover">`;
+    else av.innerHTML = `<i class="fa-solid fa-crown text-xl"></i>`;
+
+    el('ud-info').innerHTML = `
+        <div><strong>البريد:</strong> ${esc(user.email)}</div>
+        <div><strong>اللعبة:</strong> ${esc((user.game || 'cr').toUpperCase())} • <strong>التاغ:</strong> ${esc(user.tag)}</div>
+        <div><strong>حالة PRO:</strong> ${hasProAccess(user) ? `<span class="text-supercellGold font-bold">مفعّل (سيزون #${user.proSeason || state.settings.seasonNumber || 1})</span>` : '<span class="text-gray-400">غير مفعّل</span>'}</div>
+        <div><strong>اليوتيوب:</strong> ${esc(user.ytChannel || 'غير محدد')}</div>
+        <div><strong>الدولة:</strong> ${esc(user.country || 'غير محدد')}</div>
+        <div><strong>تاريخ الانضمام:</strong> ${esc(user.joinedAt || 'غير متوفر')}</div>
+        <div><strong>عدد الإحالات:</strong> ${user.referralCount || 0}</div>
+        <div><strong>المهام المكتملة:</strong> ${Object.keys(user.completedMissions || {}).length} مهمة</div>
+    `;
+
+    const logContainer = el('ud-activity-log');
+    const earnings = user.earningsHistory || [];
+    if (earnings.length === 0) {
+        logContainer.innerHTML = `<span class="text-gray-400">لا توجد عمليات تحصيل مسجلة.</span>`;
+    } else {
+        logContainer.innerHTML = earnings.slice().reverse().map(e => `
+            <div class="flex justify-between items-center border-b border-gray-800 pb-1">
+                <span>✅ ${esc(e.source)}</span>
+                <span class="text-supercellGold font-bold">+${e.reward} XP (${esc(e.timestamp)})</span>
+            </div>
+        `).join('');
+    }
+
+    el('custom-points-modal').classList.remove('hidden');
+};
+
+window.closeCustomPointsModal = () => el('custom-points-modal').classList.add('hidden');
+
+window.toggleUserProFromAdmin = async function (enable) {
+    const userKey = el('target-user-key').value;
+    if (!userKey) return;
+    const currentSeason = Number(state.settings.seasonNumber || 1);
+    await update(ref(db, 'users/' + userKey), enable
+        ? { proSeason: currentSeason, proExpiresAt: getSeasonEndTimestamp() }
+        : { proSeason: 0, proExpiresAt: 0, proPermanent: false }
+    );
+    showToast(enable ? `تم منح وتفعيل PRO للمستخدم للسيزون #${currentSeason}.` : 'تم حذف وإلغاء PRO عن المستخدم.');
+    closeCustomPointsModal();
+    renderAdminUsers();
+};
+
+window.applyCustomPoints = async function (multiplier) {
+    const userKey = el('target-user-key').value;
+    const val = Number(el('custom-points-val').value);
+    if (!userKey || isNaN(val) || val <= 0) {
+        showToast('يرجى إدخال قيمة صحيحة للجواهر.', 'error');
+        return;
+    }
+    const delta = val * multiplier;
+    try {
+        await runTransaction(ref(db, 'users/' + userKey), (cur) => {
+            if (!cur) return cur;
+            cur.xp = Math.max((cur.xp || 0) + delta, 0);
+            if (delta > 0) {
+                cur.earningsHistory = cur.earningsHistory || [];
+                const nowDt = new Date();
+                const timeStr = `${nowDt.getFullYear()}-${String(nowDt.getMonth() + 1).padStart(2, '0')}-${String(nowDt.getDate()).padStart(2, '0')} ${String(nowDt.getHours()).padStart(2, '0')}:${String(nowDt.getMinutes()).padStart(2, '0')}`;
+                cur.earningsHistory.push({
+                    source: 'إضافة يدوية بواسطة المشرف (Admin)',
+                    reward: delta,
+                    timestamp: timeStr
+                });
+            }
+            return cur;
+        });
+        closeCustomPointsModal();
+        showToast('تم تحديث نقاط المتابع بنجاح!');
+        renderAdminUsers();
+    } catch (e) {
+        showToast('حدث خطأ أثناء تعديل النقاط.', 'error');
+    }
+};
+
+window.renderAdminAuditLog = function () {
+    const list = el('admin-audit-log-list');
+    if (!list) return;
+    if (state.history.length === 0) {
+        list.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">لا توجد عمليات شراء مسجلة بعد.</div>`;
+        return;
+    }
+    list.innerHTML = state.history.slice().reverse().map(item => `
+        <div class="bg-black/50 border border-supercellCardBorder p-2.5 rounded flex items-center justify-between gap-2 text-xs">
+            <div class="overflow-hidden">
+                <strong class="text-supercellGold">${esc(item.userName || item.userTag)}</strong> اشترى <span class="text-white">${esc(item.productName)}</span> مقابل <span class="text-supercellBlue">${item.xpSpent} XP</span>
+                <div class="text-[10px] text-gray-400 mt-0.5">${esc(item.timestamp)}</div>
+                <div class="text-[10px] text-supercellBlue truncate select-all">الرابط: ${esc(item.assignedLink)}</div>
+            </div>
+            <button onclick="deleteLogItem('${esc(item.id)}')" class="text-red-400 hover:text-red-300 shrink-0"><i class="fa-solid fa-trash"></i></button>
+        </div>`).join('');
+};
+
+window.deleteLogItem = function (histId) {
+    if (!confirm('هل تريد حذف هذا السجل؟')) return;
+    remove(ref(db, 'history/' + histId)).then(() => showToast('تم الحذف.'));
+};
+
+window.clearAdminHistory = function () {
+    if (!confirm('هل أنت متأكد من مسح كافة سجل المشتريات؟')) return;
+    set(ref(db, 'history'), null).then(() => showToast('تم مسح السجل بالكامل.'));
+};
+
+window.installApp = function () {
+    showToast('ميزة التثبيت متاحة عبر متصفح هاتفك (إضافة إلى الشاشة الرئيسية).');
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    switchTab('store');
+    switchAdminTab('settings');
+    initFirebaseSync();
+});
+</script>
+</body>
+</html>
