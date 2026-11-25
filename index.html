@@ -67,6 +67,104 @@
     .social-circle { width: 38px; height: 38px; border-radius: 50%; background: #2B1055; border: 2px solid #53239e; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
     .social-circle:hover { transform: scale(1.1); border-color: #FFD700; }
 
+    /* New Pill Navigation Bar - Always Single Line */
+    .nav-pill-bar {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 6px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .nav-pill-bar::-webkit-scrollbar { display: none; }
+    .nav-pill-btn {
+        flex: 1 0 auto;
+        min-width: fit-content;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 8px 12px;
+        border-radius: 9999px;
+        font-weight: 900;
+        font-size: 11px;
+        white-space: nowrap;
+        border: 1.5px solid #53239e;
+        background: rgba(15, 6, 30, 0.75);
+        color: #d1d5db;
+        transition: all 0.18s ease;
+    }
+    @media (min-width: 768px) {
+        .nav-pill-btn { font-size: 13px; padding: 9px 16px; gap: 7px; }
+    }
+    .nav-pill-btn:hover { border-color: #FFD700; color: #fff; }
+    .nav-pill-btn.active {
+        background: linear-gradient(135deg, #FFD700 0%, #CCA100 100%);
+        color: #150824;
+        border-color: #FFF59D;
+        box-shadow: 0 3px 10px rgba(255, 215, 0, 0.35);
+    }
+
+    /* Clash Royale In-Game Deck Board */
+    .cr-deck-board {
+        background: radial-gradient(circle at top, #3b1c71 0%, #1b0c36 100%);
+        border: 2px solid #6b35c2;
+        box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 6px 15px rgba(0,0,0,0.4);
+        border-radius: 1rem;
+        padding: 12px;
+    }
+    .cr-card-slot {
+        position: relative;
+        background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(0,0,0,0.55) 100%);
+        border: 1.5px solid rgba(255, 215, 0, 0.25);
+        border-radius: 0.75rem;
+        padding: 4px 3px 6px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: transform 0.15s ease;
+    }
+    .cr-card-slot:hover { transform: translateY(-2px); border-color: #FFD700; }
+    .cr-card-slot.evo-card {
+        border-color: #e040fb;
+        box-shadow: 0 0 12px rgba(224, 64, 251, 0.4);
+    }
+    .cr-elixir-drop {
+        position: absolute;
+        top: -5px;
+        right: -4px;
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(135deg, #f50057, #aa00ff);
+        border: 1.5px solid #fff;
+        border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    }
+    .cr-elixir-drop span {
+        transform: rotate(45deg);
+        font-size: 10px;
+        font-weight: 900;
+        color: #fff;
+        line-height: 1;
+    }
+    .cr-level-pill {
+        background: linear-gradient(to right, #00b0ff, #0081cb);
+        color: #fff;
+        font-size: 9px;
+        font-weight: 900;
+        padding: 1px 6px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.4);
+        margin-top: -6px;
+        z-index: 2;
+        text-shadow: 0 1px 2px #000;
+    }
+
     @keyframes scaleIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes tabIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -139,7 +237,85 @@
     </div>
 </div>
 
-<!-- WELCOME SCREEN (Full coverage without background bleed) -->
+<!-- MANDATORY TAG VERIFICATION MODAL FOR OLD USERS -->
+<div id="force-tag-modal" class="fixed inset-0 z-[70] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="panel-card w-full max-w-sm p-5 flex flex-col gap-3 border-2 border-supercellGold shadow-2xl animate-scaleIn">
+        <div class="flex items-center gap-2 border-b border-supercellCardBorder pb-2.5">
+            <div class="w-9 h-9 rounded-full bg-supercellGold/20 border border-supercellGold flex items-center justify-center text-supercellGold shrink-0">
+                <i class="fa-solid fa-hashtag"></i>
+            </div>
+            <div>
+                <h3 class="font-black text-sm text-supercellGold">تحديث إجباري للهاشتاج</h3>
+                <p class="text-[10px] text-gray-300">نظام التحقق الجديد من الحسابات</p>
+            </div>
+        </div>
+        <p class="text-xs text-gray-200 leading-relaxed">
+            أهلاً بك! لاحظنا أن الهاشتاج المسجل في حسابك (<strong id="force-old-tag" class="text-red-400" dir="ltr">---</strong>) غير صالح أو غير موجود في اللعبة. للمتابعة واستخدام الموقع، يرجى إدخال التاغ الحقيقي لحسابك الآن:
+        </p>
+        <div class="flex flex-col gap-1.5">
+            <label class="text-[10px] text-supercellGold font-bold">اختر اللعبة:</label>
+            <select id="force-game-select" class="bg-black/60 border border-supercellCardBorder rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-supercellGold">
+                <option value="cr">كلاش رويال (Clash Royale)</option>
+                <option value="coc">كلاش أوف كلانس (Clash of Clans)</option>
+                <option value="hd">هاي داي (Hay Day)</option>
+                <option value="bs">براول ستارز (Brawl Stars)</option>
+            </select>
+        </div>
+        <div class="flex flex-col gap-1.5">
+            <label class="text-[10px] text-gray-300 font-bold">التاغ الحقيقي لحسابك (مثال: #UYQQ20PJQ):</label>
+            <input type="text" id="force-new-tag" dir="ltr" placeholder="#UYQQ20PJQ" class="bg-black/60 border border-supercellCardBorder rounded-lg px-3 py-2 text-xs text-white uppercase focus:outline-none focus:border-supercellGold">
+            <span id="force-tag-feedback" class="text-[10px] text-red-400 hidden"></span>
+        </div>
+        <button id="force-save-tag-btn" onclick="submitForcedTagUpdate()" class="btn-gold w-full py-2.5 rounded-xl text-black font-black text-xs mt-1">
+            <i class="fa-solid fa-circle-check ml-1"></i> تحقق وحفظ الهاشتاج للمتابعة
+        </button>
+    </div>
+</div>
+
+<!-- PRO FEATURES INFO MODAL (Triggered when clicking PRO badge near username) -->
+<div id="pro-info-modal" class="fixed inset-0 z-[65] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="pro-card w-full max-w-sm p-5 flex flex-col gap-3.5 animate-scaleIn">
+        <div class="flex items-center justify-between border-b border-supercellGold/30 pb-2.5">
+            <h3 class="font-black text-base text-supercellGold flex items-center gap-2">
+                <i class="fa-solid fa-crown"></i> مميزات عضوية SAVO PRO
+            </h3>
+            <button onclick="closeProInfoModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="pro-info-status-box" class="bg-black/50 border border-supercellGold/40 rounded-xl p-3 text-xs text-center"></div>
+        <div class="flex flex-col gap-2 text-xs text-gray-100 bg-black/40 p-3.5 rounded-xl border border-supercellCardBorder">
+            <div class="flex items-start gap-2">
+                <i class="fa-solid fa-chart-pie text-supercellGold mt-0.5"></i>
+                <span><strong>تحليل شامل لحسابك:</strong> عرض الكؤوس الحالية والأعلى، مستوى الملك، التبرعات، وإحصائيات التحديات والبطولات.</span>
+            </div>
+            <div class="flex items-start gap-2">
+                <i class="fa-solid fa-layer-group text-supercellBlue mt-0.5"></i>
+                <span><strong>تشكيلة القتال بشكل اللعبة:</strong> عرض بطاقاتك الثمانية بنفس تصميم كلاش رويال مع متوسط الإكسير ومستوى كل بطاقة والتطويرات.</span>
+            </div>
+            <div class="flex items-start gap-2">
+                <i class="fa-solid fa-percent text-emerald-400 mt-0.5"></i>
+                <span><strong>نسب الفوز والخسارة الدقيقة:</strong> حساب نسبة الانتصارات، الهزائم، وفوز التاج الثلاثي (3-Crown).</span>
+            </div>
+            <div class="flex items-start gap-2">
+                <i class="fa-solid fa-swords text-red-400 mt-0.5"></i>
+                <span><strong>سجل المعارك التفصيلي:</strong> استعراض آخر مبارياتك وتشكيلات خصومك ونتائج كل مواجهة.</span>
+            </div>
+            <div class="flex items-start gap-2">
+                <i class="fa-solid fa-crown text-supercellGold mt-0.5"></i>
+                <span><strong>شارة التاج الذهبية (PRO):</strong> تمييز اسمك بشارة البرو الذهبية في الموقع ولوحة المتصدرين.</span>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="closeProInfoModal(); switchTab('pro');" class="flex-1 btn-gold py-2.5 rounded-xl text-black font-black text-xs">
+                الانتقال لصفحة البرو
+            </button>
+            <button onclick="closeProInfoModal()" class="px-4 py-2.5 rounded-xl bg-black/60 border border-supercellCardBorder text-gray-200 font-bold text-xs">
+                إغلاق
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- WELCOME SCREEN -->
 <div id="welcome-screen" class="fixed inset-0 z-[48] overflow-y-auto bg-[#150824] transition-opacity duration-300">
     <div class="ws-bgfx fixed inset-0 pointer-events-none"></div>
     <div id="ws-bg" class="fixed inset-0 overflow-hidden pointer-events-none"></div>
@@ -183,13 +359,14 @@
 
     <!-- HEADER -->
     <header class="w-full bg-supercellPurple border-b-4 border-supercellCardBorder px-4 md:px-8 py-3 flex items-center justify-between sticky top-0 z-40 shadow-md">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 min-w-0">
             <button id="header-avatar-btn" onclick="toggleUserMenu(event)" class="hidden w-10 h-10 shrink-0 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-500 border-2 border-supercellGold text-supercellGold flex items-center justify-center overflow-hidden shadow" title="حسابي">
                 <i class="fa-solid fa-crown"></i>
             </button>
-            <span id="header-pro-badge" class="hidden items-center gap-1 bg-supercellGold text-black font-black text-[10px] px-2 py-0.5 rounded-full shadow">
+            <span id="header-user-name" class="hidden sm:inline font-black text-xs text-white truncate max-w-[110px]"></span>
+            <button id="header-pro-badge" onclick="openProInfoModal()" class="hidden items-center gap-1 bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-black text-[10px] px-2.5 py-1 rounded-full shadow border border-yellow-200 hover:scale-105 transition-transform cursor-pointer" title="عرض مميزات البرو">
                 <i class="fa-solid fa-crown"></i> PRO
-            </span>
+            </button>
         </div>
         <div class="flex items-center gap-2">
             <div class="relative">
@@ -219,13 +396,13 @@
                     <h4 id="menu-name" class="font-black text-sm text-white truncate">اسم المتابع</h4>
                     <p id="menu-tag" class="text-[11px] text-supercellBlue font-bold">#TAG</p>
                 </div>
-                <span id="menu-pro-pill" class="hidden bg-supercellGold text-black font-black text-[9px] px-2 py-0.5 rounded">PRO</span>
+                <button onclick="closeUserMenu(); openProInfoModal();" id="menu-pro-pill" class="hidden bg-supercellGold text-black font-black text-[9px] px-2 py-0.5 rounded">PRO</button>
             </div>
             <button class="menu-item" onclick="menuAction('pro')"><i class="fa-solid fa-crown"></i> نسخة البرو (PRO)</button>
             <button class="menu-item" onclick="menuAction('edit')"><i class="fa-solid fa-pen-to-square"></i> تعديل الحساب</button>
             <button class="menu-item" onclick="menuAction('referral')"><i class="fa-solid fa-user-plus"></i> ادعُ صديقاً</button>
             <button class="menu-item" onclick="menuAction('promo')"><i class="fa-solid fa-ticket"></i> استرداد كود</button>
-            <button class="menu-item" onclick="menuAction('mission')"><i class="fa-solid fa-flag-checkered"></i> أتمم مهمة</button>
+            <button class="menu-item" onclick="menuAction('mission')"><i class="fa-solid fa-flag-checkered"></i> المهام</button>
             <button class="menu-item install-btn hidden" onclick="menuAction('install')"><i class="fa-solid fa-download"></i> ثبّت الموقع كتطبيق</button>
             <button class="menu-item danger" onclick="menuAction('logout')"><i class="fa-solid fa-right-from-bracket"></i> تسجيل خروج</button>
         </div>
@@ -261,33 +438,35 @@
     <!-- MAIN -->
     <main class="flex-1 w-full px-3 md:px-8 py-4 md:py-6 flex flex-col gap-4">
 
-        <!-- TABS -->
-        <div class="grid grid-cols-5 gap-1.5 bg-black/40 p-1.5 rounded-xl border border-supercellCardBorder" id="tabs-container">
-            <button onclick="switchTab('store')" id="tab-btn-store" class="py-2 px-1 rounded-lg font-black text-[11px] md:text-xs text-center flex flex-col items-center justify-center gap-1 transition-all">
-                <i class="fa-solid fa-store text-base"></i>
-                <span>المتجر</span>
-            </button>
-            <button onclick="switchTab('missions')" id="tab-btn-missions" class="py-2 px-1 rounded-lg font-black text-[11px] md:text-xs text-center flex flex-col items-center justify-center gap-1 transition-all relative">
-                <i class="fa-solid fa-flag-checkered text-base"></i>
-                <span>المهام</span>
-                <span id="mission-badge-dot" class="keep-size absolute top-1 right-2 w-2 h-2 bg-supercellGold rounded-full hidden"></span>
-            </button>
-            <button onclick="switchTab('pro')" id="tab-btn-pro" class="py-2 px-1 rounded-lg font-black text-[11px] md:text-xs text-center flex flex-col items-center justify-center gap-1 transition-all">
-                <i class="fa-solid fa-crown text-base"></i>
-                <span>البرو</span>
-            </button>
-            <button onclick="switchTab('history')" id="tab-btn-history" class="py-2 px-1 rounded-lg font-black text-[11px] md:text-xs text-center flex flex-col items-center justify-center gap-1 transition-all">
-                <i class="fa-solid fa-clock-rotate-left text-base"></i>
-                <span>السجل</span>
-            </button>
-            <button onclick="switchTab('leaderboard')" id="tab-btn-leaderboard" class="py-2 px-1 rounded-lg font-black text-[11px] md:text-xs text-center flex flex-col items-center justify-center gap-1 transition-all">
-                <i class="fa-solid fa-trophy text-base"></i>
-                <span>المتصدرين</span>
-            </button>
-            <button onclick="checkAdminAccess()" id="tab-btn-admin" class="hidden py-2 px-1 rounded-lg font-black text-[11px] md:text-xs text-center flex flex-col items-center justify-center gap-1 transition-all">
-                <i class="fa-solid fa-gear text-base"></i>
-                <span>الأدمن</span>
-            </button>
+        <!-- TABS (Always Single Line Pill Bar) -->
+        <div class="bg-black/45 p-1.5 rounded-2xl border border-supercellCardBorder shadow-inner">
+            <nav id="tabs-container" class="nav-pill-bar">
+                <button onclick="switchTab('store')" id="tab-btn-store" class="nav-pill-btn active">
+                    <i class="fa-solid fa-store"></i>
+                    <span>المتجر</span>
+                </button>
+                <button onclick="switchTab('missions')" id="tab-btn-missions" class="nav-pill-btn relative">
+                    <i class="fa-solid fa-flag-checkered"></i>
+                    <span>المهام</span>
+                    <span id="mission-badge-dot" class="keep-size w-2 h-2 bg-supercellGold rounded-full hidden"></span>
+                </button>
+                <button onclick="switchTab('pro')" id="tab-btn-pro" class="nav-pill-btn">
+                    <i class="fa-solid fa-crown"></i>
+                    <span>البرو</span>
+                </button>
+                <button onclick="switchTab('history')" id="tab-btn-history" class="nav-pill-btn">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>السجل</span>
+                </button>
+                <button onclick="switchTab('leaderboard')" id="tab-btn-leaderboard" class="nav-pill-btn">
+                    <i class="fa-solid fa-trophy"></i>
+                    <span>المتصدرين</span>
+                </button>
+                <button onclick="checkAdminAccess()" id="tab-btn-admin" class="nav-pill-btn hidden">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>الأدمن</span>
+                </button>
+            </nav>
         </div>
 
         <!-- STORE -->
@@ -302,24 +481,35 @@
             <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div>
         </section>
 
-        <!-- MISSIONS TAB -->
+        <!-- MISSIONS TAB (COMING SOON / IN PROGRESS) -->
         <section id="tab-missions" class="flex flex-col gap-3 hidden">
             <div class="flex items-center justify-between">
                 <h3 class="font-black text-sm md:text-base text-supercellGold flex items-center gap-1.5">
                     <i class="fa-solid fa-flag-checkered"></i> مهمات صانع المحتوى
                 </h3>
-                <span class="text-[10px] md:text-xs text-supercellBlue font-bold">شاهد الفيديو بالكامل واكسب الجواهر</span>
+                <span class="text-[10px] md:text-xs bg-amber-500/20 border border-amber-400/50 text-supercellGold px-2.5 py-0.5 rounded-full font-bold">قيد التطوير</span>
             </div>
-            <div id="missions-list" class="flex flex-col gap-3"></div>
+            <div class="panel-card p-8 flex flex-col items-center justify-center text-center gap-3 border-2 border-supercellCardBorder">
+                <div class="w-16 h-16 rounded-full bg-supercellGold/15 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-2xl animate-pulse">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                </div>
+                <h4 class="font-black text-base text-supercellGold">جاري تجهيز قسم المهام...</h4>
+                <p class="text-xs text-gray-300 max-w-md leading-relaxed">
+                    نعمل حالياً على تطوير نظام مهام جديدة وممتعة بمكافآت مميزة. ترقبوا الإطلاق قريباً!
+                </p>
+            </div>
         </section>
 
         <!-- PRO TAB -->
         <section id="tab-pro" class="flex flex-col gap-3 hidden">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between flex-wrap gap-2">
                 <h3 class="font-black text-sm md:text-base text-supercellGold flex items-center gap-1.5">
                     <i class="fa-solid fa-crown"></i> نسخة البرو (SAVO PRO)
                 </h3>
-                <span id="pro-season-badge" class="text-[10px] md:text-xs bg-supercellCard border border-supercellGold/50 px-2.5 py-1 rounded text-supercellGold font-bold">السيزون #1</span>
+                <div class="flex items-center gap-1.5">
+                    <span id="pro-season-countdown" class="text-[10px] bg-black/50 border border-supercellBlue/50 px-2.5 py-1 rounded text-supercellBlue font-bold"></span>
+                    <span id="pro-season-badge" class="text-[10px] md:text-xs bg-supercellCard border border-supercellGold/50 px-2.5 py-1 rounded text-supercellGold font-bold">السيزون #1</span>
+                </div>
             </div>
             <div id="pro-content" class="flex flex-col gap-3"></div>
         </section>
@@ -344,7 +534,7 @@
                 <h3 class="font-black text-sm md:text-base text-supercellGold flex items-center gap-1.5">
                     <i class="fa-solid fa-trophy"></i> لوحة المتصدرين
                 </h3>
-                <span class="text-[10px] md:text-xs text-gray-400">الأول شهرياً يحصل على نسخة البرو</span>
+                <span class="text-[10px] md:text-xs text-gray-400">الأول شهرياً يُرشّح لنسخة البرو</span>
             </div>
             <div id="leaderboard-list" class="flex flex-col gap-3 max-w-2xl w-full mx-auto"></div>
         </section>
@@ -486,17 +676,53 @@
             <div id="atab-pro" class="hidden flex flex-col gap-4">
                 <div class="panel-card p-3.5 flex flex-col gap-3 border-2 border-supercellGold/60">
                     <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1.5 flex items-center gap-1.5">
-                        <i class="fa-solid fa-wallet text-supercellBlue"></i> إعدادات شام كاش (100 ليرة جديدة)
+                        <i class="fa-solid fa-wallet text-supercellBlue"></i> إعدادات شام كاش (الباركود + الكود)
                     </h4>
                     <div class="flex flex-col gap-1">
-                        <label class="text-[10px] text-gray-300">رمز / حساب الشام كاش (ShamCash):</label>
+                        <label class="text-[10px] text-gray-300">رمز / حساب الشام كاش (أحرف وأرقام):</label>
                         <input type="text" id="admin-shamcash-code" dir="ltr" placeholder="أدخل رمز أو حساب الشام كاش هنا" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
                     </div>
                     <div class="flex flex-col gap-1">
+                        <label class="text-[10px] text-supercellBlue font-bold">رابط صورة باركود الشام كاش (GitHub / Image URL):</label>
+                        <input type="text" id="admin-shamcash-qr" dir="ltr" placeholder="https://raw.githubusercontent.com/.../shamcash-qr.png" class="bg-black/60 border border-supercellBlue/50 rounded px-2.5 py-1.5 text-xs text-white">
+                    </div>
+                    <div class="flex flex-col gap-1">
                         <label class="text-[10px] text-gray-300">ملاحظة الدفع:</label>
-                        <input type="text" id="admin-shamcash-note" placeholder="حوّل 100 ليرة سورية جديدة وارفق الإيصال PDF" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+                        <input type="text" id="admin-shamcash-note" placeholder="حوّل 100 ليرة سورية جديدة عبر شام كاش وأدخل رقم العملية" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
                     </div>
                     <button onclick="saveProSettings()" class="btn-gold py-2 rounded text-black font-black text-xs">حفظ إعدادات الدفع</button>
+                </div>
+
+                <div class="panel-card p-3.5 flex flex-col gap-3 border-2 border-amber-500/60">
+                    <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-calendar-days"></i> إعدادات تواريخ السيزون وصلاحية البرو
+                    </h4>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] text-gray-300">رقم السيزون:</label>
+                            <input type="number" id="admin-season-number-input" min="1" value="1" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-white">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] text-gray-300">بداية السيزون:</label>
+                            <input type="date" id="admin-season-start" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1.5 text-xs text-white">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] text-gray-300">نهاية السيزون:</label>
+                            <input type="date" id="admin-season-end" dir="ltr" class="bg-black/60 border border-supercellCardBorder rounded px-2 py-1.5 text-xs text-white">
+                        </div>
+                    </div>
+                    <div id="admin-season-status-preview" class="text-[11px] text-supercellBlue bg-black/40 p-2 rounded border border-supercellCardBorder text-center font-bold"></div>
+                    <div class="flex gap-2">
+                        <button onclick="saveSeasonDates()" class="flex-1 btn-gold py-2 rounded text-black font-black text-xs">
+                            <i class="fa-solid fa-floppy-disk ml-1"></i> حفظ تواريخ السيزون
+                        </button>
+                        <button onclick="advanceSeasonOnly()" class="btn-blue px-3 py-2 rounded text-black font-black text-xs">
+                            سيزون جديد +1
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-gray-400 leading-relaxed">
+                        ملاحظة: تم إلغاء المنح التلقائي للبرو للمركز الأول؛ يمكنك منح أو سحب البرو لأي لاعب يدوياً من تبويب «المتابعون».
+                    </p>
                 </div>
 
                 <div class="panel-card p-3.5 flex flex-col gap-3 border-2 border-supercellBlue/60">
@@ -510,22 +736,9 @@
                     <div id="admin-pro-codes-list" class="flex flex-col gap-2 max-h-56 overflow-y-auto pr-1"></div>
                 </div>
 
-                <div class="panel-card p-3.5 flex flex-col gap-3 border-2 border-amber-500/60">
-                    <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1.5 flex items-center gap-1.5">
-                        <i class="fa-solid fa-calendar-check"></i> إدارة السيزون وجائزة المركز الأول الشهري
-                    </h4>
-                    <div class="flex items-center justify-between text-xs text-gray-200 bg-black/40 p-2.5 rounded border border-supercellCardBorder">
-                        <span>السيزون الحالي: <strong id="admin-season-num" class="text-supercellGold">#1</strong></span>
-                        <span>مدة البرو: <strong class="text-supercellBlue">حسب السيزون (30 يوم)</strong></span>
-                    </div>
-                    <button onclick="startNewSeasonAndRewardTop1()" class="btn-gold py-2.5 rounded text-black font-black text-xs">
-                        <i class="fa-solid fa-trophy ml-1"></i> بدء سيزون جديد ومنح البرو لصاحب المركز الأول
-                    </button>
-                </div>
-
                 <div class="panel-card p-3.5 flex flex-col gap-3">
                     <h4 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1.5 flex items-center gap-1.5">
-                        <i class="fa-solid fa-receipt text-supercellBlue"></i> طلبات شراء البرو عبر شام كاش
+                        <i class="fa-solid fa-receipt text-supercellBlue"></i> طلبات شراء البرو عبر شام كاش (أرقام العمليات)
                     </h4>
                     <div id="admin-pro-requests-list" class="flex flex-col gap-2 pr-1"></div>
                 </div>
@@ -549,7 +762,7 @@
                         <h4 class="font-black text-xs md:text-sm text-supercellGold"><i class="fa-solid fa-flag-checkered ml-1"></i> إدارة مهام صانع المحتوى</h4>
                         <button onclick="openMissionModal()" class="btn-blue px-2.5 py-1 rounded text-black font-black text-[10px]"><i class="fa-solid fa-plus"></i> إضافة مهمة جديدة</button>
                     </div>
-                    <p class="text-[10px] text-gray-300">أنشئ مهام للمتابعين مع تحديد الجواهر ورابط الفيديو.</p>
+                    <p class="text-[10px] text-amber-300">تنبيه: واجهة المهام للمستخدمين حالياً في وضع «قيد التجهيز» بناءً على طلبك.</p>
                     <div id="admin-missions-list" class="flex flex-col gap-2 pr-1"></div>
                 </div>
             </div>
@@ -615,7 +828,7 @@
     </div>
 </div>
 
-<!-- COMPLETE PROFILE MODAL (Game Selector + Verified Tag) -->
+<!-- COMPLETE PROFILE MODAL -->
 <div id="google-profile-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-xs p-4 flex flex-col gap-3">
         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
@@ -653,34 +866,43 @@
     </div>
 </div>
 
-<!-- SHAMCASH BUY PRO MODAL (100 SYP New + PDF Receipt) -->
+<!-- SHAMCASH BUY PRO MODAL (QR Image + Code + Transaction ID) -->
 <div id="pro-buy-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="panel-card w-full max-w-sm p-4 flex flex-col gap-3 animate-scaleIn">
         <div class="flex items-center justify-between border-b border-supercellCardBorder pb-2">
-            <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5"><i class="fa-solid fa-crown"></i> اشتراك نسخة البرو (100 ليرة جديدة)</h3>
+            <h3 class="font-black text-sm text-supercellGold flex items-center gap-1.5"><i class="fa-solid fa-crown"></i> اشتراك نسخة البرو (SAVO PRO)</h3>
             <button onclick="closeProBuyModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
 
-        <div class="bg-black/50 border border-supercellGold/60 rounded-xl p-3 flex flex-col gap-1.5 text-xs">
+        <div class="bg-black/50 border border-supercellGold/60 rounded-xl p-3 flex flex-col gap-2 text-xs">
             <div class="flex items-center justify-between">
                 <span class="text-gray-300">المبلغ المطلوب:</span>
                 <strong class="text-supercellGold font-black">100 ليرة سورية جديدة</strong>
             </div>
+
+            <!-- ShamCash QR Image Container -->
+            <div id="shamcash-qr-box" class="hidden flex-col items-center gap-1.5 bg-white p-2.5 rounded-xl mx-auto">
+                <img id="shamcash-qr-img" src="" alt="باركود شام كاش" class="w-40 h-40 object-contain">
+                <span class="text-[10px] font-black text-black">امسح الباركود عبر تطبيق شام كاش</span>
+            </div>
+
             <div class="flex items-center justify-between gap-2">
                 <span class="text-gray-300">رمز / حساب الشام كاش:</span>
-                <span id="shamcash-display-code" dir="ltr" class="font-black text-supercellBlue select-all bg-black/60 px-2 py-0.5 rounded border border-supercellCardBorder">---</span>
+                <div class="flex items-center gap-1.5">
+                    <span id="shamcash-display-code" dir="ltr" class="font-black text-supercellBlue select-all bg-black/60 px-2 py-0.5 rounded border border-supercellCardBorder">---</span>
+                    <button onclick="copyShamCashCode()" class="bg-supercellGold text-black px-2 py-0.5 rounded font-black text-[10px]" title="نسخ الكود"><i class="fa-solid fa-copy"></i></button>
+                </div>
             </div>
-            <p id="shamcash-display-note" class="text-[11px] text-gray-300 leading-relaxed pt-1">حوّل المبلغ عبر شام كاش وأرفق إيصال الدفع (PDF) لإرساله للمراجعة.</p>
+            <p id="shamcash-display-note" class="text-[11px] text-gray-300 leading-relaxed pt-1">حوّل المبلغ عبر شام كاش ثم أدخل رقم العملية لإرساله للمراجعة.</p>
         </div>
 
         <div class="flex flex-col gap-1.5">
-            <label class="text-[11px] text-supercellGold font-bold">إرفاق إيصال الدفع (ملف PDF):</label>
-            <input type="file" id="pro-receipt-file" accept="application/pdf,.pdf" class="bg-black/60 border border-supercellCardBorder rounded px-2.5 py-1.5 text-xs text-gray-200 file:ml-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-bold file:bg-supercellGold file:text-black">
-            <span id="pro-receipt-name" class="text-[10px] text-gray-400"></span>
+            <label class="text-[11px] text-supercellGold font-bold">رقم عملية التحويل (Transaction ID):</label>
+            <input type="text" id="pro-transaction-id" dir="ltr" placeholder="أدخل رقم العملية الظاهر في إشعار شام كاش" class="bg-black/60 border border-supercellCardBorder rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-supercellGold">
         </div>
 
         <button id="submit-pro-request-btn" onclick="submitShamCashProRequest()" class="btn-gold py-2.5 rounded text-black font-black text-xs">
-            <i class="fa-solid fa-paper-plane ml-1"></i> إرسال طلب التفعيل للمراجعة
+            <i class="fa-solid fa-paper-plane ml-1"></i> إرسال رقم العملية للمراجعة
         </button>
 
         <div class="border-t border-supercellCardBorder pt-2.5 flex flex-col gap-2">
@@ -704,36 +926,6 @@
         <div class="flex flex-col gap-2 w-full mt-1">
             <button id="daily-claim-btn" onclick="claimDailyJewel()" class="btn-gold py-2.5 rounded text-black font-black text-xs">مطالبة بالجوهرة الآن</button>
             <button onclick="closeDailyJewelModal()" class="btn-red py-2 rounded text-white font-black text-xs">إغلاق</button>
-        </div>
-    </div>
-</div>
-
-<!-- MISSION VIEW / SECRET TIMER MODAL -->
-<div id="mission-timer-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="panel-card w-full max-w-sm p-5 flex flex-col items-center text-center gap-3 animate-scaleIn">
-        <div class="w-12 h-12 rounded-full bg-supercellBlue/20 border-2 border-supercellBlue flex items-center justify-center text-supercellBlue text-2xl animate-pulse">
-            <i class="fa-solid fa-play"></i>
-        </div>
-        <h3 class="font-black text-base text-supercellGold">متابعة المهمة ومشاهدة الفيديو</h3>
-        <p class="text-xs text-gray-200 leading-relaxed">يرجى الضغط على زر فتح الفيديو أدناه، مشاهدته بالكامل، ووضع لايك لضمان وصول الجواهر لحسابك.</p>
-
-        <input type="hidden" id="active-mission-id">
-        <input type="hidden" id="active-mission-url">
-
-        <div class="w-full bg-black/60 border border-supercellCardBorder p-3 rounded-xl flex flex-col items-center gap-2.5 my-1">
-            <a id="mission-open-link-btn" href="#" target="_blank" rel="noopener" onclick="onMissionLinkClicked()" class="w-full btn-blue py-3 rounded text-black font-black text-xs text-center block">
-                <i class="fa-solid fa-external-link-alt ml-1"></i> اضغط هنا لفتح ومشاهدة الفيديو
-            </a>
-            <div id="mission-status-text" class="text-xs text-gray-300 py-1">
-                بعد الانتهاء من مشاهدة الفيديو ووضع لايك، اضغط على زر الاستلام أدناه.
-            </div>
-        </div>
-
-        <div class="flex flex-col gap-2 w-full mt-1">
-            <button id="mission-final-claim-btn" onclick="executeClaimMission()" disabled class="py-2.5 rounded font-black text-xs bg-gray-700 text-gray-400 border border-gray-600 cursor-not-allowed">
-                استلام الجواهر (يرجى مشاهدة الفيديو أولاً...)
-            </button>
-            <button onclick="closeMissionTimerModal()" class="btn-red py-2 rounded text-white font-black text-xs">إغلاق</button>
         </div>
     </div>
 </div>
@@ -922,8 +1114,8 @@
         </div>
         <div id="ud-info" class="bg-black/40 border border-supercellCardBorder rounded p-2.5 flex flex-col gap-1.5 text-[11px] text-gray-200"></div>
         <div class="flex gap-2">
-            <button onclick="toggleUserProFromAdmin(true)" class="flex-1 btn-gold py-1.5 rounded text-black font-black text-xs">تفعيل PRO</button>
-            <button onclick="toggleUserProFromAdmin(false)" class="flex-1 btn-red py-1.5 rounded text-white font-black text-xs">إلغاء PRO</button>
+            <button onclick="toggleUserProFromAdmin(true)" class="flex-1 btn-gold py-1.5 rounded text-black font-black text-xs">تفعيل PRO (للسيزون)</button>
+            <button onclick="toggleUserProFromAdmin(false)" class="flex-1 btn-red py-1.5 rounded text-white font-black text-xs">إلغاء / حذف PRO</button>
         </div>
         <div class="border-t border-supercellCardBorder pt-2 flex flex-col gap-1.5">
             <h5 class="font-black text-xs text-supercellGold">سجل نشاطات وتحصيل هذا المستخدم:</h5>
@@ -977,13 +1169,19 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const ADMIN_EMAILS = ["mohanadabukhader176@gmail.com", "mohanadabukhader1976@gmail.com"];
+// Strictly restricted to Mohanad's Admin accounts
+const ADMIN_EMAILS = [
+    "mohanadabukhader17076@gmail.com",
+    "mohanadabukhader176@gmail.com",
+    "mohanadabukhader1976@gmail.com"
+];
 const CR_WORKER_URL = "https://broken-sun-0e11.mohanadabukhader176.workers.dev";
 const DEFAULT_CR_TAG = "#UYQQ20PJQ";
 const DEFAULT_ABOUT = 'SAVO XP هو متجر مكافآت لمتابعي القناة.\n\n١. سجّل الدخول بحساب جوجل واختر لعبتك.\n٢. اجمع الجواهر: جوهرة مجانية كل 24 ساعة، ومن البث المباشر والمهام.\n٣. استبدل جواهرك بالمكافآت أو فعّل نسخة البرو (PRO).';
 
 let state = {
     currentUser: null,
+    activeTab: 'store',
     products: [],
     missions: [],
     history: [],
@@ -994,6 +1192,7 @@ let state = {
     activeGame: 'all',
     promoCodes: {},
     crCache: {},
+    verifiedTagsSession: {},
     settings: {
         badge: 'تنويه',
         announcement: 'أهلاً بك في منصة مكافآت صانع المحتوى SAVO XP - تابع البث المباشر واجمع النقاط!',
@@ -1006,11 +1205,14 @@ let state = {
         logoUrl: '',
         aboutText: '',
         shamCashCode: 'SAVO-SHAMCASH-100',
-        shamCashNote: 'حوّل 100 ليرة سورية جديدة عبر شام كاش وارفق ملف الإيصال PDF لتفعيل نسخة البرو للسيزون الحالي.',
+        shamCashQrUrl: '',
+        shamCashNote: 'حوّل 100 ليرة سورية جديدة عبر شام كاش ثم أدخل رقم العملية لتفعيل نسخة البرو للسيزون الحالي.',
         seasonNumber: 1,
+        seasonStartDate: '',
+        seasonEndDate: '',
         whatsappChannelUrl: 'https://whatsapp.com/channel/0029VbB2rgZHLHQYSiyye61L',
         whatsappNoticeText: 'تابع أحدث الأخبار والتحديثات في قناة الواتساب الرسمية',
-        earnInstructions: '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• إتمام المهمات اليومية ومشاهدة الفيديوهات.\n• الهدايا والمسابقات أثناء البث المباشر.',
+        earnInstructions: '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• الهدايا والمسابقات أثناء البث المباشر.\n• دعوة الأصدقاء عبر رابط الإحالة الخاص بك.',
         gameIcons: {},
         socials: {
             youtube: 'https://youtube.com',
@@ -1056,38 +1258,184 @@ try {
 let usersLoaded = false;
 const hasSavedSession = (() => { try { return !!localStorage.getItem('savo_logged_email'); } catch (e) { return false; } })();
 
-function isAdminUser() {
-    const email = (state.currentUser && state.currentUser.email || '').toLowerCase();
+function isAdminUser(user = state.currentUser) {
+    if (!user || !user.email) return false;
+    const email = String(user.email).trim().toLowerCase();
     return ADMIN_EMAILS.includes(email);
+}
+
+function getSeasonEndTimestamp() {
+    if (state.settings.seasonEndDate) {
+        const end = new Date(state.settings.seasonEndDate + 'T23:59:59').getTime();
+        if (!isNaN(end)) return end;
+    }
+    return serverNow() + (30 * 24 * 60 * 60 * 1000);
+}
+
+function getSeasonTimingInfo() {
+    const now = serverNow();
+    const startStr = state.settings.seasonStartDate;
+    const endStr = state.settings.seasonEndDate;
+    if (!startStr && !endStr) {
+        return { text: 'المدة: 30 يوم', daysLeft: 30, status: 'active' };
+    }
+    const startMs = startStr ? new Date(startStr + 'T00:00:00').getTime() : 0;
+    const endMs = endStr ? new Date(endStr + 'T23:59:59').getTime() : 0;
+
+    if (startMs && now < startMs) {
+        const daysToStart = Math.max(1, Math.ceil((startMs - now) / (1000 * 60 * 60 * 24)));
+        return { text: `باقي ${daysToStart} يوم ليبدأ السيزون الجديد`, daysLeft: daysToStart, status: 'upcoming' };
+    }
+    if (endMs && now <= endMs) {
+        const daysLeft = Math.max(1, Math.ceil((endMs - now) / (1000 * 60 * 60 * 24)));
+        return { text: `باقي ${daysLeft} يوم لنهاية السيزون`, daysLeft, status: 'active' };
+    }
+    if (endMs && now > endMs) {
+        return { text: 'انتهى السيزون الحالي', daysLeft: 0, status: 'ended' };
+    }
+    return { text: 'السيزون نشط حالياً', daysLeft: 30, status: 'active' };
 }
 
 function hasProAccess(user = state.currentUser) {
     if (!user) return false;
-    const email = (user.email || '').toLowerCase();
-    if (ADMIN_EMAILS.includes(email)) return true;
+    if (isAdminUser(user)) return true;
     const currentSeason = Number(state.settings.seasonNumber || 1);
     if (user.proPermanent) return true;
+    if (user.proSeason && Number(user.proSeason) === currentSeason) {
+        if (state.settings.seasonEndDate) {
+            const endMs = new Date(state.settings.seasonEndDate + 'T23:59:59').getTime();
+            if (!isNaN(endMs) && serverNow() > endMs) return false;
+        }
+        return true;
+    }
     if (user.proExpiresAt && Number(user.proExpiresAt) > serverNow()) return true;
-    if (user.proSeason && Number(user.proSeason) === currentSeason) return true;
     return false;
 }
 
 function applyAdminTabVisibility() {
     const b = el('tab-btn-admin');
-    const tabsContainer = el('tabs-container');
-    if (!b || !tabsContainer) return;
+    if (!b) return;
 
     if (isAdminUser()) {
         b.classList.remove('hidden');
-        tabsContainer.className = 'grid grid-cols-6 gap-1 bg-black/40 p-1.5 rounded-xl border border-supercellCardBorder';
     } else {
         b.classList.add('hidden');
-        tabsContainer.className = 'grid grid-cols-5 gap-1.5 bg-black/40 p-1.5 rounded-xl border border-supercellCardBorder';
-        if (!el('tab-admin').classList.contains('hidden')) {
+        if (state.activeTab === 'admin' || (el('tab-admin') && !el('tab-admin').classList.contains('hidden'))) {
             switchTab('store');
         }
     }
 }
+
+/* --- FORCED TAG VALIDATION FOR EXISTING 800 USERS --- */
+let checkingForcedTag = false;
+async function enforceValidPlayerTag(user) {
+    if (!user || isAdminUser(user) || checkingForcedTag) return;
+    const game = user.game || 'cr';
+    if (game !== 'cr') return;
+
+    const clean = normalizeTag(user.tag || '');
+    if (user.tagVerified && /^[0289PYLQGRJCUV]{3,14}$/.test(clean)) return;
+    if (state.verifiedTagsSession[clean]) return;
+
+    checkingForcedTag = true;
+    try {
+        if (!/^[0289PYLQGRJCUV]{3,14}$/.test(clean)) {
+            showForceTagModal(user.tag || 'بدون تاغ');
+            return;
+        }
+        const check = await verifyAndFetchCrPlayer(clean);
+        if (!check.ok) {
+            showForceTagModal(user.tag || clean);
+        } else {
+            state.verifiedTagsSession[clean] = true;
+            await update(ref(db, 'users/' + dbKeyOf(user.email)), {
+                tag: check.cleanTag,
+                tagVerified: true
+            });
+        }
+    } finally {
+        checkingForcedTag = false;
+    }
+}
+
+function showForceTagModal(oldTag) {
+    const modal = el('force-tag-modal');
+    if (!modal) return;
+    el('force-old-tag').innerText = oldTag || 'غير صالح';
+    el('force-game-select').value = (state.currentUser && state.currentUser.game) || 'cr';
+    el('force-new-tag').value = '';
+    el('force-tag-feedback').classList.add('hidden');
+    modal.classList.remove('hidden');
+}
+
+window.submitForcedTagUpdate = async function () {
+    if (!state.currentUser) return;
+    const game = el('force-game-select').value || 'cr';
+    let tag = el('force-new-tag').value.trim().toUpperCase();
+    const feedback = el('force-tag-feedback');
+    const btn = el('force-save-tag-btn');
+
+    if (!tag) {
+        feedback.innerText = 'يرجى كتابة التاغ الخاص بحسابك.';
+        feedback.classList.remove('hidden');
+        return;
+    }
+    if (!tag.startsWith('#')) tag = '#' + tag;
+
+    btn.disabled = true;
+    feedback.className = 'text-[10px] text-supercellBlue';
+    feedback.innerText = 'جاري التحقق من صحة الهاشتاج في السيرفر...';
+    feedback.classList.remove('hidden');
+
+    try {
+        if (game === 'cr') {
+            const check = await verifyAndFetchCrPlayer(tag);
+            if (!check.ok) {
+                feedback.className = 'text-[10px] text-red-400';
+                feedback.innerText = check.error;
+                return;
+            }
+            tag = check.cleanTag;
+            state.verifiedTagsSession[normalizeTag(tag)] = true;
+        }
+
+        const dbKey = dbKeyOf(state.currentUser.email);
+        await update(ref(db, 'users/' + dbKey), {
+            game,
+            tag,
+            tagVerified: true
+        });
+        state.currentUser.game = game;
+        state.currentUser.tag = tag;
+        state.currentUser.tagVerified = true;
+
+        el('force-tag-modal').classList.add('hidden');
+        renderUserProfile();
+        renderProSection();
+        showToast('تم التحقق من الهاشتاج وتحديث حسابك بنجاح! ✅');
+    } catch (e) {
+        feedback.className = 'text-[10px] text-red-400';
+        feedback.innerText = 'حدث خطأ في الاتصال، حاول مرة أخرى.';
+    } finally {
+        btn.disabled = false;
+    }
+};
+
+/* --- PRO FEATURES POPUP (Near Username) --- */
+window.openProInfoModal = function () {
+    const statusBox = el('pro-info-status-box');
+    const seasonNum = Number(state.settings.seasonNumber || 1);
+    const timing = getSeasonTimingInfo();
+    const active = hasProAccess(state.currentUser);
+
+    if (statusBox) {
+        statusBox.innerHTML = active
+            ? `<span class="text-supercellGold font-black"><i class="fa-solid fa-crown ml-1"></i> عضويتك مفعلة للسيزون #${seasonNum}</span><div class="text-[11px] text-supercellBlue mt-0.5">${esc(timing.text)}</div>`
+            : `<span class="text-gray-300">السيزون الحالي: <strong class="text-supercellGold">#${seasonNum}</strong> (${esc(timing.text)})</span>`;
+    }
+    el('pro-info-modal').classList.remove('hidden');
+};
+window.closeProInfoModal = () => el('pro-info-modal').classList.add('hidden');
 
 function restoreSession() {
     if (state.currentUser) return;
@@ -1103,6 +1451,7 @@ function restoreSession() {
         renderMissions();
         renderProSection();
         updateNotificationBadge();
+        enforceValidPlayerTag(found);
     }
 }
 
@@ -1175,8 +1524,12 @@ function initFirebaseSync() {
         renderAbout();
         renderStore();
         renderProSection();
+        renderUserProfile();
         checkMaintenanceStatus();
-        if (isAdminUser()) populateAdminSettingsForm();
+        if (isAdminUser()) {
+            populateAdminSettingsForm();
+            renderAdminProTab();
+        }
     });
 
     onValue(ref(db, 'products'), (snapshot) => {
@@ -1230,11 +1583,9 @@ function initFirebaseSync() {
         updateNotificationBadge();
         refreshLeaderboardIfOpen();
         checkMaintenanceStatus();
-        if (isAdminUser()) {
-            applyAdminTabVisibility();
-            if (!el('tab-admin').classList.contains('hidden')) renderAdminUsers();
-        } else {
-            applyAdminTabVisibility();
+        applyAdminTabVisibility();
+        if (isAdminUser() && !el('tab-admin').classList.contains('hidden')) {
+            renderAdminUsers();
         }
     });
 
@@ -1383,7 +1734,7 @@ window.renderFooterSocials = function () {
 window.renderEarnInstructions = function () {
     const box = el('earn-instructions-content');
     if (box) {
-        const instructions = state.settings.earnInstructions || '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• إتمام المهمات اليومية ومشاهدة الفيديوهات.\n• الهدايا والمسابقات أثناء البث المباشر.';
+        const instructions = state.settings.earnInstructions || '• المطالبة بجوهرتك اليومية المجانية كل 24 ساعة.\n• حضور ومتابعة البث المباشر على اليوتيوب.\n• الهدايا والمسابقات أثناء البث المباشر.';
         box.innerHTML = instructions.split('\n').map(line => line.trim() ? `<div><i class="fa-solid fa-circle-check text-supercellGold ml-1.5"></i> ${esc(line.replace(/^[•\-\*]\s*/, ''))}</div>` : '').join('');
     }
 };
@@ -1391,6 +1742,7 @@ window.renderEarnInstructions = function () {
 window.renderUserProfile = function () {
     const xpDisplay = el('header-xp-balance');
     const avatarBtn = el('header-avatar-btn');
+    const userNameEl = el('header-user-name');
     const dailyBtn = el('header-daily-btn');
     const proBadge = el('header-pro-badge');
     const menuProPill = el('menu-pro-pill');
@@ -1398,6 +1750,10 @@ window.renderUserProfile = function () {
     if (state.currentUser) {
         dailyBtn.classList.remove('hidden');
         avatarBtn.classList.remove('hidden');
+        if (userNameEl) {
+            userNameEl.innerText = state.currentUser.name || '';
+            userNameEl.classList.remove('hidden');
+        }
         el('menu-name').innerText = state.currentUser.name || '';
         el('menu-tag').innerText = state.currentUser.tag || '';
         xpDisplay.innerText = state.currentUser.xp || 0;
@@ -1413,6 +1769,7 @@ window.renderUserProfile = function () {
     } else {
         dailyBtn.classList.add('hidden');
         avatarBtn.classList.add('hidden');
+        if (userNameEl) userNameEl.classList.add('hidden');
         if (proBadge) { proBadge.classList.add('hidden'); proBadge.classList.remove('flex'); }
         xpDisplay.innerText = '0';
         closeUserMenu();
@@ -1601,141 +1958,10 @@ window.claimDailyJewel = async function () {
     }
 };
 
-/* --- MISSIONS LOGIC --- */
-let missionTimerInterval = null;
-let secondsLeft = 35;
-
+/* --- MISSIONS (Admin kept intact, User tab shows Coming Soon) --- */
 window.renderMissions = function () {
-    const list = el('missions-list');
     const badgeDot = el('mission-badge-dot');
-    if (!list) return;
-    list.innerHTML = '';
-
-    if (!state.currentUser) {
-        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">يرجى تسجيل الدخول بحساب جوجل لعرض وإتمام المهام.</div>`;
-        if (badgeDot) badgeDot.classList.add('hidden');
-        return;
-    }
-
-    const completedMissions = state.currentUser.completedMissions || {};
-    const missions = state.missions || [];
-
-    const uncompletedCount = missions.filter(m => !completedMissions[m.id]).length;
-    if (badgeDot) badgeDot.classList.toggle('hidden', uncompletedCount === 0);
-
-    if (missions.length === 0) {
-        list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لا توجد مهام متاحة حالياً. تفقد الموقع لاحقاً!</div>`;
-        return;
-    }
-
-    missions.forEach(m => {
-        const isDone = !!completedMissions[m.id];
-        const card = document.createElement('div');
-        card.className = 'panel-card p-3.5 flex flex-col gap-2.5';
-        card.innerHTML = `
-            <div class="flex items-center justify-between">
-                <h4 class="font-black text-xs md:text-sm text-supercellGold flex items-center gap-1.5"><i class="fa-solid fa-flag text-supercellBlue"></i> ${esc(m.title)}</h4>
-                <span class="bg-black/60 border border-supercellCardBorder px-2.5 py-1 rounded text-xs font-black text-supercellBlue">💎 +${m.reward || 3} جواهر</span>
-            </div>
-            <p class="text-xs text-gray-200 leading-relaxed">${esc(m.desc)}</p>
-            <div class="flex items-center gap-2 pt-1">
-                <button onclick="startMissionVerification('${esc(m.id)}', '${esc(m.url)}')" ${isDone ? 'disabled' : ''} class="w-full py-2.5 rounded font-black text-xs ${isDone ? 'bg-gray-700 text-gray-400 border border-gray-600 cursor-not-allowed' : 'btn-gold'}">
-                    ${isDone ? 'تمت المهمة بنجاح ✅' : 'شاهد الفيديو واستلم الجواهر'}
-                </button>
-            </div>`;
-        list.appendChild(card);
-    });
-};
-
-window.startMissionVerification = function (missionId, url) {
-    if (!state.currentUser) {
-        openLoginModal();
-        return;
-    }
-    const completed = (state.currentUser.completedMissions || {})[missionId];
-    if (completed) {
-        showToast('لقد قمت بإتمام هذه المهمة مسبقاً.', 'error');
-        return;
-    }
-
-    el('active-mission-id').value = missionId;
-    el('active-mission-url').value = url;
-    el('mission-open-link-btn').href = safeUrl(url);
-
-    secondsLeft = 35;
-    const claimBtn = el('mission-final-claim-btn');
-    claimBtn.disabled = true;
-    claimBtn.className = 'py-2.5 rounded font-black text-xs bg-gray-700 text-gray-400 border border-gray-600 cursor-not-allowed';
-    claimBtn.innerText = 'يرجى مشاهدة الفيديو ووضع لايك أولاً...';
-    el('mission-status-text').innerText = 'يرجى فتح الفيديو ومشاهدته بالكامل مع وضع لايك لضمان احتساب الجواهر.';
-
-    el('mission-timer-modal').classList.remove('hidden');
-};
-
-window.onMissionLinkClicked = function () {
-    if (missionTimerInterval) clearInterval(missionTimerInterval);
-
-    missionTimerInterval = setInterval(() => {
-        if (secondsLeft > 0) {
-            secondsLeft--;
-        } else {
-            clearInterval(missionTimerInterval);
-            const claimBtn = el('mission-final-claim-btn');
-            const statusText = el('mission-status-text');
-            if (statusText) statusText.innerText = '✅ تم التحقق من المشاهدة! يمكنك الآن استلام الجواهر.';
-            if (claimBtn) {
-                claimBtn.disabled = false;
-                claimBtn.className = 'btn-gold py-2.5 rounded text-black font-black text-xs';
-                claimBtn.innerText = 'استلام الجواهر الآن 💎';
-            }
-        }
-    }, 1000);
-};
-
-window.closeMissionTimerModal = function () {
-    if (missionTimerInterval) clearInterval(missionTimerInterval);
-    el('mission-timer-modal').classList.add('hidden');
-};
-
-window.executeClaimMission = async function () {
-    const missionId = el('active-mission-id').value;
-    closeMissionTimerModal();
-    if (!state.currentUser || !missionId) return;
-
-    const mission = state.missions.find(m => m.id === missionId);
-    if (!mission) return;
-
-    const reward = Number(mission.reward) || 3;
-    const dbKey = dbKeyOf(state.currentUser.email);
-
-    try {
-        await runTransaction(ref(db, 'users/' + dbKey), (cur) => {
-            if (!cur) return cur;
-            cur.completedMissions = cur.completedMissions || {};
-            if (cur.completedMissions[missionId]) return;
-
-            const nowDt = new Date();
-            const timeStr = `${nowDt.getFullYear()}-${String(nowDt.getMonth() + 1).padStart(2, '0')}-${String(nowDt.getDate()).padStart(2, '0')} ${String(nowDt.getHours()).padStart(2, '0')}:${String(nowDt.getMinutes()).padStart(2, '0')}`;
-
-            cur.completedMissions[missionId] = serverNow();
-            cur.xp = (cur.xp || 0) + reward;
-
-            cur.earningsHistory = cur.earningsHistory || [];
-            cur.earningsHistory.push({
-                source: `مهمة: ${mission.title}`,
-                reward: reward,
-                timestamp: timeStr
-            });
-
-            return cur;
-        });
-
-        launchConfetti();
-        showToast(`مبروك! تمت إضافة ${reward} جواهر إلى رصيدك بنجاح 💎`);
-        renderMissions();
-    } catch (e) {
-        showToast('حدث خطأ أثناء استلام الجوائز، حاول مرة أخرى.', 'error');
-    }
+    if (badgeDot) badgeDot.classList.add('hidden');
 };
 
 window.openMissionModal = function (missionId = null) {
@@ -1821,7 +2047,7 @@ window.renderAdminMissions = function () {
     });
 };
 
-/* --- CLASH ROYALE WORKER & PRO STATS --- */
+/* --- CLASH ROYALE WORKER & PRO STATS (RoyaleAPI / Triage Style + In-Game Deck) --- */
 function normalizeTag(raw) {
     let t = String(raw || '').trim().toUpperCase().replace(/^#/, '');
     t = t.replace(/O/g, '0');
@@ -1870,10 +2096,13 @@ window.handleGameSelectionChange = function () {
 window.renderProSection = function () {
     const box = el('pro-content');
     const seasonBadge = el('pro-season-badge');
+    const countdownEl = el('pro-season-countdown');
     if (!box) return;
 
     const seasonNum = Number(state.settings.seasonNumber || 1);
+    const timing = getSeasonTimingInfo();
     if (seasonBadge) seasonBadge.innerText = `السيزون #${seasonNum}`;
+    if (countdownEl) countdownEl.innerText = timing.text;
 
     if (!state.currentUser) {
         box.innerHTML = `<div class="panel-card p-6 text-center text-xs text-gray-300">يرجى تسجيل الدخول بحساب جوجل لاستعراض ميزات وبيانات نسخة البرو.</div>`;
@@ -1891,14 +2120,14 @@ window.renderProSection = function () {
                 <div class="flex flex-col gap-1">
                     <h4 class="font-black text-base text-supercellGold">احصل على SAVO PRO (بأسلوب RoyaleAPI)</h4>
                     <p class="text-xs text-gray-200 leading-relaxed">
-                        استعرض إحصائيات حسابك في كلاش رويال، الكؤوس، الكلان، البطاقات والتشكيلة، ونسب الفوز والخسارة؛ واشتراكها <strong>100 ليرة سورية جديدة</strong> عبر شام كاش أو عبر كود PRO لمرة واحدة، كما يحصل الأول شهرياً على البرو تلقائياً.
+                        استعرض إحصائيات حسابك في كلاش رويال، الكؤوس، الكلان، البطاقات والتشكيلة بشكلها الحقيقي داخل اللعبة، ونسب الفوز والخسارة؛ اشتراكها <strong>100 ليرة سورية جديدة</strong> عبر شام كاش أو عبر كود PRO لمرة واحدة.
                     </p>
                 </div>
                 <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-3 text-right text-xs flex flex-col gap-1.5">
-                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> عرض الكؤوس، أعلى الكؤوس، المستوى، والكلان</div>
-                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> استعراض تشكيلة القتال الحالية ومستويات البطاقات</div>
-                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> حساب نسبة الفوز والخسارة (Win/Loss %)</div>
-                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> صالحة للسيزون الحالي (#${seasonNum}) مقابل 100 ليرة جديدة</div>
+                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> عرض الكؤوس، أعلى الكؤوس، المستوى، التبرعات، والكلان</div>
+                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> استعراض تشكيلة القتال (4×2) ومتوسط الإكسير وتطور البطاقات</div>
+                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> حساب نسبة الفوز والخسارة والتاج الثلاثي وسجل آخر المعارك</div>
+                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> صالحة للسيزون الحالي (#${seasonNum}) — ${esc(timing.text)}</div>
                 </div>
                 <button onclick="openProBuyModal()" class="btn-gold w-full py-3 rounded-xl text-black font-black text-sm">
                     <i class="fa-solid fa-crown ml-1"></i> شراء / تفعيل البرو (100 ليرة جديدة)
@@ -1966,13 +2195,32 @@ window.loadProCrStats = async function (cleanTag, forceRefresh = false) {
 
     const wins = Number(player.wins || 0);
     const losses = Number(player.losses || 0);
-    const totalMatches = wins + losses;
-    const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(1) : '0.0';
-    const lossRate = totalMatches > 0 ? ((losses / totalMatches) * 100).toFixed(1) : '0.0';
+    const battleCount = Number(player.battleCount || (wins + losses));
+    const totalWL = wins + losses;
+    const winRate = totalWL > 0 ? ((wins / totalWL) * 100).toFixed(1) : '0.0';
+    const lossRate = totalWL > 0 ? ((losses / totalWL) * 100).toFixed(1) : '0.0';
+    const threeCrowns = Number(player.threeCrownWins || 0);
+    const threeCrownRate = wins > 0 ? ((threeCrowns / wins) * 100).toFixed(1) : '0.0';
+
     const arenaName = (player.arena && player.arena.name) ? player.arena.name : 'غير محدد';
     const clanName = (player.clan && player.clan.name) ? player.clan.name : 'بدون كلان';
-    const clanRole = (player.clan && player.clan.role) ? player.clan.role : '';
+    const clanTag = (player.clan && player.clan.tag) ? player.clan.tag : '';
+    const clanRoleMap = { leader: 'قائد الكلان', coLeader: 'نائب القائد', elder: 'عضو مميز', member: 'عضو' };
+    const clanRole = (player.clan && player.clan.role) ? (clanRoleMap[player.clan.role] || player.clan.role) : '';
+
+    const donations = Number(player.donations || 0);
+    const donationsReceived = Number(player.donationsReceived || 0);
+    const totalDonations = Number(player.totalDonations || 0);
+    const challengeMaxWins = Number(player.challengeMaxWins || 0);
+    const challengeCardsWon = Number(player.challengeCardsWon || 0);
+    const warDayWins = Number(player.warDayWins || 0);
+    const favCard = player.currentFavouriteCard ? player.currentFavouriteCard.name : 'غير محدد';
+    const favCardImg = (player.currentFavouriteCard && player.currentFavouriteCard.iconUrls && player.currentFavouriteCard.iconUrls.medium) || '';
+
     const deck = Array.isArray(player.currentDeck) ? player.currentDeck : [];
+    const avgElixir = deck.length > 0
+        ? (deck.reduce((sum, c) => sum + (Number(c.elixirCost) || 0), 0) / deck.length).toFixed(1)
+        : '-';
 
     let recentBattlesHtml = '';
     try {
@@ -1983,17 +2231,33 @@ window.loadProCrStats = async function (cleanTag, forceRefresh = false) {
                 const topBattles = bData.slice(0, 6);
                 recentBattlesHtml = `
                     <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-3 flex flex-col gap-2 text-right">
-                        <h5 class="font-black text-xs text-supercellGold flex items-center gap-1.5"><i class="fa-solid fa-swords text-supercellBlue"></i> آخر المعارك المسجلة</h5>
-                        <div class="flex flex-col gap-1.5">
+                        <h5 class="font-black text-xs text-supercellGold flex items-center gap-1.5"><i class="fa-solid fa-swords text-supercellBlue"></i> سجل آخر المعارك (Battle Log)</h5>
+                        <div class="flex flex-col gap-2">
                             ${topBattles.map(m => {
-                                const myCrowns = (m.team && m.team[0] && m.team[0].crowns) ?? 0;
-                                const oppCrowns = (m.opponent && m.opponent[0] && m.opponent[0].crowns) ?? 0;
+                                const myTeam = (m.team && m.team[0]) || {};
+                                const oppTeam = (m.opponent && m.opponent[0]) || {};
+                                const myCrowns = myTeam.crowns ?? 0;
+                                const oppCrowns = oppTeam.crowns ?? 0;
                                 const won = myCrowns > oppCrowns;
-                                const oppName = (m.opponent && m.opponent[0] && m.opponent[0].name) ? m.opponent[0].name : 'خصم';
+                                const draw = myCrowns === oppCrowns;
+                                const oppName = oppTeam.name || 'خصم';
                                 const modeName = (m.gameMode && m.gameMode.name) ? m.gameMode.name : (m.type || 'مباراة');
-                                return `<div class="flex items-center justify-between text-[11px] bg-black/40 px-2.5 py-1.5 rounded border border-white/5">
-                                    <span class="truncate font-bold text-white">${esc(oppName)} <span class="text-[10px] text-gray-400">(${esc(modeName)})</span></span>
-                                    <span class="font-black ${won ? 'text-emerald-400' : 'text-red-400'}">${won ? 'فوز' : 'خسارة'} (${myCrowns}-${oppCrowns})</span>
+                                const oppCards = Array.isArray(oppTeam.cards) ? oppTeam.cards.slice(0, 8) : [];
+                                return `<div class="bg-black/50 p-2.5 rounded-lg border ${won ? 'border-emerald-500/30' : draw ? 'border-gray-500/30' : 'border-red-500/30'} flex flex-col gap-1.5">
+                                    <div class="flex items-center justify-between text-[11px]">
+                                        <span class="truncate font-bold text-white">ضد: ${esc(oppName)} <span class="text-[10px] text-gray-400">(${esc(modeName)})</span></span>
+                                        <span class="font-black px-2 py-0.5 rounded text-[10px] ${won ? 'bg-emerald-500/20 text-emerald-400' : draw ? 'bg-gray-500/20 text-gray-300' : 'bg-red-500/20 text-red-400'}">
+                                            ${won ? 'فوز' : draw ? 'تعادل' : 'خسارة'} (${myCrowns} - ${oppCrowns})
+                                        </span>
+                                    </div>
+                                    ${oppCards.length > 0 ? `
+                                    <div class="flex items-center gap-1 overflow-x-auto pt-0.5">
+                                        <span class="text-[9px] text-gray-400 shrink-0 ml-1">تشكيلة الخصم:</span>
+                                        ${oppCards.map(c => {
+                                            const cImg = (c.iconUrls && c.iconUrls.medium) || '';
+                                            return cImg ? `<img src="${esc(cImg)}" alt="${esc(c.name)}" title="${esc(c.name)}" class="w-6 h-7 object-contain shrink-0">` : '';
+                                        }).join('')}
+                                    </div>` : ''}
                                 </div>`;
                             }).join('')}
                         </div>
@@ -2003,122 +2267,173 @@ window.loadProCrStats = async function (cleanTag, forceRefresh = false) {
     } catch (e) {}
 
     body.innerHTML = `
-        <div class="flex flex-col gap-3 text-right">
-            <div class="bg-black/50 border border-supercellCardBorder rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex flex-col gap-3.5 text-right">
+            <!-- Player Header Card -->
+            <div class="bg-black/50 border border-supercellCardBorder rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-2">
                 <div>
-                    <h4 class="font-black text-sm text-white">${esc(player.name)} <span class="text-supercellBlue text-xs">${esc(player.tag || '#' + cleanTag)}</span></h4>
-                    <p class="text-[11px] text-gray-300">الكلان: <strong class="text-supercellGold">${esc(clanName)}</strong> ${clanRole ? `<span class="text-gray-400">(${esc(clanRole)})</span>` : ''} • الساحة: ${esc(arenaName)}</p>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-supercellBlue text-black font-black text-xs px-2 py-0.5 rounded">Lv.${esc(player.expLevel || '-')}</span>
+                        <h4 class="font-black text-base text-white">${esc(player.name)}</h4>
+                        <span class="text-supercellBlue text-xs font-bold" dir="ltr">${esc(player.tag || '#' + cleanTag)}</span>
+                    </div>
+                    <p class="text-[11px] text-gray-300 mt-1">
+                        الكلان: <strong class="text-supercellGold">${esc(clanName)}</strong> ${clanTag ? `<span class="text-gray-400" dir="ltr">(${esc(clanTag)})</span>` : ''} ${clanRole ? `• <span class="text-supercellBlue">${esc(clanRole)}</span>` : ''}
+                    </p>
+                    <p class="text-[11px] text-gray-300">الساحة: <strong class="text-white">${esc(arenaName)}</strong></p>
                 </div>
-                <div class="text-left">
-                    <div class="font-black text-base text-supercellGold">🏆 ${esc(player.trophies || 0)}</div>
-                    <div class="text-[10px] text-gray-400">الأعلى: ${esc(player.bestTrophies || 0)}</div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2 text-center">
-                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
-                    <div class="text-[10px] text-gray-400">نسبة الفوز</div>
-                    <div class="font-black text-sm text-emerald-400">${winRate}%</div>
-                    <div class="text-[10px] text-gray-400">${wins} فوز</div>
-                </div>
-                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
-                    <div class="text-[10px] text-gray-400">نسبة الخسارة</div>
-                    <div class="font-black text-sm text-red-400">${lossRate}%</div>
-                    <div class="text-[10px] text-gray-400">${losses} خسارة</div>
-                </div>
-                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
-                    <div class="text-[10px] text-gray-400">مستوى الملك</div>
-                    <div class="font-black text-sm text-supercellBlue">Lv. ${esc(player.expLevel || '-')}</div>
-                    <div class="text-[10px] text-gray-400">3 تاج: ${esc(player.threeCrownWins || 0)}</div>
+                <div class="text-left bg-black/50 border border-supercellGold/40 px-3 py-2 rounded-xl">
+                    <div class="font-black text-lg text-supercellGold">🏆 ${esc(player.trophies || 0)}</div>
+                    <div class="text-[10px] text-gray-300">أعلى كؤوس: <strong class="text-supercellBlue">${esc(player.bestTrophies || 0)}</strong></div>
                 </div>
             </div>
 
-            ${deck.length > 0 ? `
+            <!-- Win/Loss Bar (RoyaleAPI style) -->
             <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-3 flex flex-col gap-2">
-                <div class="flex items-center justify-between">
-                    <h5 class="font-black text-xs text-supercellGold"><i class="fa-solid fa-layer-group text-supercellBlue ml-1"></i> تشكيلة القتال الحالية ومستويات البطاقات</h5>
-                    <span class="text-[10px] text-gray-400">${deck.length} بطاقات</span>
+                <div class="flex items-center justify-between text-xs font-black">
+                    <span class="text-emerald-400">نسبة الفوز: ${winRate}% (${wins})</span>
+                    <span class="text-red-400">نسبة الخسارة: ${lossRate}% (${losses})</span>
                 </div>
-                <div class="grid grid-cols-4 sm:grid-cols-8 gap-1.5">
-                    ${deck.map(card => {
-                        const imgUrl = (card.iconUrls && (card.iconUrls.evolutionMedium || card.iconUrls.medium)) || '';
-                        return `<div class="bg-black/60 border border-supercellCardBorder/70 rounded-lg p-1.5 flex flex-col items-center justify-between text-center">
-                            ${imgUrl ? `<img src="${esc(imgUrl)}" alt="${esc(card.name)}" class="w-10 h-10 object-contain" loading="lazy">` : `<div class="w-10 h-10 flex items-center justify-center text-supercellGold"><i class="fa-solid fa-clone"></i></div>`}
-                            <span class="text-[9px] text-white truncate w-full mt-0.5">${esc(card.name)}</span>
-                            <span class="text-[9px] font-black text-supercellBlue">Lv.${esc(card.level || '-')}</span>
+                <div class="w-full h-2.5 bg-red-500/40 rounded-full overflow-hidden flex border border-white/10">
+                    <div class="bg-emerald-500 h-full" style="width: ${winRate}%"></div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 pt-1 text-center">
+                    <div class="bg-black/50 rounded-lg p-2 border border-white/5">
+                        <div class="text-[10px] text-gray-400">إجمالي المعارك</div>
+                        <div class="font-black text-xs text-white">${battleCount.toLocaleString()}</div>
+                    </div>
+                    <div class="bg-black/50 rounded-lg p-2 border border-white/5">
+                        <div class="text-[10px] text-gray-400">فوز 3 تيجان</div>
+                        <div class="font-black text-xs text-supercellGold">${threeCrowns.toLocaleString()} (${threeCrownRate}%)</div>
+                    </div>
+                    <div class="bg-black/50 rounded-lg p-2 border border-white/5">
+                        <div class="text-[10px] text-gray-400">أقصى انتصارات تحدي</div>
+                        <div class="font-black text-xs text-supercellBlue">${challengeMaxWins} فوز</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- In-Game 4x2 Deck Board -->
+            ${deck.length > 0 ? `
+            <div class="cr-deck-board flex flex-col gap-2.5">
+                <div class="flex items-center justify-between border-b border-white/15 pb-2">
+                    <h5 class="font-black text-xs md:text-sm text-supercellGold flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved text-supercellBlue"></i> تشكيلة القتال الحالية
+                    </h5>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-fuchsia-950/80 border border-fuchsia-400/50 text-fuchsia-200 px-2.5 py-0.5 rounded-full text-[11px] font-black">
+                            💧 متوسط الإكسير: ${avgElixir}
+                        </span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 gap-2 pt-1">
+                    ${deck.map((card, idx) => {
+                        const isEvo = idx < 2 && card.iconUrls && card.iconUrls.evolutionMedium;
+                        const imgUrl = isEvo ? card.iconUrls.evolutionMedium : ((card.iconUrls && card.iconUrls.medium) || '');
+                        const displayLevel = (card.level || 1) + (15 - (card.maxLevel || 15));
+                        return `<div class="cr-card-slot ${isEvo ? 'evo-card' : ''}">
+                            ${card.elixirCost ? `<div class="cr-elixir-drop"><span>${esc(card.elixirCost)}</span></div>` : ''}
+                            ${imgUrl
+                                ? `<img src="${esc(imgUrl)}" alt="${esc(card.name)}" class="w-14 h-16 md:w-16 md:h-20 object-contain drop-shadow" loading="lazy">`
+                                : `<div class="w-14 h-16 flex items-center justify-center text-supercellGold"><i class="fa-solid fa-clone text-xl"></i></div>`}
+                            <span class="cr-level-pill">مستوى ${esc(displayLevel)}</span>
+                            <span class="text-[9px] font-bold text-gray-100 truncate w-full text-center mt-1 px-0.5">${esc(card.name)}</span>
                         </div>`;
                     }).join('')}
                 </div>
             </div>` : ''}
 
+            <!-- Extra Stats Grid (Donations, Challenges, Fav Card) -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
+                    <div class="text-[10px] text-gray-400">إجمالي التبرعات</div>
+                    <div class="font-black text-xs text-emerald-400 mt-0.5">${totalDonations.toLocaleString()}</div>
+                    <div class="text-[9px] text-gray-400">الأسبوع: ${donations} / استلام: ${donationsReceived}</div>
+                </div>
+                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
+                    <div class="text-[10px] text-gray-400">بطاقات التحديات</div>
+                    <div class="font-black text-xs text-supercellBlue mt-0.5">${challengeCardsWon.toLocaleString()}</div>
+                </div>
+                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
+                    <div class="text-[10px] text-gray-400">انتصارات الحرب</div>
+                    <div class="font-black text-xs text-supercellGold mt-0.5">${warDayWins}</div>
+                </div>
+                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5 flex flex-col items-center justify-center">
+                    <div class="text-[10px] text-gray-400">البطاقة المفضلة</div>
+                    <div class="flex items-center gap-1 mt-0.5">
+                        ${favCardImg ? `<img src="${esc(favCardImg)}" class="w-5 h-6 object-contain">` : ''}
+                        <span class="font-black text-[10px] text-white truncate max-w-[80px]">${esc(favCard)}</span>
+                    </div>
+                </div>
+            </div>
+
             ${recentBattlesHtml}
         </div>`;
 };
 
-/* --- SHAMCASH PRO PURCHASE + PRO CODES + SEASON --- */
+/* --- SHAMCASH PRO PURCHASE (QR + Transaction ID) + PRO CODES + SEASON DATES --- */
 window.openProBuyModal = function () {
     if (!state.currentUser) {
         openLoginModal();
         return;
     }
     el('shamcash-display-code').innerText = state.settings.shamCashCode || 'SAVO-SHAMCASH-100';
-    el('shamcash-display-note').innerText = state.settings.shamCashNote || 'حوّل 100 ليرة سورية جديدة عبر شام كاش وارفق ملف الإيصال PDF لتفعيل نسخة البرو للسيزون الحالي.';
-    el('pro-receipt-file').value = '';
-    el('pro-receipt-name').innerText = '';
+    el('shamcash-display-note').innerText = state.settings.shamCashNote || 'حوّل 100 ليرة سورية جديدة عبر شام كاش ثم أدخل رقم العملية لتفعيل نسخة البرو للسيزون الحالي.';
+
+    const qrUrl = (state.settings.shamCashQrUrl || '').trim();
+    const qrBox = el('shamcash-qr-box');
+    const qrImg = el('shamcash-qr-img');
+    if (qrUrl && qrBox && qrImg) {
+        qrImg.src = qrUrl;
+        qrBox.classList.remove('hidden');
+        qrBox.classList.add('flex');
+    } else if (qrBox) {
+        qrBox.classList.add('hidden');
+        qrBox.classList.remove('flex');
+    }
+
+    el('pro-transaction-id').value = '';
     el('pro-redeem-code-input').value = '';
     el('pro-buy-modal').classList.remove('hidden');
 };
 
 window.closeProBuyModal = () => el('pro-buy-modal').classList.add('hidden');
 
-el('pro-receipt-file').addEventListener('change', (e) => {
-    const f = e.target.files && e.target.files[0];
-    if (!f) { el('pro-receipt-name').innerText = ''; return; }
-    if (f.size > 1500000) {
-        showToast('حجم ملف الإيصال كبير جداً، يرجى اختيار ملف PDF أقل من 1.5MB.', 'error');
-        e.target.value = '';
-        el('pro-receipt-name').innerText = '';
-        return;
-    }
-    el('pro-receipt-name').innerText = `الملف المحدد: ${f.name}`;
-});
+window.copyShamCashCode = function () {
+    const code = el('shamcash-display-code').innerText;
+    navigator.clipboard.writeText(code).then(() => showToast('تم نسخ كود الشام كاش!')).catch(() => {});
+};
 
-window.submitShamCashProRequest = function () {
+window.submitShamCashProRequest = async function () {
     if (!state.currentUser) return;
-    const fileInput = el('pro-receipt-file');
-    const file = fileInput.files && fileInput.files[0];
-    if (!file) {
-        showToast('يرجى إرفاق إيصال الدفع (PDF) أولاً.', 'error');
+    const txId = el('pro-transaction-id').value.trim();
+    if (!txId || txId.length < 3) {
+        showToast('يرجى إدخال رقم عملية التحويل بشكل صحيح.', 'error');
         return;
     }
 
-    const reader = new FileReader();
-    reader.onload = async () => {
-        const reqId = 'proreq_' + Date.now();
-        const now = new Date();
-        const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-        const reqObj = {
-            id: reqId,
-            userKey: dbKeyOf(state.currentUser.email),
-            userEmail: state.currentUser.email,
-            userName: state.currentUser.name,
-            userTag: state.currentUser.tag || '',
-            amount: '100 ليرة سورية جديدة',
-            fileName: file.name,
-            pdfBase64: reader.result,
-            seasonNumber: Number(state.settings.seasonNumber || 1),
-            status: 'pending',
-            timestamp: timeStr
-        };
-        try {
-            await set(ref(db, 'proRequests/' + reqId), reqObj);
-            closeProBuyModal();
-            showToast('تم إرسال طلبك والإيصال بنجاح، بانتظار مراجعة الأدمن.');
-        } catch (err) {
-            showToast('تعذر إرسال الطلب، حاول مرة أخرى.', 'error');
-        }
+    const reqId = 'proreq_' + Date.now();
+    const now = new Date();
+    const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const reqObj = {
+        id: reqId,
+        userKey: dbKeyOf(state.currentUser.email),
+        userEmail: state.currentUser.email,
+        userName: state.currentUser.name,
+        userTag: state.currentUser.tag || '',
+        amount: '100 ليرة سورية جديدة',
+        transactionId: txId,
+        seasonNumber: Number(state.settings.seasonNumber || 1),
+        status: 'pending',
+        timestamp: timeStr
     };
-    reader.readAsDataURL(file);
+
+    try {
+        await set(ref(db, 'proRequests/' + reqId), reqObj);
+        closeProBuyModal();
+        showToast('تم إرسال رقم العملية بنجاح، بانتظار مراجعة الأدمن.');
+    } catch (err) {
+        showToast('تعذر إرسال الطلب، حاول مرة أخرى.', 'error');
+    }
 };
 
 window.redeemProCode = async function () {
@@ -2145,7 +2460,7 @@ window.redeemProCode = async function () {
         if (res.committed && outcome === 'ok') {
             await update(ref(db, 'users/' + dbKey), {
                 proSeason: currentSeason,
-                proExpiresAt: serverNow() + (30 * 24 * 60 * 60 * 1000)
+                proExpiresAt: getSeasonEndTimestamp()
             });
             closeProBuyModal();
             launchConfetti();
@@ -2163,8 +2478,35 @@ window.redeemProCode = async function () {
 window.saveProSettings = function () {
     update(ref(db, 'settings'), {
         shamCashCode: el('admin-shamcash-code').value.trim() || 'SAVO-SHAMCASH-100',
+        shamCashQrUrl: el('admin-shamcash-qr').value.trim(),
         shamCashNote: el('admin-shamcash-note').value.trim()
-    }).then(() => showToast('تم حفظ إعدادات الشام كاش بنجاح!'));
+    }).then(() => showToast('تم حفظ إعدادات الشام كاش والباركود بنجاح!'));
+};
+
+window.saveSeasonDates = function () {
+    const num = Number(el('admin-season-number-input').value) || 1;
+    const start = el('admin-season-start').value;
+    const end = el('admin-season-end').value;
+    if (start && end && new Date(end) < new Date(start)) {
+        showToast('تاريخ نهاية السيزون يجب أن يكون بعد تاريخ البداية.', 'error');
+        return;
+    }
+    update(ref(db, 'settings'), {
+        seasonNumber: num,
+        seasonStartDate: start,
+        seasonEndDate: end
+    }).then(() => {
+        showToast('تم حفظ تواريخ ورقم السيزون بنجاح!');
+        renderAdminProTab();
+    });
+};
+
+window.advanceSeasonOnly = function () {
+    const nextSeason = Number(state.settings.seasonNumber || 1) + 1;
+    update(ref(db, 'settings'), { seasonNumber: nextSeason }).then(() => {
+        showToast(`تم الانتقال إلى السيزون #${nextSeason} (بدون منح تلقائي للبرو).`);
+        renderAdminProTab();
+    });
 };
 
 window.generateSingleProCode = function () {
@@ -2193,9 +2535,9 @@ window.approveProRequest = async function (reqId) {
     try {
         await update(ref(db, 'users/' + uKey), {
             proSeason: currentSeason,
-            proExpiresAt: serverNow() + (30 * 24 * 60 * 60 * 1000)
+            proExpiresAt: getSeasonEndTimestamp()
         });
-        await update(ref(db, 'proRequests/' + reqId), { status: 'approved', pdfBase64: null });
+        await update(ref(db, 'proRequests/' + reqId), { status: 'approved' });
         showToast(`تم قبول الطلب وتفعيل البرو لحساب ${reqItem.userName}!`);
     } catch (e) {
         showToast('حدث خطأ أثناء التفعيل.', 'error');
@@ -2205,37 +2547,24 @@ window.approveProRequest = async function (reqId) {
 window.rejectProRequest = async function (reqId) {
     const reqItem = state.proRequests[reqId];
     if (!reqItem) return;
-    await update(ref(db, 'proRequests/' + reqId), { status: 'rejected', pdfBase64: null });
+    await update(ref(db, 'proRequests/' + reqId), { status: 'rejected' });
     showToast('تم رفض الطلب.');
-};
-
-window.startNewSeasonAndRewardTop1 = async function () {
-    if (!confirm('هل تريد بدء سيزون جديد ومنح البرو لصاحب المركز الأول في لوحة المتصدرين؟')) return;
-    const nextSeason = Number(state.settings.seasonNumber || 1) + 1;
-    const users = Object.entries(state.usersMap || {})
-        .map(([k, u]) => ({ key: k, ...u }))
-        .filter(u => u && !ADMIN_EMAILS.includes((u.email || '').toLowerCase()) && (u.xp || 0) > 0)
-        .sort((a, b) => (b.xp || 0) - (a.xp || 0));
-
-    await update(ref(db, 'settings'), { seasonNumber: nextSeason });
-
-    if (users.length > 0) {
-        const top1 = users[0];
-        await update(ref(db, 'users/' + top1.key), {
-            proSeason: nextSeason,
-            proExpiresAt: serverNow() + (30 * 24 * 60 * 60 * 1000)
-        });
-        showToast(`بدأ السيزون #${nextSeason} وتم منح البرو للمركز الأول: ${top1.name}!`);
-    } else {
-        showToast(`بدأ السيزون #${nextSeason} بنجاح.`);
-    }
 };
 
 window.renderAdminProTab = function () {
     if (!isAdminUser()) return;
     el('admin-shamcash-code').value = state.settings.shamCashCode || '';
+    el('admin-shamcash-qr').value = state.settings.shamCashQrUrl || '';
     el('admin-shamcash-note').value = state.settings.shamCashNote || '';
-    el('admin-season-num').innerText = `#${Number(state.settings.seasonNumber || 1)}`;
+    el('admin-season-number-input').value = Number(state.settings.seasonNumber || 1);
+    el('admin-season-start').value = state.settings.seasonStartDate || '';
+    el('admin-season-end').value = state.settings.seasonEndDate || '';
+
+    const timing = getSeasonTimingInfo();
+    const preview = el('admin-season-status-preview');
+    if (preview) {
+        preview.innerText = `حالة السيزون #${Number(state.settings.seasonNumber || 1)}: ${timing.text}`;
+    }
 
     const codesBox = el('admin-pro-codes-list');
     if (codesBox) {
@@ -2263,9 +2592,9 @@ window.renderAdminProTab = function () {
                     : r.status === 'rejected'
                         ? `<span class="text-red-400 font-bold">مرفوض ❌</span>`
                         : `<span class="text-supercellGold font-bold">قيد المراجعة</span>`;
-                const pdfLink = r.pdfBase64
-                    ? `<a href="${esc(r.pdfBase64)}" download="${esc(r.fileName || 'receipt.pdf')}" class="text-supercellBlue underline text-[11px] font-bold"><i class="fa-solid fa-file-pdf ml-1"></i> تحميل الإيصال (${esc(r.fileName || 'PDF')})</a>`
-                    : `<span class="text-[10px] text-gray-400">ملف الإيصال: ${esc(r.fileName || 'PDF')}</span>`;
+                const txDisplay = r.transactionId
+                    ? `<span class="text-supercellBlue font-black select-all bg-black/60 px-2 py-0.5 rounded border border-supercellBlue/40" dir="ltr">رقم العملية: ${esc(r.transactionId)}</span>`
+                    : `<span class="text-[10px] text-gray-400">إيصال: ${esc(r.fileName || 'قديم')}</span>`;
 
                 return `
                     <div class="bg-black/50 border border-supercellCardBorder rounded-xl p-3 flex flex-col gap-2 text-xs">
@@ -2277,11 +2606,11 @@ window.renderAdminProTab = function () {
                             ${statusBadge}
                         </div>
                         <div class="text-[11px] text-gray-300">${esc(r.userEmail)} • ${esc(r.amount || '100 ليرة جديدة')} • <span class="text-gray-400">${esc(r.timestamp)}</span></div>
-                        <div class="flex items-center justify-between gap-2 pt-1">
-                            ${pdfLink}
+                        <div class="flex items-center justify-between gap-2 pt-1 flex-wrap">
+                            ${txDisplay}
                             ${r.status === 'pending' ? `
                             <div class="flex gap-1.5">
-                                <button onclick="approveProRequest('${esc(r.id)}')" class="btn-gold px-2.5 py-1 rounded text-black font-black text-[10px]">قبول</button>
+                                <button onclick="approveProRequest('${esc(r.id)}')" class="btn-gold px-2.5 py-1 rounded text-black font-black text-[10px]">قبول وتفعيل</button>
                                 <button onclick="rejectProRequest('${esc(r.id)}')" class="btn-red px-2.5 py-1 rounded text-white font-black text-[10px]">رفض</button>
                             </div>` : ''}
                         </div>
@@ -2451,7 +2780,7 @@ window.renderLeaderboard = function () {
     const list = el('leaderboard-list');
     if (!list) return;
 
-    const users = Object.values(state.usersMap || {}).filter(u => u && !ADMIN_EMAILS.includes((u.email || '').toLowerCase()));
+    const users = Object.values(state.usersMap || {}).filter(u => u && !isAdminUser(u));
     const ranked = users.filter(u => (u.xp || 0) > 0).sort((a, b) => (b.xp || 0) - (a.xp || 0));
     const meEmail = state.currentUser ? (state.currentUser.email || '').toLowerCase() : null;
 
@@ -2486,7 +2815,7 @@ window.renderLeaderboard = function () {
 
     let html = `<div dir="ltr" class="panel-card px-3 pt-5 pb-0 flex items-end gap-2 overflow-hidden">${cols}</div>`;
 
-    if (meEmail && !ADMIN_EMAILS.includes(meEmail)) {
+    if (meEmail && !isAdminUser(state.currentUser)) {
         const me = users.find(u => (u.email || '').toLowerCase() === meEmail);
         if (me) {
             const myXp = me.xp || 0;
@@ -2563,6 +2892,7 @@ window.handleGoogleSignIn = function (response) {
             renderMissions();
             renderProSection();
             updateNotificationBadge();
+            enforceValidPlayerTag(existingUser);
             showToast(`مرحباً بك مجدداً ${existingUser.name}!`);
         } else {
             closeLoginModal();
@@ -2635,6 +2965,7 @@ window.saveGoogleProfile = async function () {
             renderMissions();
             renderProSection();
             updateNotificationBadge();
+            enforceValidPlayerTag(state.currentUser);
             showToast(`مرحباً بك مجدداً ${state.currentUser.name}!`);
             return;
         }
@@ -2644,6 +2975,7 @@ window.saveGoogleProfile = async function () {
 
         const newUser = {
             name, email, avatar, game, ytChannel, tag, country,
+            tagVerified: true,
             xp: 0,
             lastReadNotification: 0,
             joinedAt: timeStr,
@@ -2757,8 +3089,9 @@ window.saveEditedProfile = async function () {
     state.currentUser.ytChannel = ytChannel;
     state.currentUser.tag = tag;
     state.currentUser.country = country;
+    state.currentUser.tagVerified = true;
 
-    update(ref(db, 'users/' + dbKeyOf(state.currentUser.email)), { name, game, ytChannel, tag, country });
+    update(ref(db, 'users/' + dbKeyOf(state.currentUser.email)), { name, game, ytChannel, tag, country, tagVerified: true });
 
     closeEditProfileModal();
     renderUserProfile();
@@ -2992,13 +3325,13 @@ window.switchTab = function (tabId) {
         showToast('غير مسموح بالدخول.', 'error');
         return;
     }
+    state.activeTab = tabId;
     ['store', 'missions', 'pro', 'history', 'leaderboard', 'admin'].forEach(id => {
         const sec = el('tab-' + id);
         const btn = el('tab-btn-' + id);
         if (sec) sec.classList.toggle('hidden', id !== tabId);
         if (btn) {
-            const active = id === tabId;
-            btn.className = `py-2 px-1 rounded-lg font-black text-[11px] md:text-xs text-center flex flex-col items-center justify-center gap-1 transition-all ${active ? 'bg-supercellPurple text-supercellGold border border-supercellCardBorder shadow' : 'text-gray-300 hover:text-white'}`;
+            btn.classList.toggle('active', id === tabId);
         }
     });
     if (tabId === 'pro') renderProSection();
@@ -3251,7 +3584,7 @@ window.renderAdminUsers = function () {
     if (!list) return;
 
     let users = Object.entries(state.usersMap || {}).map(([k, u]) => ({ key: k, ...u }));
-    users = users.filter(u => !ADMIN_EMAILS.includes((u.email || '').toLowerCase()));
+    users = users.filter(u => !isAdminUser(u));
     countEl.innerText = `${users.length} متابع`;
 
     if (searchVal) {
@@ -3301,7 +3634,7 @@ window.openUserDetails = function (userKey) {
     el('ud-info').innerHTML = `
         <div><strong>البريد:</strong> ${esc(user.email)}</div>
         <div><strong>اللعبة:</strong> ${esc((user.game || 'cr').toUpperCase())} • <strong>التاغ:</strong> ${esc(user.tag)}</div>
-        <div><strong>حالة PRO:</strong> ${hasProAccess(user) ? '<span class="text-supercellGold font-bold">مفعّل</span>' : '<span class="text-gray-400">غير مفعّل</span>'}</div>
+        <div><strong>حالة PRO:</strong> ${hasProAccess(user) ? `<span class="text-supercellGold font-bold">مفعّل (سيزون #${user.proSeason || state.settings.seasonNumber || 1})</span>` : '<span class="text-gray-400">غير مفعّل</span>'}</div>
         <div><strong>اليوتيوب:</strong> ${esc(user.ytChannel || 'غير محدد')}</div>
         <div><strong>الدولة:</strong> ${esc(user.country || 'غير محدد')}</div>
         <div><strong>تاريخ الانضمام:</strong> ${esc(user.joinedAt || 'غير متوفر')}</div>
@@ -3332,10 +3665,10 @@ window.toggleUserProFromAdmin = async function (enable) {
     if (!userKey) return;
     const currentSeason = Number(state.settings.seasonNumber || 1);
     await update(ref(db, 'users/' + userKey), enable
-        ? { proSeason: currentSeason, proExpiresAt: serverNow() + (30 * 24 * 60 * 60 * 1000) }
+        ? { proSeason: currentSeason, proExpiresAt: getSeasonEndTimestamp() }
         : { proSeason: 0, proExpiresAt: 0, proPermanent: false }
     );
-    showToast(enable ? 'تم تفعيل PRO للمستخدم.' : 'تم إلغاء PRO عن المستخدم.');
+    showToast(enable ? `تم منح وتفعيل PRO للمستخدم للسيزون #${currentSeason}.` : 'تم حذف وإلغاء PRO عن المستخدم.');
     closeCustomPointsModal();
     renderAdminUsers();
 };
