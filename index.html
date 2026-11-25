@@ -48,26 +48,41 @@
     ::-webkit-scrollbar-thumb { background: #53239e; border-radius: 4px; }
 
     .btn-gold, .btn-blue, .btn-red { position: relative; overflow: hidden; }
-    .btn-gold { background: linear-gradient(to bottom, #FFE853, #CCA100); border: 2px solid #FFF59D; box-shadow: 0 4px 0 #8B6508, 0 6px 10px rgba(0,0,0,0.4); transition: all 0.1s ease; }
+    .btn-gold { background: linear-gradient(to bottom, #FFE853, #CCA100); border: 2px solid #FFF59D; box-shadow: 0 4px 0 #8B6508, 0 6px 10px rgba(0,0,0,0.4); transition: all 0.12s ease; }
     .btn-gold:active { transform: translateY(4px); box-shadow: 0 0 0 #8B6508, 0 2px 5px rgba(0,0,0,0.4); }
-    .btn-blue { background: linear-gradient(to bottom, #00FFFF, #0088CC); border: 2px solid #B3FFFF; box-shadow: 0 4px 0 #004466, 0 6px 10px rgba(0,0,0,0.4); transition: all 0.1s ease; }
+    .btn-blue { background: linear-gradient(to bottom, #00FFFF, #0088CC); border: 2px solid #B3FFFF; box-shadow: 0 4px 0 #004466, 0 6px 10px rgba(0,0,0,0.4); transition: all 0.12s ease; }
     .btn-blue:active { transform: translateY(4px); box-shadow: 0 0 0 #004466, 0 2px 5px rgba(0,0,0,0.4); }
-    .btn-red { background: linear-gradient(to bottom, #FF5252, #C62828); border: 2px solid #FF8A80; box-shadow: 0 4px 0 #7F0000, 0 6px 10px rgba(0,0,0,0.4); transition: all 0.1s ease; }
+    .btn-red { background: linear-gradient(to bottom, #FF5252, #C62828); border: 2px solid #FF8A80; box-shadow: 0 4px 0 #7F0000, 0 6px 10px rgba(0,0,0,0.4); transition: all 0.12s ease; }
     .btn-red:active { transform: translateY(4px); box-shadow: 0 0 0 #7F0000, 0 2px 5px rgba(0,0,0,0.4); }
-    .btn-gold:hover, .btn-blue:hover, .btn-red:hover { filter: brightness(1.08); }
+    .btn-gold:hover, .btn-blue:hover, .btn-red:hover { filter: brightness(1.08); transform: translateY(-1px); }
     button:disabled { cursor: not-allowed; }
-    button:not(.btn-gold):not(.btn-blue):not(.btn-red) { transition: transform 0.12s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
+    button:not(.btn-gold):not(.btn-blue):not(.btn-red) { transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; }
     button:not(.btn-gold):not(.btn-blue):not(.btn-red):active { transform: scale(0.96); }
     .ripple-dot { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.55); transform: scale(0); animation: ripple 0.6s ease-out forwards; pointer-events: none; }
     @keyframes ripple { to { transform: scale(1); opacity: 0; } }
 
-    .panel-card { background: linear-gradient(135deg, #2b1055 0%, #1f0b3d 100%); border: 2px solid #53239e; box-shadow: 0 8px 0 rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.3); border-radius: 1rem; }
-    .pro-card { background: linear-gradient(135deg, #3a1666 0%, #1c0a38 100%); border: 2px solid #FFD700; box-shadow: 0 8px 0 rgba(0,0,0,0.5), 0 0 20px rgba(255,215,0,0.15); border-radius: 1rem; }
+    .panel-card {
+        background: linear-gradient(135deg, #2b1055 0%, #1f0b3d 100%);
+        border: 2px solid #53239e;
+        box-shadow: 0 8px 0 rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.3);
+        border-radius: 1rem;
+        transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.22s ease, box-shadow 0.22s ease;
+    }
+    .panel-card:hover {
+        border-color: rgba(255, 215, 0, 0.55);
+        box-shadow: 0 10px 0 rgba(0,0,0,0.52), 0 14px 24px rgba(0, 229, 255, 0.08);
+    }
+    .pro-card {
+        background: linear-gradient(145deg, #361363 0%, #1b0936 55%, #120624 100%);
+        border: 2px solid #FFD700;
+        box-shadow: 0 8px 0 rgba(0,0,0,0.55), 0 0 24px rgba(255,215,0,0.16);
+        border-radius: 1rem;
+    }
     .game-badge { text-shadow: 2px 2px 0px #000, -2px -2px 0px #000, 2px -2px 0px #000, -2px 2px 0px #000; }
-    .social-circle { width: 38px; height: 38px; border-radius: 50%; background: #2B1055; border: 2px solid #53239e; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-    .social-circle:hover { transform: scale(1.1); border-color: #FFD700; }
+    .social-circle { width: 38px; height: 38px; border-radius: 50%; background: #2B1055; border: 2px solid #53239e; display: flex; align-items: center; justify-content: center; transition: all 0.22s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+    .social-circle:hover { transform: scale(1.12) translateY(-2px); border-color: #FFD700; }
 
-    /* New Pill Navigation Bar - Always Single Line */
+    /* Pill Navigation Bar */
     .nav-pill-bar {
         display: flex;
         flex-wrap: nowrap;
@@ -93,20 +108,21 @@
         border: 1.5px solid #53239e;
         background: rgba(15, 6, 30, 0.75);
         color: #d1d5db;
-        transition: all 0.18s ease;
+        transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
     }
     @media (min-width: 768px) {
         .nav-pill-btn { font-size: 13px; padding: 9px 16px; gap: 7px; }
     }
-    .nav-pill-btn:hover { border-color: #FFD700; color: #fff; }
+    .nav-pill-btn:hover { border-color: #FFD700; color: #fff; transform: translateY(-1px); }
     .nav-pill-btn.active {
         background: linear-gradient(135deg, #FFD700 0%, #CCA100 100%);
         color: #150824;
         border-color: #FFF59D;
-        box-shadow: 0 3px 10px rgba(255, 215, 0, 0.35);
+        box-shadow: 0 3px 12px rgba(255, 215, 0, 0.38);
+        transform: scale(1.02);
     }
 
-    /* Clash Royale In-Game Deck Board */
+    /* Clash Royale Deck & Card Slots */
     .cr-deck-board {
         background: radial-gradient(circle at top, #3b1c71 0%, #1b0c36 100%);
         border: 2px solid #6b35c2;
@@ -116,19 +132,19 @@
     }
     .cr-card-slot {
         position: relative;
-        background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(0,0,0,0.55) 100%);
+        background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(0,0,0,0.58) 100%);
         border: 1.5px solid rgba(255, 215, 0, 0.25);
         border-radius: 0.75rem;
         padding: 4px 3px 6px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        transition: transform 0.15s ease;
+        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.18s ease, box-shadow 0.18s ease;
     }
-    .cr-card-slot:hover { transform: translateY(-2px); border-color: #FFD700; }
+    .cr-card-slot:hover { transform: translateY(-3px) scale(1.02); border-color: #FFD700; }
     .cr-card-slot.evo-card {
         border-color: #e040fb;
-        box-shadow: 0 0 12px rgba(224, 64, 251, 0.4);
+        box-shadow: 0 0 14px rgba(224, 64, 251, 0.42);
     }
     .cr-elixir-drop {
         position: absolute;
@@ -144,6 +160,7 @@
         align-items: center;
         justify-content: center;
         box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        z-index: 2;
     }
     .cr-elixir-drop span {
         transform: rotate(45deg);
@@ -165,16 +182,54 @@
         text-shadow: 0 1px 2px #000;
     }
 
+    /* Global & Filter Animations */
     @keyframes scaleIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes tabIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    @keyframes tabIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    @keyframes boxPopIn {
+        0% { opacity: 0; transform: translateY(18px) scale(0.94); }
+        70% { opacity: 1; transform: translateY(-2px) scale(1.01); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes pulsePill {
+        0% { transform: scale(0.92); }
+        50% { transform: scale(1.06); }
+        100% { transform: scale(1); }
+    }
+    @keyframes floatSlow {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-4px); }
+    }
+    @keyframes shimmerSweep {
+        0% { transform: translateX(-140%) skewX(-18deg); }
+        100% { transform: translateX(240%) skewX(-18deg); }
+    }
     @keyframes riseIn { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: none; } }
     @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
     @keyframes confettiFall { to { transform: translateY(105vh) rotate(720deg); opacity: 0.9; } }
-    .animate-scaleIn { animation: scaleIn 0.2s ease-out; }
+
+    .animate-scaleIn { animation: scaleIn 0.22s cubic-bezier(0.22, 1, 0.36, 1); }
+    .animate-box-in { animation: boxPopIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .animate-pill-pop { animation: pulsePill 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+    .animate-float-slow { animation: floatSlow 3.2s ease-in-out infinite; }
+    .shimmer-overlay {
+        position: relative;
+        overflow: hidden;
+    }
+    .shimmer-overlay::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        width: 45%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+        animation: shimmerSweep 3.8s ease-in-out infinite;
+        pointer-events: none;
+    }
+
     [id$="-modal"]:not(.hidden) { animation: fadeIn 0.2s ease-out; }
-    [id$="-modal"]:not(.hidden) > .panel-card { animation: scaleIn 0.22s ease-out; }
-    main > section:not(.hidden) { animation: tabIn 0.28s ease-out; }
+    [id$="-modal"]:not(.hidden) > .panel-card,
+    [id$="-modal"]:not(.hidden) > .pro-card { animation: scaleIn 0.22s ease-out; }
+    main > section:not(.hidden) { animation: tabIn 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
     .podium-col { animation: riseIn 0.55s cubic-bezier(.2,.8,.2,1) both; }
     .animate-marquee { display: inline-block; min-width: 100%; white-space: nowrap; animation: marquee 18s linear infinite; }
     .animate-marquee:hover { animation-play-state: paused; }
@@ -200,7 +255,8 @@
         .text-\[11px\]:not(.keep-size) { font-size: 14px !important; }
         [id$="-modal"] > .max-w-xs { max-width: 26rem; }
     }
-    [id$="-modal"] > .panel-card { max-height: 92vh; max-height: 92dvh; overflow-y: auto; }
+    [id$="-modal"] > .panel-card,
+    [id$="-modal"] > .pro-card { max-height: 92vh; max-height: 92dvh; overflow-y: auto; }
     header { padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
     #toast-container { top: calc(1rem + env(safe-area-inset-top, 0px)); }
 
@@ -285,23 +341,19 @@
         <div class="flex flex-col gap-2 text-xs text-gray-100 bg-black/40 p-3.5 rounded-xl border border-supercellCardBorder">
             <div class="flex items-start gap-2">
                 <i class="fa-solid fa-chart-pie text-supercellGold mt-0.5"></i>
-                <span><strong>تحليل شامل لحسابك:</strong> عرض الكؤوس الحالية والأعلى، مستوى الملك، التبرعات، وإحصائيات التحديات والبطولات.</span>
+                <span><strong>تحليل شامل لحسابك:</strong> الكؤوس، أعلى الكؤوس، المستوى، التبرعات، إحصائيات التحديات، المصنف، والمجتمع.</span>
             </div>
             <div class="flex items-start gap-2">
                 <i class="fa-solid fa-layer-group text-supercellBlue mt-0.5"></i>
-                <span><strong>تشكيلة القتال بشكل اللعبة:</strong> عرض بطاقاتك الثمانية بنفس تصميم كلاش رويال مع متوسط الإكسير ومستوى كل بطاقة والتطويرات.</span>
+                <span><strong>تشكيلات اللعب ومجموعة البطاقات:</strong> عرض التشكيلات ومتوسط الإكسير، وجميع البطاقات مع الفلاتر وقوات الأبراج ونسب الاكتمال.</span>
             </div>
             <div class="flex items-start gap-2">
                 <i class="fa-solid fa-percent text-emerald-400 mt-0.5"></i>
-                <span><strong>نسب الفوز والخسارة الدقيقة:</strong> حساب نسبة الانتصارات، الهزائم، وفوز التاج الثلاثي (3-Crown).</span>
-            </div>
-            <div class="flex items-start gap-2">
-                <i class="fa-solid fa-swords text-red-400 mt-0.5"></i>
-                <span><strong>سجل المعارك التفصيلي:</strong> استعراض آخر مبارياتك وتشكيلات خصومك ونتائج كل مواجهة.</span>
+                <span><strong>نسب الفوز والخسارة وسجل 30 معركة:</strong> حساب نسبة الانتصارات والهزائم وفوز التاج الثلاثي وسجل آخر المعارك.</span>
             </div>
             <div class="flex items-start gap-2">
                 <i class="fa-solid fa-crown text-supercellGold mt-0.5"></i>
-                <span><strong>شارة التاج الذهبية (PRO):</strong> تمييز اسمك بشارة البرو الذهبية في الموقع ولوحة المتصدرين.</span>
+                <span><strong>شارة التاج الذهبية (PRO):</strong> تمييز اسمك بشارة البرو الذهبية في الموقع.</span>
             </div>
         </div>
         <div class="flex gap-2">
@@ -320,7 +372,7 @@
     <div class="ws-bgfx fixed inset-0 pointer-events-none"></div>
     <div id="ws-bg" class="fixed inset-0 overflow-hidden pointer-events-none"></div>
     <div class="relative min-h-full w-full flex flex-col items-center justify-center gap-5 px-6 py-12 max-w-md mx-auto text-center">
-        <div class="ws-logo-glow flex flex-col items-center gap-1">
+        <div class="ws-logo-glow animate-float-slow flex flex-col items-center gap-1">
             <div id="ws-logo" class="flex flex-col items-center"></div>
         </div>
         <p class="text-sm md:text-base text-gray-100 font-bold leading-relaxed">اجمع الجواهر واستبدلها بمكافآت كلاش رويال، كلاش أوف كلانس، هاي داي وبراول ستارز</p>
@@ -489,8 +541,8 @@
                 </h3>
                 <span class="text-[10px] md:text-xs bg-amber-500/20 border border-amber-400/50 text-supercellGold px-2.5 py-0.5 rounded-full font-bold">قيد التطوير</span>
             </div>
-            <div class="panel-card p-8 flex flex-col items-center justify-center text-center gap-3 border-2 border-supercellCardBorder">
-                <div class="w-16 h-16 rounded-full bg-supercellGold/15 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-2xl animate-pulse">
+            <div class="panel-card p-8 flex flex-col items-center justify-center text-center gap-3 border-2 border-supercellCardBorder animate-box-in">
+                <div class="w-16 h-16 rounded-full bg-supercellGold/15 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-2xl animate-bounce">
                     <i class="fa-solid fa-hourglass-half"></i>
                 </div>
                 <h4 class="font-black text-base text-supercellGold">جاري تجهيز قسم المهام...</h4>
@@ -880,7 +932,6 @@
                 <strong class="text-supercellGold font-black">100 ليرة سورية جديدة</strong>
             </div>
 
-            <!-- ShamCash QR Image Container -->
             <div id="shamcash-qr-box" class="hidden flex-col items-center gap-1.5 bg-white p-2.5 rounded-xl mx-auto">
                 <img id="shamcash-qr-img" src="" alt="باركود شام كاش" class="w-40 h-40 object-contain">
                 <span class="text-[10px] font-black text-black">امسح الباركود عبر تطبيق شام كاش</span>
@@ -1190,6 +1241,10 @@ let state = {
     proRequests: {},
     proCodes: {},
     activeGame: 'all',
+    filterAnimTick: 0,
+    proSubTab: 'overview',
+    proCardSort: 'rarity',
+    proBattleFilter: 'mode',
     promoCodes: {},
     crCache: {},
     verifiedTagsSession: {},
@@ -1326,7 +1381,7 @@ function applyAdminTabVisibility() {
     }
 }
 
-/* --- FORCED TAG VALIDATION FOR EXISTING 800 USERS --- */
+/* --- FORCED TAG VALIDATION FOR EXISTING USERS --- */
 let checkingForcedTag = false;
 async function enforceValidPlayerTag(user) {
     if (!user || isAdminUser(user) || checkingForcedTag) return;
@@ -1421,7 +1476,7 @@ window.submitForcedTagUpdate = async function () {
     }
 };
 
-/* --- PRO FEATURES POPUP (Near Username) --- */
+/* --- PRO FEATURES POPUP --- */
 window.openProInfoModal = function () {
     const statusBox = el('pro-info-status-box');
     const seasonNum = Number(state.settings.seasonNumber || 1);
@@ -1821,10 +1876,11 @@ window.openNotificationsModal = function () {
     if (state.notifications.length === 0) {
         listContainer.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لا توجد إشعارات أو رسائل جديدة حالياً.</div>`;
     } else {
-        state.notifications.forEach(notif => {
+        state.notifications.forEach((notif, idx) => {
             const dateStr = new Date(notif.timestamp).toLocaleString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
             const item = document.createElement('div');
-            item.className = 'bg-black/50 border border-supercellCardBorder p-3 rounded-xl flex flex-col gap-1.5';
+            item.className = 'bg-black/50 border border-supercellCardBorder p-3 rounded-xl flex flex-col gap-1.5 animate-box-in';
+            item.style.animationDelay = `${Math.min(idx * 0.05, 0.35)}s`;
             item.innerHTML = `
                 <div class="flex items-center justify-between">
                     <h5 class="font-black text-xs text-supercellGold flex items-center gap-1.5"><i class="fa-solid fa-bullhorn text-supercellBlue"></i> ${esc(notif.title)}</h5>
@@ -2047,7 +2103,7 @@ window.renderAdminMissions = function () {
     });
 };
 
-/* --- CLASH ROYALE WORKER & PRO STATS (RoyaleAPI / Triage Style + In-Game Deck) --- */
+/* --- CLASH ROYALE WORKER & COMPREHENSIVE PRO STATS --- */
 function normalizeTag(raw) {
     let t = String(raw || '').trim().toUpperCase().replace(/^#/, '');
     t = t.replace(/O/g, '0');
@@ -2068,10 +2124,22 @@ async function verifyAndFetchCrPlayer(rawTag) {
         if (!data || !data.name) {
             return { ok: false, error: 'تعذر التحقق من وجود الهاشتاج. تأكد من كتابته بشكل صحيح.' };
         }
-        state.crCache[clean] = { data, fetchedAt: Date.now() };
+        const prev = state.crCache[clean] || {};
+        state.crCache[clean] = { ...prev, data, fetchedAt: Date.now() };
         return { ok: true, cleanTag: '#' + clean, data };
     } catch (e) {
         return { ok: false, error: 'تعذر الاتصال بخادم التحقق حالياً، حاول مرة أخرى.' };
+    }
+}
+
+async function fetchCrBattles(cleanTag) {
+    try {
+        const bRes = await fetch(`${CR_WORKER_URL}?tag=${encodeURIComponent(cleanTag)}&endpoint=battlelog`);
+        if (!bRes.ok) return [];
+        const bData = await bRes.json();
+        return Array.isArray(bData) ? bData : [];
+    } catch (e) {
+        return [];
     }
 }
 
@@ -2105,7 +2173,7 @@ window.renderProSection = function () {
     if (countdownEl) countdownEl.innerText = timing.text;
 
     if (!state.currentUser) {
-        box.innerHTML = `<div class="panel-card p-6 text-center text-xs text-gray-300">يرجى تسجيل الدخول بحساب جوجل لاستعراض ميزات وبيانات نسخة البرو.</div>`;
+        box.innerHTML = `<div class="panel-card p-6 text-center text-xs text-gray-300 animate-box-in">يرجى تسجيل الدخول بحساب جوجل لاستعراض ميزات وبيانات نسخة البرو.</div>`;
         return;
     }
 
@@ -2113,20 +2181,20 @@ window.renderProSection = function () {
 
     if (!activePro) {
         box.innerHTML = `
-            <div class="pro-card p-5 flex flex-col gap-4 text-center">
-                <div class="w-14 h-14 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-2xl mx-auto">
+            <div class="pro-card p-5 flex flex-col gap-4 text-center animate-box-in shimmer-overlay">
+                <div class="w-14 h-14 rounded-full bg-supercellGold/20 border-2 border-supercellGold flex items-center justify-center text-supercellGold text-2xl mx-auto animate-float-slow">
                     <i class="fa-solid fa-crown"></i>
                 </div>
                 <div class="flex flex-col gap-1">
-                    <h4 class="font-black text-base text-supercellGold">احصل على SAVO PRO (بأسلوب RoyaleAPI)</h4>
+                    <h4 class="font-black text-base text-supercellGold">احصل على SAVO PRO المتكامل</h4>
                     <p class="text-xs text-gray-200 leading-relaxed">
-                        استعرض إحصائيات حسابك في كلاش رويال، الكؤوس، الكلان، البطاقات والتشكيلة بشكلها الحقيقي داخل اللعبة، ونسب الفوز والخسارة؛ اشتراكها <strong>100 ليرة سورية جديدة</strong> عبر شام كاش أو عبر كود PRO لمرة واحدة.
+                        استعرض إحصائيات حسابك في كلاش رويال، الكؤوس، الكلان، البطاقات والتشكيلات، ونسب الفوز والخسارة وسجل المعارك؛ اشتراكها <strong>100 ليرة سورية جديدة</strong> عبر شام كاش أو عبر كود PRO لمرة واحدة.
                     </p>
                 </div>
                 <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-3 text-right text-xs flex flex-col gap-1.5">
-                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> عرض الكؤوس، أعلى الكؤوس، المستوى، التبرعات، والكلان</div>
-                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> استعراض تشكيلة القتال (4×2) ومتوسط الإكسير وتطور البطاقات</div>
-                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> حساب نسبة الفوز والخسارة والتاج الثلاثي وسجل آخر المعارك</div>
+                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> ملخص اللاعب، الكؤوس، المستوى، التبرعات، والمجتمع</div>
+                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> تشكيلات القتال ومجموعة البطاقات الكاملة وقوات الأبراج</div>
+                    <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> نسبة الفوز والخسارة، آخر 30 معركة، وسجل المباريات</div>
                     <div><i class="fa-solid fa-check text-supercellGold ml-1.5"></i> صالحة للسيزون الحالي (#${seasonNum}) — ${esc(timing.text)}</div>
                 </div>
                 <button onclick="openProBuyModal()" class="btn-gold w-full py-3 rounded-xl text-black font-black text-sm">
@@ -2141,13 +2209,13 @@ window.renderProSection = function () {
     const cleanTag = normalizeTag(rawTag);
 
     if (!cleanTag) {
-        box.innerHTML = `<div class="panel-card p-4 text-center text-xs text-gray-300">يرجى إضافة التاغ الخاص بك من «تعديل الحساب» لعرض إحصائيات البرو.</div>`;
+        box.innerHTML = `<div class="panel-card p-4 text-center text-xs text-gray-300 animate-box-in">يرجى إضافة التاغ الخاص بك من «تعديل الحساب» لعرض إحصائيات البرو.</div>`;
         return;
     }
 
     if (userGame !== 'cr' && !isAdminUser()) {
         box.innerHTML = `
-            <div class="pro-card p-4 flex flex-col gap-2.5 text-xs">
+            <div class="pro-card p-4 flex flex-col gap-2.5 text-xs animate-box-in">
                 <div class="flex items-center justify-between border-b border-supercellGold/30 pb-2">
                     <span class="font-black text-supercellGold"><i class="fa-solid fa-crown ml-1"></i> حساب PRO مفعل</span>
                     <span class="text-supercellBlue font-bold">${esc(state.currentUser.tag)}</span>
@@ -2158,7 +2226,7 @@ window.renderProSection = function () {
     }
 
     box.innerHTML = `
-        <div class="pro-card p-4 flex flex-col gap-3">
+        <div class="pro-card p-3.5 md:p-4 flex flex-col gap-3 animate-box-in">
             <div class="flex items-center justify-between border-b border-supercellGold/30 pb-2">
                 <div class="flex items-center gap-2">
                     <span class="bg-supercellGold text-black font-black text-[10px] px-2 py-0.5 rounded">PRO</span>
@@ -2168,37 +2236,87 @@ window.renderProSection = function () {
                     <i class="fa-solid fa-rotate"></i> تحديث
                 </button>
             </div>
-            <div id="pro-cr-stats-body" class="py-4 text-center text-xs text-gray-300">
-                <i class="fa-solid fa-spinner fa-spin text-supercellGold text-lg mb-2"></i>
-                <div>جاري جلب بيانات اللاعب من الخادم...</div>
+            <div id="pro-cr-stats-body" class="py-5 text-center text-xs text-gray-300">
+                <i class="fa-solid fa-spinner fa-spin text-supercellGold text-xl mb-2"></i>
+                <div>جاري جلب بيانات اللاعب والمعارك والبطاقات...</div>
             </div>
         </div>`;
 
     loadProCrStats(cleanTag, false);
 };
 
+window.setProSubTab = function (sub) {
+    state.proSubTab = sub;
+    const rawTag = (state.currentUser && state.currentUser.tag) || (isAdminUser() ? DEFAULT_CR_TAG : '');
+    loadProCrStats(normalizeTag(rawTag), false);
+};
+
+window.setProCardSort = function (sortBy) {
+    state.proCardSort = sortBy;
+    const rawTag = (state.currentUser && state.currentUser.tag) || (isAdminUser() ? DEFAULT_CR_TAG : '');
+    loadProCrStats(normalizeTag(rawTag), false);
+};
+
+window.setProBattleFilter = function (mode) {
+    state.proBattleFilter = mode;
+    const rawTag = (state.currentUser && state.currentUser.tag) || (isAdminUser() ? DEFAULT_CR_TAG : '');
+    loadProCrStats(normalizeTag(rawTag), false);
+};
+
+function getCardDisplayLevel(card) {
+    const lvl = Number(card.level || 1);
+    const maxLvl = Number(card.maxLevel || 15);
+    return lvl + Math.max(0, 15 - maxLvl);
+}
+
+function getRarityInfo(card) {
+    const maxLvl = Number(card.maxLevel || 15);
+    const rarityRaw = String(card.rarity || '').toLowerCase();
+    if (rarityRaw.includes('champion') || maxLvl === 5) {
+        return { key: 'champion', label: 'بطل', color: '#FFD700', barGrad: 'from-yellow-400 to-amber-500', maxBase: 5 };
+    }
+    if (rarityRaw.includes('legendary') || maxLvl === 7) {
+        return { key: 'legendary', label: 'أسطورية', color: '#00E5FF', barGrad: 'from-cyan-400 via-pink-400 to-amber-300', maxBase: 7 };
+    }
+    if (rarityRaw.includes('epic') || maxLvl === 10) {
+        return { key: 'epic', label: 'ملحمية', color: '#d500f9', barGrad: 'from-purple-500 to-fuchsia-400', maxBase: 10 };
+    }
+    if (rarityRaw.includes('rare') || maxLvl === 13) {
+        return { key: 'rare', label: 'نادرة', color: '#ff9100', barGrad: 'from-orange-500 to-amber-400', maxBase: 13 };
+    }
+    return { key: 'common', label: 'شائعة', color: '#40c4ff', barGrad: 'from-sky-400 to-blue-500', maxBase: 15 };
+}
+
 window.loadProCrStats = async function (cleanTag, forceRefresh = false) {
     const body = el('pro-cr-stats-body');
     if (!body) return;
 
-    let player = null;
-    if (!forceRefresh && state.crCache[cleanTag] && (Date.now() - state.crCache[cleanTag].fetchedAt) < 120000) {
-        player = state.crCache[cleanTag].data;
-    } else {
+    let cached = state.crCache[cleanTag] || {};
+    let player = cached.data;
+    let battles = cached.battles;
+
+    if (forceRefresh || !player || (Date.now() - (cached.fetchedAt || 0)) > 120000) {
         const res = await verifyAndFetchCrPlayer(cleanTag);
         if (!res.ok) {
             body.innerHTML = `<div class="text-red-400 text-xs py-3">${esc(res.error)}</div>`;
             return;
         }
         player = res.data;
+        battles = await fetchCrBattles(cleanTag);
+        state.crCache[cleanTag] = { data: player, battles, fetchedAt: Date.now() };
+    } else if (!Array.isArray(battles)) {
+        battles = await fetchCrBattles(cleanTag);
+        state.crCache[cleanTag] = { ...cached, battles };
     }
 
     const wins = Number(player.wins || 0);
     const losses = Number(player.losses || 0);
     const battleCount = Number(player.battleCount || (wins + losses));
     const totalWL = wins + losses;
-    const winRate = totalWL > 0 ? ((wins / totalWL) * 100).toFixed(1) : '0.0';
-    const lossRate = totalWL > 0 ? ((losses / totalWL) * 100).toFixed(1) : '0.0';
+    const winRateNum = totalWL > 0 ? ((wins / totalWL) * 100) : 0;
+    const lossRateNum = totalWL > 0 ? ((losses / totalWL) * 100) : 0;
+    const winRate = winRateNum.toFixed(1);
+    const lossRate = lossRateNum.toFixed(1);
     const threeCrowns = Number(player.threeCrownWins || 0);
     const threeCrownRate = wins > 0 ? ((threeCrowns / wins) * 100).toFixed(1) : '0.0';
 
@@ -2214,122 +2332,169 @@ window.loadProCrStats = async function (cleanTag, forceRefresh = false) {
     const challengeMaxWins = Number(player.challengeMaxWins || 0);
     const challengeCardsWon = Number(player.challengeCardsWon || 0);
     const warDayWins = Number(player.warDayWins || 0);
+    const starPoints = Number(player.starPoints || 0);
+    const expPoints = Number(player.expPoints || 0);
     const favCard = player.currentFavouriteCard ? player.currentFavouriteCard.name : 'غير محدد';
     const favCardImg = (player.currentFavouriteCard && player.currentFavouriteCard.iconUrls && player.currentFavouriteCard.iconUrls.medium) || '';
 
+    const bestLeagueName = (player.bestLeague && player.bestLeague.name) ? player.bestLeague.name : '-';
+    const bestPathTrophies = Number((player.bestPathOfLegend && player.bestPathOfLegend.trophies) || player.bestTrophies || 0);
+    const currentPathTrophies = Number((player.currentPathOfLegend && player.currentPathOfLegend.trophies) || 0);
+    const currentPathRank = (player.currentPathOfLegend && player.currentPathOfLegend.rank) ? `#${player.currentPathOfLegend.rank}` : '-';
+    const bestPathRank = (player.bestPathOfLegend && player.bestPathOfLegend.rank) ? `#${player.bestPathOfLegend.rank}` : '-';
+
+    const allCards = Array.isArray(player.cards) ? player.cards : [];
     const deck = Array.isArray(player.currentDeck) ? player.currentDeck : [];
     const avgElixir = deck.length > 0
         ? (deck.reduce((sum, c) => sum + (Number(c.elixirCost) || 0), 0) / deck.length).toFixed(1)
         : '-';
 
-    let recentBattlesHtml = '';
-    try {
-        const bRes = await fetch(`${CR_WORKER_URL}?tag=${encodeURIComponent(cleanTag)}&endpoint=battlelog`);
-        if (bRes.ok) {
-            const bData = await bRes.json();
-            if (Array.isArray(bData) && bData.length > 0) {
-                const topBattles = bData.slice(0, 6);
-                recentBattlesHtml = `
-                    <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-3 flex flex-col gap-2 text-right">
-                        <h5 class="font-black text-xs text-supercellGold flex items-center gap-1.5"><i class="fa-solid fa-swords text-supercellBlue"></i> سجل آخر المعارك (Battle Log)</h5>
-                        <div class="flex flex-col gap-2">
-                            ${topBattles.map(m => {
-                                const myTeam = (m.team && m.team[0]) || {};
-                                const oppTeam = (m.opponent && m.opponent[0]) || {};
-                                const myCrowns = myTeam.crowns ?? 0;
-                                const oppCrowns = oppTeam.crowns ?? 0;
-                                const won = myCrowns > oppCrowns;
-                                const draw = myCrowns === oppCrowns;
-                                const oppName = oppTeam.name || 'خصم';
-                                const modeName = (m.gameMode && m.gameMode.name) ? m.gameMode.name : (m.type || 'مباراة');
-                                const oppCards = Array.isArray(oppTeam.cards) ? oppTeam.cards.slice(0, 8) : [];
-                                return `<div class="bg-black/50 p-2.5 rounded-lg border ${won ? 'border-emerald-500/30' : draw ? 'border-gray-500/30' : 'border-red-500/30'} flex flex-col gap-1.5">
-                                    <div class="flex items-center justify-between text-[11px]">
-                                        <span class="truncate font-bold text-white">ضد: ${esc(oppName)} <span class="text-[10px] text-gray-400">(${esc(modeName)})</span></span>
-                                        <span class="font-black px-2 py-0.5 rounded text-[10px] ${won ? 'bg-emerald-500/20 text-emerald-400' : draw ? 'bg-gray-500/20 text-gray-300' : 'bg-red-500/20 text-red-400'}">
-                                            ${won ? 'فوز' : draw ? 'تعادل' : 'خسارة'} (${myCrowns} - ${oppCrowns})
-                                        </span>
-                                    </div>
-                                    ${oppCards.length > 0 ? `
-                                    <div class="flex items-center gap-1 overflow-x-auto pt-0.5">
-                                        <span class="text-[9px] text-gray-400 shrink-0 ml-1">تشكيلة الخصم:</span>
-                                        ${oppCards.map(c => {
-                                            const cImg = (c.iconUrls && c.iconUrls.medium) || '';
-                                            return cImg ? `<img src="${esc(cImg)}" alt="${esc(c.name)}" title="${esc(c.name)}" class="w-6 h-7 object-contain shrink-0">` : '';
-                                        }).join('')}
-                                    </div>` : ''}
-                                </div>`;
-                            }).join('')}
-                        </div>
-                    </div>`;
+    const totalCardsCount = allCards.length;
+    const maxedCardsCount = allCards.filter(c => Number(c.level || 0) >= Number(c.maxLevel || 15)).length;
+    const completionPct = totalCardsCount > 0 ? ((maxedCardsCount / totalCardsCount) * 100).toFixed(2) : '0.00';
+
+    const rarityBuckets = {
+        common: { label: 'شائعة', total: 0, maxed: 0, barGrad: 'from-sky-400 to-blue-500' },
+        rare: { label: 'نادرة', total: 0, maxed: 0, barGrad: 'from-orange-500 to-amber-400' },
+        epic: { label: 'ملحمية', total: 0, maxed: 0, barGrad: 'from-purple-500 to-fuchsia-400' },
+        legendary: { label: 'أسطورية', total: 0, maxed: 0, barGrad: 'from-cyan-400 via-pink-400 to-amber-300' },
+        champion: { label: 'بطل', total: 0, maxed: 0, barGrad: 'from-yellow-400 to-amber-500' }
+    };
+
+    allCards.forEach(c => {
+        const r = getRarityInfo(c).key;
+        if (rarityBuckets[r]) {
+            rarityBuckets[r].total += 1;
+            if (Number(c.level || 0) >= Number(c.maxLevel || 15)) {
+                rarityBuckets[r].maxed += 1;
             }
         }
-    } catch (e) {}
+    });
 
-    body.innerHTML = `
-        <div class="flex flex-col gap-3.5 text-right">
-            <!-- Player Header Card -->
-            <div class="bg-black/50 border border-supercellCardBorder rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-2">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="bg-supercellBlue text-black font-black text-xs px-2 py-0.5 rounded">Lv.${esc(player.expLevel || '-')}</span>
-                        <h4 class="font-black text-base text-white">${esc(player.name)}</h4>
-                        <span class="text-supercellBlue text-xs font-bold" dir="ltr">${esc(player.tag || '#' + cleanTag)}</span>
+    const towerTroops = allCards.filter(c => {
+        const n = String(c.name || '').toLowerCase();
+        return n.includes('tower') || n.includes('princess') || n.includes('cannoneer') || n.includes('dagger') || n.includes('duchess');
+    }).slice(0, 4);
+
+    // Last 30 Battles bar (like reference image 1)
+    const last30 = (Array.isArray(battles) ? battles : []).slice(0, 30);
+    let recentWins = 0;
+    let recentLosses = 0;
+    const recentBarsHtml = last30.length > 0
+        ? last30.map((m, i) => {
+            const myC = Number((m.team && m.team[0] && m.team[0].crowns) ?? 0);
+            const oppC = Number((m.opponent && m.opponent[0] && m.opponent[0].crowns) ?? 0);
+            const isWin = myC > oppC;
+            if (isWin) recentWins++; else recentLosses++;
+            const heightPx = isWin ? (18 + ((i * 5) % 14)) : (12 + ((i * 3) % 8));
+            return `<span title="${isWin ? 'فوز' : 'خسارة'} (${myC}-${oppC})" class="w-1.5 sm:w-2 rounded-sm ${isWin ? 'bg-emerald-400' : 'bg-rose-500'}" style="height:${heightPx}px"></span>`;
+        }).join('')
+        : `<span class="text-[11px] text-gray-400">لا توجد معارك حديثة متاحة حالياً</span>`;
+
+    const recentTotal = recentWins + recentLosses;
+    const recentWinPct = recentTotal > 0 ? Math.round((recentWins / recentTotal) * 100) : Math.round(winRateNum);
+
+    // Overview Tab HTML
+    const overviewHtml = `
+        <div class="flex flex-col gap-3.5 text-right animate-box-in">
+            <!-- Player Hero Card (Inspired by Image 1) -->
+            <div class="panel-card p-3.5 flex flex-col gap-3 border border-supercellGold/50">
+                <div class="flex items-start justify-between gap-2 flex-wrap">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="bg-supercellBlue text-black font-black text-xs px-2 py-0.5 rounded">Lv.${esc(player.expLevel || '-')}</span>
+                            <h4 class="font-black text-base md:text-lg text-white">★ ${esc(player.name)}</h4>
+                            <span class="text-supercellBlue text-xs font-bold" dir="ltr">${esc(player.tag || '#' + cleanTag)}</span>
+                        </div>
+                        <p class="text-[11px] text-gray-300 mt-1">
+                            الكلان: <strong class="text-supercellGold">${esc(clanName)}</strong>
+                            ${clanTag ? `<span class="text-gray-400" dir="ltr">(${esc(clanTag)})</span>` : ''}
+                            ${clanRole ? `• <span class="text-supercellBlue">${esc(clanRole)}</span>` : ''}
+                        </p>
+                        <p class="text-[11px] text-gray-300">الساحة: <strong class="text-white">${esc(arenaName)}</strong></p>
                     </div>
-                    <p class="text-[11px] text-gray-300 mt-1">
-                        الكلان: <strong class="text-supercellGold">${esc(clanName)}</strong> ${clanTag ? `<span class="text-gray-400" dir="ltr">(${esc(clanTag)})</span>` : ''} ${clanRole ? `• <span class="text-supercellBlue">${esc(clanRole)}</span>` : ''}
-                    </p>
-                    <p class="text-[11px] text-gray-300">الساحة: <strong class="text-white">${esc(arenaName)}</strong></p>
+                    <div class="bg-black/55 border border-supercellGold/40 px-3 py-2 rounded-xl text-left">
+                        <div class="font-black text-base md:text-lg text-supercellGold">🏆 ${Number(player.trophies || 0).toLocaleString()}</div>
+                        <div class="text-[10px] text-gray-300">أعلى كؤوس: <strong class="text-supercellBlue">${Number(player.bestTrophies || 0).toLocaleString()}</strong></div>
+                        ${currentPathTrophies > 0 ? `<div class="text-[10px] text-fuchsia-300">مسار الأبطال: <strong>${currentPathTrophies.toLocaleString()}</strong> (${esc(currentPathRank)})</div>` : ''}
+                    </div>
                 </div>
-                <div class="text-left bg-black/50 border border-supercellGold/40 px-3 py-2 rounded-xl">
-                    <div class="font-black text-lg text-supercellGold">🏆 ${esc(player.trophies || 0)}</div>
-                    <div class="text-[10px] text-gray-300">أعلى كؤوس: <strong class="text-supercellBlue">${esc(player.bestTrophies || 0)}</strong></div>
+
+                <!-- Last 30 Battles Strip -->
+                <div class="bg-black/50 border border-white/10 rounded-xl p-2.5 flex flex-col gap-1.5">
+                    <div class="flex items-center justify-between text-[10px] font-bold">
+                        <span class="text-emerald-400">${recentWins}W ${recentLosses}L</span>
+                        <span class="text-gray-300">آخر 30 معركة</span>
+                    </div>
+                    <div class="flex items-end justify-between gap-0.5 h-9 px-1 py-1 bg-black/40 rounded-lg overflow-hidden">
+                        ${recentBarsHtml}
+                    </div>
+                    <div class="flex items-center justify-between text-[10px] text-gray-400">
+                        <span>الأحدث</span>
+                        <span class="text-supercellGold font-black">معدل فوز ${recentWinPct}%</span>
+                        <span>الأقدم</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Win/Loss Bar (RoyaleAPI style) -->
-            <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-3 flex flex-col gap-2">
-                <div class="flex items-center justify-between text-xs font-black">
-                    <span class="text-emerald-400">نسبة الفوز: ${winRate}% (${wins})</span>
-                    <span class="text-red-400">نسبة الخسارة: ${lossRate}% (${losses})</span>
+            <!-- Overall Win/Loss Donut & Stats Cards (Inspired by Image 7) -->
+            <div class="panel-card p-3.5 flex flex-col gap-3">
+                <div class="flex items-center justify-between gap-3 flex-wrap">
+                    <div class="flex items-center gap-3">
+                        <div class="w-16 h-16 rounded-full flex items-center justify-center shrink-0" style="background: conic-gradient(#10b981 ${winRateNum * 3.6}deg, #f43f5e 0deg); padding: 5px;">
+                            <div class="w-full h-full rounded-full bg-[#1d0b3b] flex flex-col items-center justify-center">
+                                <span class="text-xs font-black text-emerald-400">${winRate}%</span>
+                                <span class="text-[8px] text-gray-300">فوز</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] text-gray-400">السجل الإجمالي</div>
+                            <div class="font-black text-base text-white">${wins.toLocaleString()} <span class="text-xs text-emerald-400">الانتصارات</span></div>
+                            <div class="text-[11px] text-gray-300">عبر ${battleCount.toLocaleString()} مباراة • <span class="text-rose-400">${losses.toLocaleString()} خسارة (${lossRate}%)</span></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="w-full h-2.5 bg-red-500/40 rounded-full overflow-hidden flex border border-white/10">
-                    <div class="bg-emerald-500 h-full" style="width: ${winRate}%"></div>
-                </div>
-                <div class="grid grid-cols-3 gap-2 pt-1 text-center">
-                    <div class="bg-black/50 rounded-lg p-2 border border-white/5">
+
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
                         <div class="text-[10px] text-gray-400">إجمالي المعارك</div>
-                        <div class="font-black text-xs text-white">${battleCount.toLocaleString()}</div>
+                        <div class="font-black text-sm text-white mt-0.5">${battleCount.toLocaleString()} ⚔️</div>
+                        <div class="text-[10px] text-emerald-400">فاز ${wins.toLocaleString()}</div>
                     </div>
-                    <div class="bg-black/50 rounded-lg p-2 border border-white/5">
-                        <div class="text-[10px] text-gray-400">فوز 3 تيجان</div>
-                        <div class="font-black text-xs text-supercellGold">${threeCrowns.toLocaleString()} (${threeCrownRate}%)</div>
+                    <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
+                        <div class="text-[10px] text-gray-400">أعلى كؤوس (مسار الكؤوس)</div>
+                        <div class="font-black text-sm text-supercellGold mt-0.5">${Number(player.bestTrophies || 0).toLocaleString()} 🏆</div>
+                        <div class="text-[10px] text-gray-300">البطولة/المسار: ${bestPathTrophies.toLocaleString()}</div>
                     </div>
-                    <div class="bg-black/50 rounded-lg p-2 border border-white/5">
-                        <div class="text-[10px] text-gray-400">أقصى انتصارات تحدي</div>
-                        <div class="font-black text-xs text-supercellBlue">${challengeMaxWins} فوز</div>
+                    <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
+                        <div class="text-[10px] text-gray-400">أفضل تصنيف / مصنف</div>
+                        <div class="font-black text-sm text-fuchsia-300 mt-0.5">${esc(bestLeagueName)}</div>
+                        <div class="text-[10px] text-gray-300">أفضل ترتيب: ${esc(bestPathRank)}</div>
+                    </div>
+                    <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
+                        <div class="text-[10px] text-gray-400">انتصارات التاج الثلاثي</div>
+                        <div class="font-black text-sm text-supercellBlue mt-0.5">${threeCrowns.toLocaleString()} 👑</div>
+                        <div class="text-[10px] text-gray-300">${threeCrownRate}% من الانتصارات</div>
                     </div>
                 </div>
             </div>
 
-            <!-- In-Game 4x2 Deck Board -->
+            <!-- In-Game 4x2 Current Deck -->
             ${deck.length > 0 ? `
             <div class="cr-deck-board flex flex-col gap-2.5">
                 <div class="flex items-center justify-between border-b border-white/15 pb-2">
                     <h5 class="font-black text-xs md:text-sm text-supercellGold flex items-center gap-1.5">
                         <i class="fa-solid fa-shield-halved text-supercellBlue"></i> تشكيلة القتال الحالية
                     </h5>
-                    <div class="flex items-center gap-2">
-                        <span class="bg-fuchsia-950/80 border border-fuchsia-400/50 text-fuchsia-200 px-2.5 py-0.5 rounded-full text-[11px] font-black">
-                            💧 متوسط الإكسير: ${avgElixir}
-                        </span>
-                    </div>
+                    <span class="bg-fuchsia-950/80 border border-fuchsia-400/50 text-fuchsia-200 px-2.5 py-0.5 rounded-full text-[11px] font-black">
+                        💧 متوسط الإكسير: ${avgElixir}
+                    </span>
                 </div>
                 <div class="grid grid-cols-4 gap-2 pt-1">
                     ${deck.map((card, idx) => {
                         const isEvo = idx < 2 && card.iconUrls && card.iconUrls.evolutionMedium;
                         const imgUrl = isEvo ? card.iconUrls.evolutionMedium : ((card.iconUrls && card.iconUrls.medium) || '');
-                        const displayLevel = (card.level || 1) + (15 - (card.maxLevel || 15));
+                        const displayLevel = getCardDisplayLevel(card);
                         return `<div class="cr-card-slot ${isEvo ? 'evo-card' : ''}">
                             ${card.elixirCost ? `<div class="cr-elixir-drop"><span>${esc(card.elixirCost)}</span></div>` : ''}
                             ${imgUrl
@@ -2342,31 +2507,256 @@ window.loadProCrStats = async function (cleanTag, forceRefresh = false) {
                 </div>
             </div>` : ''}
 
-            <!-- Extra Stats Grid (Donations, Challenges, Fav Card) -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
-                    <div class="text-[10px] text-gray-400">إجمالي التبرعات</div>
-                    <div class="font-black text-xs text-emerald-400 mt-0.5">${totalDonations.toLocaleString()}</div>
-                    <div class="text-[9px] text-gray-400">الأسبوع: ${donations} / استلام: ${donationsReceived}</div>
+            <!-- Community, Challenges & Account Progress (Inspired by Images 4 & 7) -->
+            <div class="panel-card p-3.5 flex flex-col gap-2">
+                <h5 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1.5 flex items-center justify-between">
+                    <span>المجتمع، التحديات، وتقدم الحساب</span>
+                    <span class="text-[10px] text-supercellBlue">Stats</span>
+                </h5>
+                <div class="divide-y divide-white/10 text-xs">
+                    <div class="py-2 flex items-center justify-between"><span class="text-gray-300">انتصارات حرب الكلان (Clan War)</span><strong class="text-white">${warDayWins.toLocaleString()}</strong></div>
+                    <div class="py-2 flex items-center justify-between"><span class="text-gray-300">إجمالي التبرعات (Total Donations)</span><strong class="text-emerald-400">${totalDonations.toLocaleString()}</strong></div>
+                    <div class="py-2 flex items-center justify-between"><span class="text-gray-300">التبرعات الأسبوعية / المستلمة</span><strong class="text-supercellBlue">${donations} / ${donationsReceived}</strong></div>
+                    <div class="py-2 flex items-center justify-between"><span class="text-gray-300">أقصى انتصارات التحدي (Challenge Max Wins)</span><strong class="text-supercellGold">${challengeMaxWins}</strong></div>
+                    <div class="py-2 flex items-center justify-between"><span class="text-gray-300">بطاقات التحديات المكتسبة</span><strong class="text-white">${challengeCardsWon.toLocaleString()}</strong></div>
+                    <div class="py-2 flex items-center justify-between"><span class="text-gray-300">الكلان الحالي</span><strong class="text-supercellGold">${esc(clanName)}</strong></div>
                 </div>
-                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
-                    <div class="text-[10px] text-gray-400">بطاقات التحديات</div>
-                    <div class="font-black text-xs text-supercellBlue mt-0.5">${challengeCardsWon.toLocaleString()}</div>
+
+                <div class="grid grid-cols-2 gap-2.5 pt-2">
+                    <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
+                        <div class="text-[10px] text-gray-400">إجمالي نقاط الخبرة (Total XP)</div>
+                        <div class="font-black text-sm text-supercellBlue mt-0.5">${expPoints.toLocaleString()}</div>
+                    </div>
+                    <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
+                        <div class="text-[10px] text-gray-400">البطاقات المجمعة</div>
+                        <div class="font-black text-sm text-white mt-0.5">${totalCardsCount} بطاقة</div>
+                    </div>
+                    <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
+                        <div class="text-[10px] text-gray-400">نقاط النجوم (Star Points)</div>
+                        <div class="font-black text-sm text-supercellGold mt-0.5">${starPoints.toLocaleString()} ⭐</div>
+                    </div>
+                    <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5 flex items-center justify-between gap-1.5">
+                        <div class="min-w-0">
+                            <div class="text-[10px] text-gray-400">البطاقة المفضلة</div>
+                            <div class="font-black text-xs text-supercellGold truncate">${esc(favCard)}</div>
+                        </div>
+                        ${favCardImg ? `<img src="${esc(favCardImg)}" class="w-8 h-10 object-contain shrink-0">` : ''}
+                    </div>
                 </div>
-                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
-                    <div class="text-[10px] text-gray-400">انتصارات الحرب</div>
-                    <div class="font-black text-xs text-supercellGold mt-0.5">${warDayWins}</div>
-                </div>
-                <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5 flex flex-col items-center justify-center">
-                    <div class="text-[10px] text-gray-400">البطاقة المفضلة</div>
-                    <div class="flex items-center gap-1 mt-0.5">
-                        ${favCardImg ? `<img src="${esc(favCardImg)}" class="w-5 h-6 object-contain">` : ''}
-                        <span class="font-black text-[10px] text-white truncate max-w-[80px]">${esc(favCard)}</span>
+            </div>
+        </div>`;
+
+    // Collection & Cards Tab HTML (Inspired by Images 2, 3, 6)
+    const sortedCards = allCards.slice().sort((a, b) => {
+        if (state.proCardSort === 'level') return getCardDisplayLevel(b) - getCardDisplayLevel(a);
+        if (state.proCardSort === 'elixir') return (Number(a.elixirCost || 0) - Number(b.elixirCost || 0)) || String(a.name).localeCompare(String(b.name));
+        if (state.proCardSort === 'name') return String(a.name || '').localeCompare(String(b.name || ''), 'ar');
+        const rOrder = { champion: 5, legendary: 4, epic: 3, rare: 2, common: 1 };
+        return (rOrder[getRarityInfo(b).key] || 0) - (rOrder[getRarityInfo(a).key] || 0);
+    });
+
+    const collectionHtml = `
+        <div class="flex flex-col gap-3.5 text-right animate-box-in">
+            <!-- Completion Summary Box (Inspired by Image 6) -->
+            <div class="panel-card p-4 flex flex-col items-center text-center gap-2 border border-supercellGold/40">
+                <div class="font-black text-2xl md:text-3xl text-white">${completionPct}%</div>
+                <div class="text-xs text-supercellGold font-bold">نسبة اكتمال البطاقات بالحد الأقصى</div>
+                <div class="grid grid-cols-2 gap-3 w-full pt-2 text-xs">
+                    <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
+                        <div class="font-black text-base text-supercellBlue">${maxedCardsCount} <span class="text-[11px] text-gray-300">من ${totalCardsCount}</span></div>
+                        <div class="text-[10px] text-gray-400">بطاقات مكتملة (Maxed)</div>
+                    </div>
+                    <div class="bg-black/45 border border-supercellCardBorder rounded-xl p-2.5">
+                        <div class="font-black text-base text-supercellGold">${totalCardsCount}</div>
+                        <div class="text-[10px] text-gray-400">إجمالي البطاقات المتاحة</div>
                     </div>
                 </div>
             </div>
 
-            ${recentBattlesHtml}
+            <!-- Rarity Bars & Tower Troops (Inspired by Images 3 & 6) -->
+            <div class="panel-card p-3.5 flex flex-col gap-3">
+                <h5 class="font-black text-xs md:text-sm text-supercellGold border-b border-supercellCardBorder pb-1.5">تقدم البطاقات حسب الندرة</h5>
+                <div class="flex flex-col gap-2.5">
+                    ${Object.values(rarityBuckets).map(rb => {
+                        const pct = rb.total > 0 ? Math.round((rb.maxed / rb.total) * 100) : 0;
+                        return `<div class="flex flex-col gap-1">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="font-black text-white">${esc(rb.label)}</span>
+                                <span class="text-supercellBlue font-bold">${pct}% (${rb.maxed} من ${rb.total} مكتملة)</span>
+                            </div>
+                            <div class="w-full h-2 bg-black/60 rounded-full overflow-hidden border border-white/10">
+                                <div class="h-full bg-gradient-to-r ${rb.barGrad}" style="width:${pct}%"></div>
+                            </div>
+                        </div>`;
+                    }).join('')}
+                </div>
+
+                ${towerTroops.length > 0 ? `
+                <div class="border-t border-supercellCardBorder pt-3 mt-1 flex flex-col gap-2">
+                    <h6 class="font-black text-xs text-supercellGold">قوات الأبراج (Tower Troops)</h6>
+                    <div class="grid grid-cols-2 gap-2">
+                        ${towerTroops.map(t => {
+                            const img = (t.iconUrls && t.iconUrls.medium) || '';
+                            const lvl = getCardDisplayLevel(t);
+                            return `<div class="bg-black/50 border border-supercellCardBorder rounded-xl p-2 flex items-center gap-2">
+                                ${img ? `<img src="${esc(img)}" class="w-9 h-11 object-contain shrink-0">` : ''}
+                                <div class="min-w-0">
+                                    <div class="font-black text-xs text-white truncate">${esc(t.name)}</div>
+                                    <div class="text-[10px] text-supercellBlue font-bold">مستوى ${esc(lvl)}</div>
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>` : ''}
+            </div>
+
+            <!-- All Cards Grid with Sort Buttons (Inspired by Image 2) -->
+            <div class="panel-card p-3.5 flex flex-col gap-3">
+                <div class="flex items-center justify-between flex-wrap gap-2 border-b border-supercellCardBorder pb-2">
+                    <h5 class="font-black text-xs md:text-sm text-supercellGold">جميع البطاقات (${sortedCards.length})</h5>
+                    <div class="flex items-center gap-1 flex-wrap">
+                        <button onclick="setProCardSort('rarity')" class="px-2.5 py-1 rounded-lg text-[10px] font-black ${state.proCardSort === 'rarity' ? 'bg-supercellGold text-black' : 'bg-black/50 text-gray-200 border border-supercellCardBorder'}">الندرة</button>
+                        <button onclick="setProCardSort('level')" class="px-2.5 py-1 rounded-lg text-[10px] font-black ${state.proCardSort === 'level' ? 'bg-supercellGold text-black' : 'bg-black/50 text-gray-200 border border-supercellCardBorder'}">المستوى</button>
+                        <button onclick="setProCardSort('elixir')" class="px-2.5 py-1 rounded-lg text-[10px] font-black ${state.proCardSort === 'elixir' ? 'bg-supercellGold text-black' : 'bg-black/50 text-gray-200 border border-supercellCardBorder'}">الإكسير</button>
+                        <button onclick="setProCardSort('name')" class="px-2.5 py-1 rounded-lg text-[10px] font-black ${state.proCardSort === 'name' ? 'bg-supercellGold text-black' : 'bg-black/50 text-gray-200 border border-supercellCardBorder'}">من أ إلى ي</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                    ${sortedCards.map((c, idx) => {
+                        const img = (c.iconUrls && c.iconUrls.medium) || '';
+                        const lvl = getCardDisplayLevel(c);
+                        const isMax = Number(c.level || 0) >= Number(c.maxLevel || 15);
+                        return `<div class="cr-card-slot animate-box-in" style="animation-delay:${Math.min(idx * 0.015, 0.4)}s" title="${esc(c.name)} - مستوى ${lvl}">
+                            ${c.elixirCost ? `<div class="cr-elixir-drop"><span>${esc(c.elixirCost)}</span></div>` : ''}
+                            ${img ? `<img src="${esc(img)}" alt="${esc(c.name)}" class="w-11 h-13 object-contain" loading="lazy">` : ''}
+                            <span class="cr-level-pill ${isMax ? '!bg-amber-500 !text-black' : ''}">${esc(lvl)}</span>
+                            <span class="text-[9px] text-gray-200 truncate w-full text-center mt-0.5">${esc(c.name)}</span>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>
+        </div>`;
+
+    // Battles & Decks Tab HTML (Inspired by Image 5)
+    const battleList = Array.isArray(battles) ? battles : [];
+    const groupedModes = {};
+    battleList.forEach(m => {
+        const modeLabel = (m.gameMode && m.gameMode.name) ? m.gameMode.name : (m.type || 'مباراة');
+        const myC = Number((m.team && m.team[0] && m.team[0].crowns) ?? 0);
+        const oppC = Number((m.opponent && m.opponent[0] && m.opponent[0].crowns) ?? 0);
+        const won = myC > oppC;
+        if (!groupedModes[modeLabel]) {
+            groupedModes[modeLabel] = {
+                mode: modeLabel,
+                matches: 0,
+                wins: 0,
+                losses: 0,
+                deck: (m.team && m.team[0] && Array.isArray(m.team[0].cards)) ? m.team[0].cards.slice(0, 8) : []
+            };
+        }
+        groupedModes[modeLabel].matches += 1;
+        if (won) groupedModes[modeLabel].wins += 1;
+        else if (myC < oppC) groupedModes[modeLabel].losses += 1;
+    });
+
+    const modeSummaries = Object.values(groupedModes).sort((a, b) => b.matches - a.matches);
+
+    const battlesHtml = `
+        <div class="flex flex-col gap-3.5 text-right animate-box-in">
+            <!-- Filter Bar (Inspired by Image 5) -->
+            <div class="panel-card p-2.5 flex items-center justify-between gap-2">
+                <span class="text-xs font-black text-supercellGold">سجل المعارك والتشكيلات (${battleList.length})</span>
+                <div class="flex items-center gap-1 bg-black/50 p-1 rounded-xl border border-supercellCardBorder">
+                    <button onclick="setProBattleFilter('mode')" class="px-3 py-1 rounded-lg text-[11px] font-black ${state.proBattleFilter === 'mode' ? 'bg-supercellBlue text-black' : 'text-gray-300'}">الوضع والتشكيلات</button>
+                    <button onclick="setProBattleFilter('log')" class="px-3 py-1 rounded-lg text-[11px] font-black ${state.proBattleFilter === 'log' ? 'bg-supercellBlue text-black' : 'text-gray-300'}">سجل المباريات</button>
+                </div>
+            </div>
+
+            ${state.proBattleFilter === 'mode' ? (
+                modeSummaries.length > 0 ? modeSummaries.map(g => {
+                    const gTotal = g.wins + g.losses;
+                    const gWinPct = gTotal > 0 ? Math.round((g.wins / gTotal) * 100) : 0;
+                    const gAvgElixir = g.deck.length > 0
+                        ? (g.deck.reduce((s, c) => s + (Number(c.elixirCost) || 0), 0) / g.deck.length).toFixed(1)
+                        : '-';
+                    return `
+                    <div class="panel-card p-3.5 flex flex-col gap-2.5 animate-box-in">
+                        <div class="flex items-center justify-between">
+                            <span class="font-black text-xs md:text-sm text-supercellGold">${esc(g.mode)}</span>
+                            <span class="bg-fuchsia-950/80 border border-fuchsia-400/50 text-fuchsia-200 px-2.5 py-0.5 rounded-full text-[11px] font-black">💧 ${gAvgElixir}</span>
+                        </div>
+                        ${g.deck.length > 0 ? `
+                        <div class="grid grid-cols-4 sm:grid-cols-8 gap-1.5">
+                            ${g.deck.map(c => {
+                                const img = (c.iconUrls && c.iconUrls.medium) || '';
+                                const lvl = getCardDisplayLevel(c);
+                                return `<div class="cr-card-slot">
+                                    ${img ? `<img src="${esc(img)}" class="w-10 h-12 object-contain" loading="lazy">` : ''}
+                                    <span class="cr-level-pill">Lv.${esc(lvl)}</span>
+                                </div>`;
+                            }).join('')}
+                        </div>` : ''}
+                        <div class="flex items-center justify-between text-xs pt-1">
+                            <span class="text-emerald-400 font-bold">الانتصارات: ${g.wins}</span>
+                            <span class="text-gray-300">المباريات: ${g.matches}</span>
+                            <span class="text-rose-400 font-bold">الهزائم: ${g.losses}</span>
+                        </div>
+                        <div class="w-full h-2 bg-rose-500/40 rounded-full overflow-hidden">
+                            <div class="h-full bg-emerald-400" style="width:${gWinPct}%"></div>
+                        </div>
+                        <div class="text-[11px] text-supercellBlue font-black">معدل الفوز ${gWinPct}%</div>
+                    </div>`;
+                }).join('') : `<div class="panel-card p-5 text-center text-xs text-gray-400">لا توجد بيانات تشكيلات حديثة حالياً.</div>`
+            ) : (
+                battleList.length > 0 ? battleList.slice(0, 12).map((m, idx) => {
+                    const myTeam = (m.team && m.team[0]) || {};
+                    const oppTeam = (m.opponent && m.opponent[0]) || {};
+                    const myCrowns = myTeam.crowns ?? 0;
+                    const oppCrowns = oppTeam.crowns ?? 0;
+                    const won = myCrowns > oppCrowns;
+                    const draw = myCrowns === oppCrowns;
+                    const oppName = oppTeam.name || 'خصم';
+                    const modeName = (m.gameMode && m.gameMode.name) ? m.gameMode.name : (m.type || 'مباراة');
+                    const oppCards = Array.isArray(oppTeam.cards) ? oppTeam.cards.slice(0, 8) : [];
+                    return `<div class="panel-card p-3 flex flex-col gap-1.5 border ${won ? 'border-emerald-500/40' : draw ? 'border-gray-500/30' : 'border-rose-500/40'} animate-box-in" style="animation-delay:${Math.min(idx * 0.04, 0.35)}s">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="truncate font-bold text-white">ضد: ${esc(oppName)} <span class="text-[10px] text-gray-400">(${esc(modeName)})</span></span>
+                            <span class="font-black px-2 py-0.5 rounded text-[10px] ${won ? 'bg-emerald-500/20 text-emerald-400' : draw ? 'bg-gray-500/20 text-gray-300' : 'bg-rose-500/20 text-rose-400'}">
+                                ${won ? 'فوز' : draw ? 'تعادل' : 'خسارة'} (${myCrowns} - ${oppCrowns})
+                            </span>
+                        </div>
+                        ${oppCards.length > 0 ? `
+                        <div class="flex items-center gap-1 overflow-x-auto pt-0.5">
+                            <span class="text-[10px] text-gray-400 shrink-0 ml-1">تشكيلة الخصم:</span>
+                            ${oppCards.map(c => {
+                                const cImg = (c.iconUrls && c.iconUrls.medium) || '';
+                                return cImg ? `<img src="${esc(cImg)}" alt="${esc(c.name)}" title="${esc(c.name)}" class="w-6 h-7 object-contain shrink-0">` : '';
+                            }).join('')}
+                        </div>` : ''}
+                    </div>`;
+                }).join('') : `<div class="panel-card p-5 text-center text-xs text-gray-400">لا توجد معارك حديثة متاحة حالياً.</div>`
+            )}
+        </div>`;
+
+    const activeSectionHtml = state.proSubTab === 'collection'
+        ? collectionHtml
+        : (state.proSubTab === 'battles' ? battlesHtml : overviewHtml);
+
+    body.innerHTML = `
+        <div class="flex flex-col gap-3.5">
+            <!-- Sub-navigation Tabs (Inspired by Top Bar in Reference Images) -->
+            <div class="grid grid-cols-3 gap-1.5 bg-black/50 p-1.5 rounded-2xl border border-supercellCardBorder">
+                <button onclick="setProSubTab('overview')" class="py-2 px-2 rounded-xl font-black text-xs transition-all ${state.proSubTab === 'overview' ? 'bg-supercellGold text-black shadow' : 'text-gray-200 hover:text-white'}">
+                    <i class="fa-solid fa-chart-line ml-1"></i> الإحصائيات
+                </button>
+                <button onclick="setProSubTab('collection')" class="py-2 px-2 rounded-xl font-black text-xs transition-all ${state.proSubTab === 'collection' ? 'bg-supercellGold text-black shadow' : 'text-gray-200 hover:text-white'}">
+                    <i class="fa-solid fa-layer-group ml-1"></i> البطاقات والمجموعة
+                </button>
+                <button onclick="setProSubTab('battles')" class="py-2 px-2 rounded-xl font-black text-xs transition-all ${state.proSubTab === 'battles' ? 'bg-supercellGold text-black shadow' : 'text-gray-200 hover:text-white'}">
+                    <i class="fa-solid fa-swords ml-1"></i> التشكيلات والمعارك
+                </button>
+            </div>
+            ${activeSectionHtml}
         </div>`;
 };
 
@@ -2619,7 +3009,7 @@ window.renderAdminProTab = function () {
     }
 };
 
-/* --- STORE & GAMES --- */
+/* --- STORE & GAMES WITH STAGGERED ANIMATION --- */
 function gameIconHtml(g, size) {
     const url = (state.settings.gameIcons || {})[g.id];
     if (url && String(url).trim() !== '') {
@@ -2645,10 +3035,10 @@ window.renderGameFilters = function () {
     const allIconHtml = allIconUrl ? `<img src="${esc(allIconUrl)}" class="w-7 h-7 object-contain rounded" onerror="this.outerHTML='<span>🎮</span>'">` : '<span>🎮</span>';
 
     const chips = [{ id: 'all', name: 'الكل', short: 'الكل', customIcon: allIconHtml }, ...GAMES.map(g => ({ ...g, customIcon: gameIconHtml(g, 'w-7 h-7') }))];
-    box.innerHTML = chips.map(c => {
+    box.innerHTML = chips.map((c, idx) => {
         const active = state.activeGame === c.id;
-        return `<button onclick="setGameFilter('${c.id}')" title="${esc(c.name || c.short)}" class="relative flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-xl border-2 font-black transition-all min-w-0 ${active ? 'bg-supercellGold text-black border-yellow-200 shadow-lg' : 'bg-black/40 text-gray-200 border-supercellCardBorder hover:border-supercellGold'}">
-            <span class="h-7 flex items-center justify-center text-xl leading-none">${c.customIcon}</span>
+        return `<button onclick="setGameFilter('${c.id}')" title="${esc(c.name || c.short)}" class="relative flex flex-col items-center justify-center gap-0.5 py-2 px-1 rounded-xl border-2 font-black transition-all min-w-0 animate-box-in ${active ? 'bg-supercellGold text-black border-yellow-200 shadow-lg animate-pill-pop' : 'bg-black/40 text-gray-200 border-supercellCardBorder hover:border-supercellGold hover:-translate-y-0.5'}" style="animation-delay:${idx * 0.04}s">
+            <span class="h-7 flex items-center justify-center text-xl leading-none transition-transform duration-200 ${active ? 'scale-110' : ''}">${c.customIcon}</span>
             <span class="text-[10px] md:text-xs leading-tight whitespace-nowrap">${c.short}</span>
             <span class="keep-size absolute -top-2 -left-1.5 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] flex items-center justify-center ${active ? 'bg-black text-supercellGold' : 'bg-supercellPurple text-gray-200 border border-supercellCardBorder'}">${counts[c.id]}</span>
         </button>`;
@@ -2657,6 +3047,7 @@ window.renderGameFilters = function () {
 
 window.setGameFilter = function (id) {
     state.activeGame = id;
+    state.filterAnimTick += 1;
     renderStore();
 };
 
@@ -2670,14 +3061,17 @@ window.renderStore = function () {
     const list = (state.activeGame === 'all' ? state.products : state.products.filter(p => p.game === state.activeGame)).slice();
     list.sort((a, b) => (productStock(a) === 0 ? 1 : 0) - (productStock(b) === 0 ? 1 : 0));
     countEl.innerText = `${list.length} منتج`;
+    countEl.classList.remove('animate-pill-pop');
+    void countEl.offsetWidth;
+    countEl.classList.add('animate-pill-pop');
 
     if (list.length === 0) {
         const msg = state.activeGame === 'all' ? 'لا توجد منتجات متاحة حالياً في المتجر.' : 'لا توجد منتجات بهذا القسم حالياً.';
-        grid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400 text-xs">${msg}</div>`;
+        grid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400 text-xs animate-box-in">${msg}</div>`;
         return;
     }
 
-    list.forEach(prod => {
+    list.forEach((prod, idx) => {
         const stockCount = productStock(prod);
         const isSoldOut = stockCount === 0;
         const game = GAMES.find(g => g.id === prod.game);
@@ -2685,12 +3079,13 @@ window.renderStore = function () {
         const newBadge = isNewProduct(prod) ? `<span class="bg-supercellGold text-black px-1.5 py-0.5 rounded text-[9px] font-black">جديد</span>` : '';
 
         const card = document.createElement('div');
-        card.className = 'panel-card p-3 flex flex-col justify-between gap-2.5 relative overflow-hidden';
+        card.className = 'panel-card p-3 flex flex-col justify-between gap-2.5 relative overflow-hidden animate-box-in hover:-translate-y-1';
+        card.style.animationDelay = `${Math.min(idx * 0.055, 0.45)}s`;
         card.innerHTML = `
             <div class="absolute top-2 left-2 bg-black/70 border border-supercellCardBorder px-2 py-0.5 rounded text-[9px] text-supercellGold font-bold">${stockCount > 0 ? `متبقي: ${stockCount}` : 'نفذت'}</div>
             <div class="absolute top-2 right-2 flex items-center gap-1">${gameBadge}${newBadge}</div>
             <div class="flex flex-col items-center gap-2 pt-6">
-                <img src="${esc(prod.image)}" alt="${esc(prod.name)}" loading="lazy" class="w-16 h-16 md:w-20 md:h-20 object-contain rounded-lg border border-supercellCardBorder bg-black/40" onerror="this.src='https://placehold.co/150x150/2B1055/FFD700?text=Item'">
+                <img src="${esc(prod.image)}" alt="${esc(prod.name)}" loading="lazy" class="w-16 h-16 md:w-20 md:h-20 object-contain rounded-lg border border-supercellCardBorder bg-black/40 transition-transform duration-200 hover:scale-105" onerror="this.src='https://placehold.co/150x150/2B1055/FFD700?text=Item'">
                 <h4 class="font-black text-xs md:text-sm text-white text-center truncate w-full">${esc(prod.name)}</h4>
                 <p class="text-[10px] md:text-xs text-gray-300 text-center line-clamp-2 h-9">${esc(prod.desc)}</p>
             </div>
@@ -2730,9 +3125,10 @@ window.renderHistory = function () {
         list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لم تقم بشراء أي منتج بعد.</div>`;
         return;
     }
-    userHistory.slice().reverse().forEach(item => {
+    userHistory.slice().reverse().forEach((item, idx) => {
         const row = document.createElement('div');
-        row.className = 'panel-card p-3.5 flex items-center justify-between gap-2';
+        row.className = 'panel-card p-3.5 flex items-center justify-between gap-2 animate-box-in';
+        row.style.animationDelay = `${Math.min(idx * 0.04, 0.35)}s`;
         row.innerHTML = `
             <div class="flex flex-col gap-1 overflow-hidden">
                 <h4 class="font-black text-xs md:text-sm text-white">${esc(item.productName)}</h4>
@@ -2760,9 +3156,10 @@ window.renderEarningsHistory = function () {
         list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">لا توجد عمليات تحصيل مسجلة بعد. ابدأ بجمع الجواهر الآن!</div>`;
         return;
     }
-    earnings.slice().reverse().forEach(item => {
+    earnings.slice().reverse().forEach((item, idx) => {
         const row = document.createElement('div');
-        row.className = 'panel-card p-3.5 flex items-center justify-between gap-2';
+        row.className = 'panel-card p-3.5 flex items-center justify-between gap-2 animate-box-in';
+        row.style.animationDelay = `${Math.min(idx * 0.04, 0.35)}s`;
         row.innerHTML = `
             <div class="flex flex-col gap-1 overflow-hidden">
                 <h4 class="font-black text-xs md:text-sm text-white flex items-center gap-1.5"><i class="fa-solid fa-coins text-supercellGold"></i> ${esc(item.source)}</h4>
@@ -2821,7 +3218,7 @@ window.renderLeaderboard = function () {
             const myXp = me.xp || 0;
             const rank = users.filter(u => (u.xp || 0) > myXp).length + 1;
             html += `
-                <div class="panel-card border-supercellGold p-3 flex items-center justify-between gap-2">
+                <div class="panel-card border-supercellGold p-3 flex items-center justify-between gap-2 animate-box-in">
                     <div class="flex items-center gap-2">
                         <span class="font-black text-xl text-supercellGold">#${rank}</span>
                         <span class="font-black text-xs md:text-sm text-white">أنت رتبتك ${rank}</span>
@@ -3138,10 +3535,10 @@ window.redeemPromo = async function () {
     try {
         const res = await runTransaction(ref(db, 'promoCodes/' + code), (cur) => {
             if (cur === null) { outcome = 'invalid'; return cur; }
-            if (!cur.active) { outcome = 'inactive'; return; }
-            if (cur.redeemedBy && cur.redeemedBy[dbKey]) { outcome = 'used'; return; }
+            if (!cur.active) { outcome = 'inactive'; return cur; }
+            if (cur.redeemedBy && cur.redeemedBy[dbKey]) { outcome = 'used'; return cur; }
             const uses = cur.uses || 0;
-            if (uses >= (cur.maxUses || 0)) { outcome = 'full'; return; }
+            if (uses >= (cur.maxUses || 0)) { outcome = 'full'; return cur; }
             cur.uses = uses + 1;
             cur.redeemedBy = cur.redeemedBy || {};
             cur.redeemedBy[dbKey] = serverNow();
@@ -3313,102 +3710,111 @@ window.executeRedeem = async function () {
 window.closeRedeemModal = () => el('redeem-success-modal').classList.add('hidden');
 window.copyRedeemLink = function () {
     const input = el('redeem-link-output');
-    navigator.clipboard.writeText(input.value).then(() => showToast('تم نسخ الرابط!')).catch(() => {
+    navigator.clipboard.writeText(input.value).then(() => {
+        showToast('تم نسخ الرابط إلى الحافظة!');
+    }).catch(() => {
         input.select();
         document.execCommand('copy');
         showToast('تم النسخ!');
     });
 };
 
-window.switchTab = function (tabId) {
-    if (tabId === 'admin' && !isAdminUser()) {
-        showToast('غير مسموح بالدخول.', 'error');
+window.switchTab = function (tabName) {
+    if (tabName === 'admin' && !isAdminUser()) {
+        showToast('غير مسموح بالدخول إلى لوحة الأدمن.', 'error');
         return;
     }
-    state.activeTab = tabId;
-    ['store', 'missions', 'pro', 'history', 'leaderboard', 'admin'].forEach(id => {
-        const sec = el('tab-' + id);
-        const btn = el('tab-btn-' + id);
-        if (sec) sec.classList.toggle('hidden', id !== tabId);
-        if (btn) {
-            btn.classList.toggle('active', id === tabId);
-        }
-    });
-    if (tabId === 'pro') renderProSection();
-    if (tabId === 'leaderboard') renderLeaderboard();
-    if (tabId === 'history') { renderHistory(); renderEarningsHistory(); }
-    if (tabId === 'missions') renderMissions();
-};
 
-window.switchAdminTab = function (subId) {
-    ['settings', 'pro', 'products', 'missions', 'users', 'log'].forEach(id => {
-        const sec = el('atab-' + id);
-        const btn = el('atab-btn-' + (id === 'missions' ? 'admin-missions' : id));
-        if (sec) sec.classList.toggle('hidden', id !== subId);
+    state.activeTab = tabName;
+    ['store', 'missions', 'pro', 'history', 'leaderboard', 'admin'].forEach(t => {
+        const sec = el('tab-' + t);
+        if (sec) sec.classList.toggle('hidden', t !== tabName);
+        const btn = el('tab-btn-' + t);
         if (btn) {
-            const active = id === subId;
-            btn.className = `flex-1 py-1.5 px-2 rounded-lg font-black text-[11px] md:text-xs whitespace-nowrap transition-all ${active ? 'admin-sub-on' : 'admin-sub-off'}`;
+            btn.classList.toggle('active', t === tabName);
         }
     });
-    if (subId === 'pro') renderAdminProTab();
-    if (subId === 'products') renderAdminProducts();
-    if (subId === 'missions') renderAdminMissions();
-    if (subId === 'users') renderAdminUsers();
-    if (subId === 'log') renderAdminAuditLog();
+
+    if (tabName === 'store') {
+        state.filterAnimTick += 1;
+        renderStore();
+    } else if (tabName === 'missions') {
+        renderMissions();
+    } else if (tabName === 'pro') {
+        renderProSection();
+    } else if (tabName === 'history') {
+        renderHistory();
+        renderEarningsHistory();
+    } else if (tabName === 'leaderboard') {
+        renderLeaderboard();
+    } else if (tabName === 'admin' && isAdminUser()) {
+        populateAdminSettingsForm();
+        renderAdminProducts();
+        renderAdminMissions();
+        renderAdminUsers();
+        renderAdminAuditLog();
+        renderAdminProTab();
+    }
 };
 
 window.checkAdminAccess = function () {
     if (!isAdminUser()) {
-        showToast('عذراً، هذه اللوحة مخصصة للأدمن فقط.', 'error');
+        showToast('هذا القسم مخصص للمشرف فقط.', 'error');
+        switchTab('store');
         return;
     }
     switchTab('admin');
-    switchAdminTab('settings');
-    populateAdminSettingsForm();
-    renderAdminProTab();
-    renderAdminProducts();
-    renderAdminMissions();
-    renderAdminPromoList();
-    renderAdminUsers();
-    renderAdminAuditLog();
 };
 
-window.lockAdminPanel = () => switchTab('store');
+window.lockAdminPanel = function () {
+    switchTab('store');
+};
+
+window.switchAdminTab = function (subTab) {
+    ['settings', 'pro', 'products', 'missions', 'users', 'log'].forEach(t => {
+        const div = el('atab-' + t);
+        if (div) div.classList.toggle('hidden', t !== subTab);
+        const btnId = t === 'missions' ? 'atab-btn-admin-missions' : ('atab-btn-' + t);
+        const btn = el(btnId);
+        if (btn) btn.className = `flex-1 py-1.5 px-2 rounded-lg font-black text-[11px] md:text-xs whitespace-nowrap ${t === subTab ? 'admin-sub-on' : 'admin-sub-off'}`;
+    });
+    if (subTab === 'pro') renderAdminProTab();
+    if (subTab === 'users') renderAdminUsers();
+    if (subTab === 'products') renderAdminProducts();
+    if (subTab === 'missions') renderAdminMissions();
+    if (subTab === 'log') renderAdminAuditLog();
+};
 
 function populateAdminSettingsForm() {
-    const s = state.settings || {};
-    el('admin-maintenance-toggle').checked = !!s.maintenanceMode;
-    el('admin-announcement-badge').value = s.badge || '';
-    el('admin-announcement-input').value = s.announcement || '';
-    el('admin-marquee-toggle').checked = s.marqueeEnabled !== false;
-    el('admin-weekly-text').value = s.weeklyText || '';
-    el('admin-weekly-btn-text').value = s.weeklyBtnText || '';
-    el('admin-weekly-btn-url').value = s.weeklyBtnUrl || '';
-    el('admin-event-bar-input').value = s.eventBarText || '';
-    el('admin-logo-input').value = s.logoUrl || '';
-    el('admin-about-text').value = s.aboutText || '';
-    el('admin-whatsapp-channel-url').value = s.whatsappChannelUrl || '';
-    el('admin-whatsapp-notice').value = s.whatsappNoticeText || '';
-    el('admin-earn-instructions').value = s.earnInstructions || '';
-
-    const soc = s.socials || {};
-    el('social-yt').value = soc.youtube || '';
-    el('social-tik').value = soc.tiktok || '';
-    el('social-ig').value = soc.instagram || '';
-    el('social-twi').value = soc.twitch || '';
-
-    const icons = s.gameIcons || {};
+    if (!isAdminUser()) return;
+    el('admin-maintenance-toggle').checked = !!state.settings.maintenanceMode;
+    el('admin-announcement-badge').value = state.settings.badge || '';
+    el('admin-announcement-input').value = state.settings.announcement || '';
+    el('admin-marquee-toggle').checked = state.settings.marqueeEnabled !== false;
+    el('admin-weekly-text').value = state.settings.weeklyText || '';
+    el('admin-weekly-btn-text').value = state.settings.weeklyBtnText || '';
+    el('admin-weekly-btn-url').value = state.settings.weeklyBtnUrl || '';
+    el('admin-event-bar-input').value = state.settings.eventBarText || '';
+    el('admin-logo-input').value = state.settings.logoUrl || '';
+    el('admin-about-text').value = state.settings.aboutText || '';
+    el('admin-whatsapp-channel-url').value = state.settings.whatsappChannelUrl || '';
+    el('admin-whatsapp-notice').value = state.settings.whatsappNoticeText || '';
+    el('admin-earn-instructions').value = state.settings.earnInstructions || '';
+    const socials = state.settings.socials || {};
+    el('social-yt').value = socials.youtube || '';
+    el('social-tik').value = socials.tiktok || '';
+    el('social-ig').value = socials.instagram || '';
+    el('social-twi').value = socials.twitch || '';
+    const icons = state.settings.gameIcons || {};
     el('game-icon-all').value = icons.all || '';
     el('game-icon-cr').value = icons.cr || '';
     el('game-icon-coc').value = icons.coc || '';
     el('game-icon-hd').value = icons.hd || '';
     el('game-icon-bs').value = icons.bs || '';
-    renderAdminPromoList();
 }
 
 window.saveAdminSettings = function () {
-    const updated = {
-        ...state.settings,
+    const newSettings = {
         maintenanceMode: el('admin-maintenance-toggle').checked,
         badge: el('admin-announcement-badge').value.trim(),
         announcement: el('admin-announcement-input').value.trim(),
@@ -3422,23 +3828,23 @@ window.saveAdminSettings = function () {
         whatsappChannelUrl: el('admin-whatsapp-channel-url').value.trim(),
         whatsappNoticeText: el('admin-whatsapp-notice').value.trim(),
         earnInstructions: el('admin-earn-instructions').value.trim(),
-        socials: {
-            youtube: el('social-yt').value.trim(),
-            tiktok: el('social-tik').value.trim(),
-            instagram: el('social-ig').value.trim(),
-            twitch: el('social-twi').value.trim()
-        },
         gameIcons: {
             all: el('game-icon-all').value.trim(),
             cr: el('game-icon-cr').value.trim(),
             coc: el('game-icon-coc').value.trim(),
             hd: el('game-icon-hd').value.trim(),
             bs: el('game-icon-bs').value.trim()
+        },
+        socials: {
+            youtube: el('social-yt').value.trim(),
+            tiktok: el('social-tik').value.trim(),
+            instagram: el('social-ig').value.trim(),
+            twitch: el('social-twi').value.trim()
         }
     };
 
-    set(ref(db, 'settings'), updated).then(() => {
-        showToast('تم حفظ الإعدادات بنجاح!');
+    update(ref(db, 'settings'), newSettings).then(() => {
+        showToast('تم حفظ الإعدادات وتحديث الواجهة سحابياً!');
     }).catch(() => showToast('حدث خطأ أثناء الحفظ.', 'error'));
 };
 
@@ -3457,11 +3863,11 @@ window.openProductModal = function (productId = null) {
             el('product-modal-title').innerText = 'تعديل المنتج';
             el('edit-product-id').value = prod.id;
             el('prod-game').value = prod.game || '';
-            el('prod-name').value = prod.name || '';
-            el('prod-desc').value = prod.desc || '';
-            el('prod-price').value = prod.price || '';
-            el('prod-img').value = prod.image || '';
-            el('prod-links').value = prod.links ? prod.links.join('\n') : '';
+            el('prod-name').value = prod.name;
+            el('prod-desc').value = prod.desc;
+            el('prod-price').value = prod.price;
+            el('prod-img').value = prod.image;
+            el('prod-links').value = (prod.links || []).join('\n');
         }
     } else {
         el('product-modal-title').innerText = 'إضافة منتج جديد';
@@ -3473,275 +3879,336 @@ window.closeProductModal = () => el('product-modal').classList.add('hidden');
 
 window.saveProduct = function () {
     const editId = el('edit-product-id').value.trim();
-    const game = el('prod-game').value;
+    const game = el('prod-game').value || '';
     const name = el('prod-name').value.trim();
     const desc = el('prod-desc').value.trim();
     const price = Number(el('prod-price').value);
-    const image = el('prod-img').value.trim();
-    const linksRaw = el('prod-links').value.trim();
+    const image = el('prod-img').value.trim() || 'https://placehold.co/150x150/2B1055/FFD700?text=Reward';
+    const linksRaw = el('prod-links').value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
 
-    if (!name || isNaN(price) || price < 0) {
-        showToast('يرجى إدخال اسم المنتج والسعر بشكل صحيح.', 'error');
+    if (!name || !desc || isNaN(price) || price <= 0) {
+        showToast('يرجى إدخال الاسم والوصف والسعر الصحيح.', 'error');
         return;
     }
 
-    const links = linksRaw ? linksRaw.split('\n').map(l => l.trim()).filter(Boolean) : [];
     const productId = editId || ('prod_' + Date.now());
-    const productObj = { id: productId, game, name, desc, price, image, links };
+    const prodObj = { id: productId, game, name, desc, price, image, links: linksRaw };
 
-    set(ref(db, 'products/' + productId), productObj).then(() => {
+    set(ref(db, 'products/' + productId), prodObj).then(() => {
         closeProductModal();
-        showToast('تم حفظ المنتج بنجاح!');
+        showToast('تم حفظ المنتج سحابياً بنجاح!');
     }).catch(() => showToast('حدث خطأ أثناء الحفظ.', 'error'));
 };
 
 window.deleteProduct = function (productId) {
-    if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
-    remove(ref(db, 'products/' + productId)).then(() => showToast('تم الحذف بنجاح.'));
+    if (!confirm('هل أنت متأكد من حذف هذا المنتج نهائياً؟')) return;
+    remove(ref(db, 'products/' + productId)).then(() => showToast('تم حذف المنتج بنجاح.'));
 };
 
 window.renderAdminProducts = function () {
     const container = el('admin-products-list');
-    if (!container) return;
     container.innerHTML = '';
     if (state.products.length === 0) {
-        container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs">لا توجد منتجات مسجلة.</div>`;
+        container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs">لا توجد منتجات مسجلة حالياً.</div>`;
         return;
     }
-    state.products.forEach(p => {
-        const stock = productStock(p);
+    state.products.forEach(prod => {
+        const stockCount = prod.links ? prod.links.length : 0;
+        const game = GAMES.find(g => g.id === prod.game);
+        const gameText = game ? game.short : 'الكل';
         const item = document.createElement('div');
         item.className = 'bg-black/50 border border-supercellCardBorder p-2.5 rounded flex items-center justify-between gap-2';
         item.innerHTML = `
-            <div class="flex items-center gap-2 overflow-hidden">
-                <img src="${esc(p.image)}" alt="" class="w-10 h-10 object-contain rounded bg-black/40 border border-supercellCardBorder shrink-0" onerror="this.src='https://placehold.co/100x100/2B1055/FFD700?text=Item'">
+            <div class="flex items-center gap-2.5 overflow-hidden">
+                <img src="${esc(prod.image)}" class="w-10 h-10 object-contain rounded border border-supercellCardBorder bg-black/40" onerror="this.src='https://placehold.co/60x60/2B1055/FFD700?text=Item'">
                 <div class="overflow-hidden">
-                    <h5 class="font-black text-xs text-white truncate">${esc(p.name)}</h5>
-                    <span class="text-[10px] text-supercellBlue">💎 ${esc(p.price)} XP | مخزون: ${stock}</span>
+                    <h5 class="font-black text-xs text-white truncate">${esc(prod.name)} <span class="text-[9px] text-supercellGold">[${esc(gameText)}]</span></h5>
+                    <span class="text-[10px] text-supercellBlue font-bold">${esc(prod.price)} XP | المخزون: (${stockCount})</span>
                 </div>
             </div>
             <div class="flex items-center gap-1.5 shrink-0">
-                <button onclick="openProductModal('${esc(p.id)}')" class="btn-blue px-2 py-1 rounded text-black font-bold text-[10px]">تعديل</button>
-                <button onclick="deleteProduct('${esc(p.id)}')" class="btn-red px-2 py-1 rounded text-white font-bold text-[10px]">حذف</button>
+                <button onclick="openProductModal('${esc(prod.id)}')" class="btn-blue px-2 py-1 rounded text-black font-bold text-[10px]">تعديل</button>
+                <button onclick="deleteProduct('${esc(prod.id)}')" class="btn-red px-2 py-1 rounded text-white font-bold text-[10px]">حذف</button>
             </div>`;
         container.appendChild(item);
     });
 };
 
-window.createPromoCode = function () {
-    const code = el('promo-new-code').value.trim().toUpperCase();
-    const reward = Number(el('promo-new-reward').value);
-    const maxUses = Number(el('promo-new-max').value);
-
-    if (!/^[A-Z0-9_-]{2,30}$/.test(code) || isNaN(reward) || reward <= 0 || isNaN(maxUses) || maxUses <= 0) {
-        showToast('يرجى إدخال بيانات الكود بشكل صحيح.', 'error');
-        return;
-    }
-
-    const promoObj = { code, reward, maxUses, uses: 0, active: true, createdAt: serverNow() };
-    set(ref(db, 'promoCodes/' + code), promoObj).then(() => {
-        el('promo-new-code').value = '';
-        el('promo-new-reward').value = '';
-        el('promo-new-max').value = '';
-        showToast('تم إنشاء الكود الترويجي بنجاح!');
-        renderAdminPromoList();
-    });
-};
-
-window.renderAdminPromoList = async function () {
-    const container = el('admin-promo-list');
-    if (!container) return;
-    try {
-        const snap = await get(ref(db, 'promoCodes'));
-        if (!snap.exists()) {
-            container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs">لا توجد أكواد ترويجية حالياً.</div>`;
-            return;
-        }
-        const val = snap.val();
-        container.innerHTML = Object.values(val).map(c => `
-            <div class="bg-black/50 border border-supercellCardBorder p-2 rounded flex items-center justify-between text-xs">
-                <div>
-                    <span class="font-black text-supercellGold" dir="ltr">${esc(c.code)}</span>
-                    <span class="text-gray-300 mr-2">(💎 ${c.reward} - استُخدم: ${c.uses}/${c.maxUses})</span>
-                </div>
-                <button onclick="deletePromoCode('${esc(c.code)}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
-            </div>`).join('');
-    } catch (e) {}
-};
-
-window.deletePromoCode = function (code) {
-    if (!confirm('هل أنت متأكد من حذف هذا الكود؟')) return;
-    remove(ref(db, 'promoCodes/' + code)).then(() => {
-        showToast('تم حذف الكود.');
-        renderAdminPromoList();
-    });
-};
-
 window.renderAdminUsers = function () {
-    const list = el('admin-users-list');
+    const container = el('admin-users-list');
     const countEl = el('admin-users-count');
-    const searchVal = (el('admin-user-search').value || '').toLowerCase().trim();
-    if (!list) return;
+    container.innerHTML = '';
+    const q = (el('admin-user-search') ? el('admin-user-search').value : '').trim().toLowerCase();
 
-    let users = Object.entries(state.usersMap || {}).map(([k, u]) => ({ key: k, ...u }));
-    users = users.filter(u => !isAdminUser(u));
-    countEl.innerText = `${users.length} متابع`;
+    const usersArr = Object.entries(state.usersMap || {}).filter(([k, u]) => {
+        if (!u || isAdminUser(u)) return false;
+        if (!q) return true;
+        return (u.name || '').toLowerCase().includes(q)
+            || (u.email || '').toLowerCase().includes(q)
+            || (u.tag || '').toLowerCase().includes(q);
+    });
 
-    if (searchVal) {
-        users = users.filter(u => (u.name || '').toLowerCase().includes(searchVal) || (u.email || '').toLowerCase().includes(searchVal) || (u.tag || '').toLowerCase().includes(searchVal));
-    }
+    if (countEl) countEl.innerText = `${usersArr.length} متابع`;
 
-    users.sort((a, b) => (b.xp || 0) - (a.xp || 0));
-
-    if (users.length === 0) {
-        list.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">لا يوجد متابعون مطابقة للبحث.</div>`;
+    if (usersArr.length === 0) {
+        container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs">لا يوجد متابعون مطابقون.</div>`;
         return;
     }
 
-    list.innerHTML = users.map(u => {
-        const proTag = hasProAccess(u) ? `<span class="bg-supercellGold text-black font-black text-[9px] px-1.5 py-0.5 rounded mr-1">PRO</span>` : '';
-        return `
-        <div onclick="openUserDetails('${esc(u.key)}')" class="bg-black/50 border border-supercellCardBorder p-2.5 rounded-xl flex items-center justify-between gap-2 cursor-pointer hover:border-supercellGold transition-colors">
-            <div class="flex items-center gap-2.5 overflow-hidden">
-                <div class="w-10 h-10 shrink-0 rounded-full bg-purple-900 border border-supercellGold flex items-center justify-center text-supercellGold overflow-hidden">
-                    ${u.avatar ? `<img src="${esc(u.avatar)}" alt="" class="w-full h-full object-cover">` : `<i class="fa-solid fa-crown"></i>`}
-                </div>
-                <div class="overflow-hidden">
-                    <h5 class="font-black text-xs text-white truncate">${esc(u.name)}${proTag}</h5>
-                    <p class="text-[10px] text-supercellBlue font-bold">${esc(u.tag)} | <span class="text-gray-300">${esc(u.email)}</span></p>
-                </div>
+    usersArr.forEach(([key, user]) => {
+        const isPro = hasProAccess(user);
+        const item = document.createElement('div');
+        item.className = 'bg-black/50 border border-supercellCardBorder p-3 rounded flex items-center justify-between gap-2';
+        item.innerHTML = `
+            <div class="overflow-hidden">
+                <h5 class="font-black text-xs text-white truncate">
+                    ${esc(user.name)}
+                    ${isPro ? '<span class="bg-supercellGold text-black text-[9px] px-1.5 py-0.2 rounded mr-1">PRO</span>' : ''}
+                </h5>
+                <div class="text-[10px] text-supercellBlue font-bold truncate">${esc(user.tag || '')} | رصيده: 💎 ${esc(user.xp || 0)} XP</div>
+                <div class="text-[9px] text-gray-400 truncate">${esc(user.email || '')}</div>
             </div>
-            <div class="flex items-center gap-1.5 bg-black/60 border border-supercellCardBorder px-2.5 py-1 rounded shrink-0">
-                <span class="text-xs">💎</span>
-                <span class="font-black text-supercellBlue text-xs">${esc(u.xp || 0)}</span>
-            </div>
-        </div>`;
-    }).join('');
+            <button onclick="openCustomPointsModal('${esc(key)}')" class="btn-blue px-2.5 py-1.5 rounded text-black font-black text-[10px] shrink-0">تفاصيل / تعديل</button>`;
+        container.appendChild(item);
+    });
 };
 
-window.openUserDetails = function (userKey) {
+window.openCustomPointsModal = function (userKey) {
     const user = state.usersMap[userKey];
     if (!user) return;
     el('target-user-key').value = userKey;
-    el('ud-name').innerText = user.name || '';
-    el('ud-balance').innerText = `💎 ${user.xp || 0} جوهرة`;
     el('custom-points-val').value = '';
 
-    const av = el('ud-avatar');
-    if (user.avatar) av.innerHTML = `<img src="${esc(user.avatar)}" class="w-full h-full object-cover">`;
-    else av.innerHTML = `<i class="fa-solid fa-crown text-xl"></i>`;
+    el('ud-name').innerText = user.name || '';
+    el('ud-balance').innerText = `رصيده الحالي: 💎 ${user.xp || 0} XP`;
+    el('ud-avatar').innerHTML = user.avatar
+        ? `<img src="${esc(user.avatar)}" class="w-full h-full object-cover" onerror="this.outerHTML='<i class=&quot;fa-solid fa-crown text-xl&quot;></i>'">`
+        : `<i class="fa-solid fa-crown text-xl"></i>`;
 
+    const gameNames = { cr: 'كلاش رويال', coc: 'كلاش أوف كلانس', hd: 'هاي داي', bs: 'براول ستارز' };
+    const isPro = hasProAccess(user);
     el('ud-info').innerHTML = `
-        <div><strong>البريد:</strong> ${esc(user.email)}</div>
-        <div><strong>اللعبة:</strong> ${esc((user.game || 'cr').toUpperCase())} • <strong>التاغ:</strong> ${esc(user.tag)}</div>
-        <div><strong>حالة PRO:</strong> ${hasProAccess(user) ? `<span class="text-supercellGold font-bold">مفعّل (سيزون #${user.proSeason || state.settings.seasonNumber || 1})</span>` : '<span class="text-gray-400">غير مفعّل</span>'}</div>
-        <div><strong>اليوتيوب:</strong> ${esc(user.ytChannel || 'غير محدد')}</div>
-        <div><strong>الدولة:</strong> ${esc(user.country || 'غير محدد')}</div>
-        <div><strong>تاريخ الانضمام:</strong> ${esc(user.joinedAt || 'غير متوفر')}</div>
-        <div><strong>عدد الإحالات:</strong> ${user.referralCount || 0}</div>
-        <div><strong>المهام المكتملة:</strong> ${Object.keys(user.completedMissions || {}).length} مهمة</div>
-    `;
+        <div><strong>حالة البرو:</strong> ${isPro ? '<span class="text-supercellGold font-black">مفعل (PRO)</span>' : '<span class="text-gray-400">غير مفعل</span>'}</div>
+        <div><strong>الإيميل:</strong> <span class="select-all">${esc(user.email || '-')}</span></div>
+        <div><strong>اللعبة:</strong> ${esc(gameNames[user.game] || user.game || '-')}</div>
+        <div><strong>التاغ / الهاشتاج:</strong> <span class="text-supercellBlue font-bold">${esc(user.tag || '-')}</span></div>
+        <div><strong>قناة اليوتيوب:</strong> ${esc(user.ytChannel || '-')}</div>
+        <div><strong>الدولة:</strong> ${esc(user.country || '-')}</div>
+        <div><strong>تاريخ التسجيل:</strong> ${esc(user.joinedAt || '-')}</div>
+        <div><strong>الإحالات:</strong> ${user.referralCount || 0} / ${MAX_REFERRALS}</div>`;
 
-    const logContainer = el('ud-activity-log');
+    const logBox = el('ud-activity-log');
+    logBox.innerHTML = '';
     const earnings = user.earningsHistory || [];
-    if (earnings.length === 0) {
-        logContainer.innerHTML = `<span class="text-gray-400">لا توجد عمليات تحصيل مسجلة.</span>`;
+    const userPurchases = state.history.filter(h => h.userEmail ? h.userEmail.toLowerCase() === (user.email || '').toLowerCase() : h.userTag === user.tag);
+
+    const combined = [
+        ...earnings.map(e => ({ type: 'earn', label: e.source, val: `+${e.reward} XP`, time: e.timestamp })),
+        ...userPurchases.map(p => ({ type: 'buy', label: `شراء: ${p.productName}`, val: `-${p.xpSpent} XP`, time: p.timestamp }))
+    ];
+
+    if (combined.length === 0) {
+        logBox.innerHTML = `<div class="text-gray-400 text-center py-2">لا توجد أنشطة مسجلة لهذا الحساب.</div>`;
     } else {
-        logContainer.innerHTML = earnings.slice().reverse().map(e => `
-            <div class="flex justify-between items-center border-b border-gray-800 pb-1">
-                <span>✅ ${esc(e.source)}</span>
-                <span class="text-supercellGold font-bold">+${e.reward} XP (${esc(e.timestamp)})</span>
-            </div>
-        `).join('');
+        combined.slice().reverse().forEach(c => {
+            const d = document.createElement('div');
+            d.className = 'flex items-center justify-between border-b border-white/10 pb-1 last:border-0';
+            d.innerHTML = `<span class="truncate text-gray-200">${esc(c.label)} <span class="text-[8px] text-gray-500">(${esc(c.time)})</span></span><span class="font-bold shrink-0 ${c.type === 'earn' ? 'text-emerald-400' : 'text-red-400'}">${esc(c.val)}</span>`;
+            logBox.appendChild(d);
+        });
     }
 
     el('custom-points-modal').classList.remove('hidden');
 };
 
-window.closeCustomPointsModal = () => el('custom-points-modal').classList.add('hidden');
-
-window.toggleUserProFromAdmin = async function (enable) {
-    const userKey = el('target-user-key').value;
-    if (!userKey) return;
+window.toggleUserProFromAdmin = async function (enablePro) {
+    const key = el('target-user-key').value;
+    if (!key || !state.usersMap[key]) return;
     const currentSeason = Number(state.settings.seasonNumber || 1);
-    await update(ref(db, 'users/' + userKey), enable
+    const patch = enablePro
         ? { proSeason: currentSeason, proExpiresAt: getSeasonEndTimestamp() }
-        : { proSeason: 0, proExpiresAt: 0, proPermanent: false }
-    );
-    showToast(enable ? `تم منح وتفعيل PRO للمستخدم للسيزون #${currentSeason}.` : 'تم حذف وإلغاء PRO عن المستخدم.');
-    closeCustomPointsModal();
-    renderAdminUsers();
+        : { proSeason: null, proExpiresAt: null, proPermanent: null };
+
+    await update(ref(db, 'users/' + key), patch);
+    showToast(enablePro ? 'تم تفعيل البرو للمستخدم!' : 'تم إلغاء / حذف البرو عن المستخدم.');
+    setTimeout(() => openCustomPointsModal(key), 200);
 };
 
-window.applyCustomPoints = async function (multiplier) {
+window.closeCustomPointsModal = () => el('custom-points-modal').classList.add('hidden');
+
+window.applyCustomPoints = function (sign) {
     const userKey = el('target-user-key').value;
     const val = Number(el('custom-points-val').value);
     if (!userKey || isNaN(val) || val <= 0) {
-        showToast('يرجى إدخال قيمة صحيحة للجواهر.', 'error');
+        showToast('يرجى إدخال رقم صحيح أكبر من صفر.', 'error');
         return;
     }
-    const delta = val * multiplier;
-    try {
-        await runTransaction(ref(db, 'users/' + userKey), (cur) => {
-            if (!cur) return cur;
-            cur.xp = Math.max((cur.xp || 0) + delta, 0);
-            if (delta > 0) {
-                cur.earningsHistory = cur.earningsHistory || [];
-                const nowDt = new Date();
-                const timeStr = `${nowDt.getFullYear()}-${String(nowDt.getMonth() + 1).padStart(2, '0')}-${String(nowDt.getDate()).padStart(2, '0')} ${String(nowDt.getHours()).padStart(2, '0')}:${String(nowDt.getMinutes()).padStart(2, '0')}`;
-                cur.earningsHistory.push({
-                    source: 'إضافة يدوية بواسطة المشرف (Admin)',
-                    reward: delta,
-                    timestamp: timeStr
-                });
-            }
-            return cur;
+    const delta = sign * val;
+
+    const now = new Date();
+    const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+    runTransaction(ref(db, 'users/' + userKey), (cur) => {
+        if (!cur) return cur;
+        cur.xp = Math.max(0, (cur.xp || 0) + delta);
+        cur.earningsHistory = cur.earningsHistory || [];
+        cur.earningsHistory.push({
+            source: delta > 0 ? 'مكافأة / تعديل رصيد من الأدمن' : 'خصم / تعديل رصيد من الأدمن',
+            reward: delta,
+            timestamp: timeStr
         });
+        return cur;
+    }).then(() => {
         closeCustomPointsModal();
-        showToast('تم تحديث نقاط المتابع بنجاح!');
-        renderAdminUsers();
-    } catch (e) {
-        showToast('حدث خطأ أثناء تعديل النقاط.', 'error');
-    }
+        showToast('تم تحديث رصيد المتابع بنجاح!');
+    }).catch(() => showToast('حدث خطأ أثناء التحديث.', 'error'));
 };
 
 window.renderAdminAuditLog = function () {
-    const list = el('admin-audit-log-list');
-    if (!list) return;
+    const container = el('admin-audit-log-list');
+    container.innerHTML = '';
     if (state.history.length === 0) {
-        list.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">لا توجد عمليات شراء مسجلة بعد.</div>`;
+        container.innerHTML = `<div class="text-center py-4 text-gray-400 text-xs">لا توجد عمليات مسجلة.</div>`;
         return;
     }
-    list.innerHTML = state.history.slice().reverse().map(item => `
-        <div class="bg-black/50 border border-supercellCardBorder p-2.5 rounded flex items-center justify-between gap-2 text-xs">
-            <div class="overflow-hidden">
-                <strong class="text-supercellGold">${esc(item.userName || item.userTag)}</strong> اشترى <span class="text-white">${esc(item.productName)}</span> مقابل <span class="text-supercellBlue">${item.xpSpent} XP</span>
-                <div class="text-[10px] text-gray-400 mt-0.5">${esc(item.timestamp)}</div>
-                <div class="text-[10px] text-supercellBlue truncate select-all">الرابط: ${esc(item.assignedLink)}</div>
+    state.history.slice().reverse().forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'bg-black/50 border border-supercellCardBorder p-2.5 rounded text-[11px] flex flex-col gap-1';
+        row.innerHTML = `
+            <div class="flex items-center justify-between font-bold">
+                <span class="text-white">${esc(item.userName)} <span class="text-supercellBlue font-normal">(${esc(item.userTag)})</span></span>
+                <span class="text-red-400">-${esc(item.xpSpent)} XP</span>
             </div>
-            <button onclick="deleteLogItem('${esc(item.id)}')" class="text-red-400 hover:text-red-300 shrink-0"><i class="fa-solid fa-trash"></i></button>
-        </div>`).join('');
-};
-
-window.deleteLogItem = function (histId) {
-    if (!confirm('هل تريد حذف هذا السجل؟')) return;
-    remove(ref(db, 'history/' + histId)).then(() => showToast('تم الحذف.'));
+            <div class="text-gray-300">المنتج: <strong class="text-supercellGold">${esc(item.productName)}</strong> | <span class="text-[9px] text-gray-400">${esc(item.timestamp)}</span></div>
+            <div class="text-[9px] text-supercellBlue truncate select-all">الرابط: ${esc(item.assignedLink)}</div>`;
+        container.appendChild(row);
+    });
 };
 
 window.clearAdminHistory = function () {
-    if (!confirm('هل أنت متأكد من مسح كافة سجل المشتريات؟')) return;
-    set(ref(db, 'history'), null).then(() => showToast('تم مسح السجل بالكامل.'));
+    if (!confirm('هل أنت متأكد من مسح كافة سجلات الشراء العامة؟')) return;
+    remove(ref(db, 'history')).then(() => showToast('تم مسح السجل العام بنجاح.'));
 };
 
-window.installApp = function () {
-    showToast('ميزة التثبيت متاحة عبر متصفح هاتفك (إضافة إلى الشاشة الرئيسية).');
+function renderPromoCodesList() {
+    const box = el('admin-promo-list');
+    if (!box) return;
+    const codes = Object.entries(state.promoCodes || {});
+    if (codes.length === 0) { box.innerHTML = '<div class="text-center text-gray-400 text-[11px] py-3">لا توجد أكواد ترويجية.</div>'; return; }
+    box.innerHTML = codes.map(([code, p]) => {
+        const uses = p.uses || 0, max = p.maxUses || 0;
+        const active = p.active !== false;
+        return `<div class="bg-black/50 border border-supercellCardBorder p-2.5 rounded flex items-center justify-between gap-2 text-xs">
+            <div class="min-w-0">
+                <div class="font-black text-white truncate" dir="ltr">${esc(code)} <span class="text-[10px] ${active ? 'text-emerald-400' : 'text-red-400'}">(${active ? 'فعّال' : 'معطّل'})</span></div>
+                <div class="text-[10px] text-supercellBlue font-bold">+${esc(p.reward)} 💎 | المستخدم: ${uses} / ${max}</div>
+            </div>
+            <div class="flex gap-1.5 shrink-0">
+                <button onclick="togglePromo('${esc(code)}')" class="btn-blue px-2 py-1 rounded text-black font-bold text-[10px]">${active ? 'تعطيل' : 'تفعيل'}</button>
+                <button onclick="deletePromo('${esc(code)}')" class="btn-red px-2 py-1 rounded text-white font-bold text-[10px]">حذف</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+window.createPromoCode = function () {
+    const code = el('promo-new-code').value.trim().toUpperCase();
+    const reward = Number(el('promo-new-reward').value);
+    const maxUses = Number(el('promo-new-max').value);
+    if (!/^[A-Z0-9_-]{2,30}$/.test(code)) { showToast('الكود غير صحيح.', 'error'); return; }
+    if (!Number.isInteger(reward) || reward <= 0) { showToast('أدخل عدداً صحيحاً للجواهر.', 'error'); return; }
+    if (!Number.isInteger(maxUses) || maxUses <= 0) { showToast('أدخل عدداً صحيحاً للاستخدامات.', 'error'); return; }
+    set(ref(db, 'promoCodes/' + code), { reward, maxUses, uses: 0, active: true }).then(() => {
+        el('promo-new-code').value = '';
+        el('promo-new-reward').value = '';
+        el('promo-new-max').value = '';
+        showToast('تم إنشاء الكود.');
+    }).catch(() => showToast('تعذر إنشاء الكود.', 'error'));
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    switchTab('store');
-    switchAdminTab('settings');
-    initFirebaseSync();
+window.togglePromo = function (code) {
+    const cur = state.promoCodes[code];
+    if (!cur) return;
+    update(ref(db, 'promoCodes/' + code), { active: cur.active === false ? true : false });
+};
+
+window.deletePromo = function (code) {
+    if (!confirm('حذف الكود ' + code + '؟')) return;
+    remove(ref(db, 'promoCodes/' + code));
+};
+
+onValue(ref(db, 'promoCodes'), (snap) => {
+    state.promoCodes = snap.exists() ? snap.val() : {};
+    renderPromoCodesList();
 });
+
+let deferredPrompt = null;
+const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+
+function syncInstallUi() {
+    const show = !isStandalone && (!!deferredPrompt || isIos);
+    document.querySelectorAll('.install-btn').forEach(b => b.classList.toggle('hidden', !show));
+    const tip = el('ios-install-tip');
+    if (tip) tip.classList.toggle('hidden', !(!isStandalone && isIos));
+}
+syncInstallUi();
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    syncInstallUi();
+});
+
+window.installApp = async function () {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        syncInstallUi();
+    } else if (isIos) {
+        showToast('من متصفح سفاري: اضغط زر المشاركة ثم "إضافة إلى الشاشة الرئيسية".');
+    } else {
+        showToast('افتح قائمة المتصفح واختر "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية".');
+    }
+};
+
+window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    syncInstallUi();
+    showToast('تم تثبيت التطبيق بنجاح!');
+});
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+}
+
+setInterval(() => {
+    updateDailyBtnState();
+    const dm = el('daily-jewel-modal');
+    if (dm && !dm.classList.contains('hidden')) refreshDailyModal();
+}, 1000);
+
+renderAnnouncement();
+renderWeeklyEvent();
+renderEventBar();
+renderHeaderLogo();
+renderFooterSocials();
+renderEarnInstructions();
+renderAbout();
+renderUserProfile();
+renderStore();
+renderMissions();
+renderProSection();
+renderHistory();
+renderEarningsHistory();
+initFirebaseSync();
+
+window.onload = function () {
+    if (window.google && window.google.accounts) initGoogleButton();
+};
 </script>
 </body>
 </html>
